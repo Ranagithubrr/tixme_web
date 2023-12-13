@@ -202,14 +202,17 @@ const Home = ({ title }) => {
     setShowLocation(true);
   };
   const CategoryImage = [
+    { image: NIGHTLIFE },
     { image: Arts },
-    { image: Business },
     { image: Food },
+    { image: Sports },
+    { image: Business },
     { image: Music },
     { image: NIGHTLIFE },
-    { image: Sports },
   ];
   const firstSixCategories = Listitems.slice(0, 6);
+  const filteredList = Listitems.filter(item => item.is_homepage === 1);
+  console.log(filteredList);
   return (
     <>
       <Container fluid className="body-container">
@@ -307,7 +310,7 @@ const Home = ({ title }) => {
                 <Col md={12} className="category-box-responsive">
                   <div className="category-section text-center">
                     <Slider {...settings}>
-                      {firstSixCategories.map((item, index) => (
+                      {filteredList.map((item, index) => (
                         <div key={index} className="mx-2">
                           <div className="category-items-box">
                             <div className="cat-image-box" onClick={() => setFilterCategory(item._id)}>

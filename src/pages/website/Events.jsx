@@ -1,23 +1,51 @@
 import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Alert from 'react-bootstrap/Alert';
+import Select from 'react-select'
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Range, getTrackBackground } from "react-range";
 import Eventlogo from "../../common/icon/eventlogo.svg";
 import Timelogo from "../../common/icon/time 1.svg";
 import Hourglasslogo from "../../common/icon/hourglass.svg";
 import LocationIcon from "../../common/icon/location.svg";
+import Whitestartbtn from "../../component/Whitestarbtn";
 import Eventimg from "../../common/event.jpg";
 import { useNavigate } from "react-router-dom";
 import DateIcon from "../../common/icon/date 2.svg";
+import Accordion from 'react-bootstrap/Accordion';
 import Fade from "react-reveal/Fade";
-import { apiurl, onlyDayMonth, shortPer, app_url } from "../../common/Helpers";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
+import { apiurl, onlyDayMonth, shortPer, app_url, get_date_time } from "../../common/Helpers";
 import "./events.css"
 const Events = () => {
     const [Listitems, setListitems] = useState([]);
     const [Eventlist, setEventlist] = useState([]);
     const [Eventloader, setEventloader] = useState(false);
     const [filtercategory, setFilterCategory] = useState('');
+    const [Ticketstype, setTicketstype] = useState('');
+    const [Dateapitype, setDateapitype] = useState('');
+    const [Eventtype, setEventtype] = useState('');
+    const [Startdateselect, setStartdateselect] = useState(new Date());
+    const [Enddateselect, setEnddateselect] = useState(new Date());
+    const [values, setValues] = useState([0]);
+    const [Datevalue, setDatevalue] = useState();
+    const [Datetype, setDatetype] = useState();
+
+    const fromgetdate = get_date_time(Startdateselect);
+    const endgetdate = get_date_time(Enddateselect);
+    const STEP = 1;
+    const MIN = 0;
+    const MAX = 100;
+    var startdate = '';
+    var enddate = '';
+    if (fromgetdate) {
+        startdate = fromgetdate[0].Dateview;
+    }
+    if (endgetdate) {
+        enddate = endgetdate[0].Dateview;
+    }
     const navigate = useNavigate();
     const viewEvent = async (id, name) => {
         navigate(`${app_url}event/${id}/${name}`)
@@ -54,7 +82,10 @@ const Events = () => {
             const requestData = {
                 limit: 10,
                 organizerid: null,
-                category: filtercategory ? filtercategory : null
+                category: filtercategory ? filtercategory : null,
+                eventtype: Eventtype ? Eventtype : null,
+                tickettype: Ticketstype ? Ticketstype : null,
+                dateapitype: Dateapitype ? Dateapitype : null,
             }
             fetch(apiurl + "website/all-events-list", {
                 method: "POST",
@@ -69,7 +100,7 @@ const Events = () => {
                         setEventlist(data.data);
                     } else {
                     }
-                setEventloader(false)
+                    setEventloader(false)
                 })
                 .catch((error) => {
                     console.error("Insert error:", error);
@@ -80,16 +111,47 @@ const Events = () => {
             setEventloader(false)
         }
     };
-    const categories = [
-        'All', 'Arts & Theater', 'Business & Networking', 'Food & Drinks', 'Music', 'Nightlife', 'Sports & Fitness'
+
+    const Resetfilter = async () => {
+        setDatetype('');
+        setEventtype('');
+        setTicketstype('');
+        setDateapitype('');
+        setValues([0]);
+        setFilterCategory('');
+        setDatevalue({ value: "", label: "Select" });
+        fetchEvent()
+    }
+    const DatefilterOption = [
+        {
+            options: [
+                { value: "", label: "Select" },
+                { value: "Today", label: "Today" },
+                { value: "Tomorrow", label: "Tomorrow" },
+                { value: "Next 7 days", label: "Next 7 days" },
+                { value: "This month", label: "This month" },
+                { value: "Next month", label: "Next month" },
+                { value: "Pick a date", label: "Pick a date" },
+                { value: "Pick between two dates", label: "Pick between two dates" },
+            ]
+        }
     ]
+    const selectDatefiltertype = (selectedValue) => {
+        setDatevalue(selectedValue);
+        setDatetype(selectedValue.value);
+        if (selectedValue.value == 'Today' || selectedValue.value == 'Tomorrow' || selectedValue.value == 'This month' || selectedValue.value == 'Next month') {
+            setDateapitype(selectedValue.value);
+        }
+        if(!selectedValue.value){
+            setDateapitype('');
+        }
+    };
     useEffect(() => {
         fetchCategory();
-        fetchEvent();
     }, []);
     useEffect(() => {
         fetchEvent();
-    }, [filtercategory]);
+    }, [filtercategory, Eventtype, Ticketstype, Dateapitype]);
     return (
         <div className='content-data'>
             <Container fluid className="body-container">
@@ -105,6 +167,183 @@ const Events = () => {
                                 })
                             }
                         </div>
+                    </Col>
+                    <Col md={12} className="filter-according">
+                        <Accordion defaultActiveKey="0">
+                            <Accordion.Item eventKey="0">
+                                <Accordion.Header>Event Filters</Accordion.Header>
+                                <Accordion.Body>
+                                    <Row>
+                                        <Col md={3} xs={12}>
+                                            <div>
+                                                <p className="mb-0">Event mode</p>
+                                                <div className="filterbutton-container">
+                                                    <a onClick={() => setEventtype(Eventtype ==  1? '' : 1)} className={Eventtype == 1 ? 'active hobby-box' : 'hobby-box'}>Online</a>
+                                                    <a onClick={() => setEventtype(Eventtype ==  2? '' : 2)} className={Eventtype == 2 ? 'active hobby-box' : 'hobby-box'}>In-Person</a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md={3} xs={12}>
+                                            <div>
+                                                <p className="mb-0">Price</p>
+                                                <div className="filterbutton-container">
+                                                    <a onClick={() => setTicketstype(Ticketstype == 2 ? '' : 2)} className={Ticketstype == 2 ? 'active hobby-box' : 'hobby-box'}>Free</a>
+                                                    <a onClick={() => setTicketstype(Ticketstype == 1 ? '' : 1)} className={Ticketstype == 1 ? 'active hobby-box' : 'hobby-box'}>Paid</a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md={2} xs={12}>
+                                            <div>
+                                                <p className="mb-2">Date</p>
+                                                <div>
+                                                    <Select
+                                                        isClearable={false}
+                                                        options={DatefilterOption}
+                                                        className='react-select'
+                                                        classNamePrefix='select'
+                                                        onChange={selectDatefiltertype}
+                                                        value={Datevalue}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        {Datetype == "Pick a date" ? (
+                                            <Col md={4} xs={12}>
+                                                <p className="mb-1">Select Date</p>
+                                                <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                                    <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                                    <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={startdate} />
+                                                    <div className="date-style-picker">
+                                                        <Flatpickr
+                                                            value={Startdateselect}
+                                                            id='date-picker'
+                                                            className='form-control'
+                                                            onChange={date => setStartdateselect(date)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        ) : ''}
+                                        {Datetype == "Pick between two dates" ? (
+                                            <>
+                                                <Col md={2} xs={12}>
+                                                    <p className="mb-1">Start Date</p>
+                                                    <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                                        <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                                        <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={startdate} />
+                                                        <div className="date-style-picker">
+                                                            <Flatpickr
+                                                                value={Startdateselect}
+                                                                id='date-picker'
+                                                                className='form-control'
+                                                                onChange={date => setStartdateselect(date)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                                <Col md={2} xs={12}>
+                                                    <p className="mb-1">End Date</p>
+                                                    <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                                        <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                                        <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={enddate} />
+                                                        <div className="date-style-picker">
+                                                            <Flatpickr
+                                                                value={Enddateselect}
+                                                                id='date-picker'
+                                                                className='form-control'
+                                                                onChange={date => setEnddateselect(date)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </>
+                                        ) : ''}
+                                        <Col md={12} className="mb-2"></Col>
+                                        <Col md={4}>
+                                            <p className="mb-0">Select Price rage</p>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    flexWrap: "wrap",
+                                                    margin: "2em"
+                                                }}
+                                            >
+                                                <Range
+                                                    values={values}
+                                                    step={STEP}
+                                                    min={MIN}
+                                                    max={MAX}
+                                                    onChange={(values) => setValues(values)}
+                                                    renderTrack={({ props, children }) => (
+                                                        <div
+                                                            onMouseDown={props.onMouseDown}
+                                                            onTouchStart={props.onTouchStart}
+                                                            style={{
+                                                                ...props.style,
+                                                                height: "36px",
+                                                                display: "flex",
+                                                                width: "100%"
+                                                            }}
+                                                        >
+                                                            <div
+                                                                ref={props.ref}
+                                                                style={{
+                                                                    height: "5px",
+                                                                    width: "100%",
+                                                                    borderRadius: "4px",
+                                                                    background: getTrackBackground({
+                                                                        values,
+                                                                        colors: ["#548BF4", "#ccc"],
+                                                                        min: MIN,
+                                                                        max: MAX
+                                                                    }),
+                                                                    alignSelf: "center"
+                                                                }}
+                                                            >
+                                                                {children}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    renderThumb={({ props, isDragged }) => (
+                                                        <div
+                                                            {...props}
+                                                            style={{
+                                                                ...props.style,
+                                                                height: "42px",
+                                                                width: "42px",
+                                                                borderRadius: "4px",
+                                                                backgroundColor: "#FFF",
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                                boxShadow: "0px 2px 6px #AAA"
+                                                            }}
+                                                        >
+                                                            <div
+                                                                style={{
+                                                                    height: "16px",
+                                                                    width: "5px",
+                                                                    backgroundColor: isDragged ? "#548BF4" : "#CCC"
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                />
+                                                <output style={{ marginTop: "30px" }} id="output">
+                                                    $ {values[0].toFixed(0)}
+                                                </output>
+                                            </div>
+                                        </Col>
+                                        <Col md={4} className="mt-5">
+                                            <span onClick={Resetfilter}>
+                                                <Whitestartbtn title={'Reset filter'} />
+                                            </span>
+                                        </Col>
+                                    </Row>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </Accordion>
                     </Col>
                     <Col md={12}>
                         <div className="event-category-section mb-5 in-event-page mt-5">
@@ -217,7 +456,7 @@ const Events = () => {
                                             <>
                                                 <Col md={12}>
                                                     <Alert variant="danger">
-                                                        No records available for the specified category
+                                                        No records available for the specified filter
                                                     </Alert>
                                                 </Col>
                                             </>

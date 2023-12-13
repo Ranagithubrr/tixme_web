@@ -1328,7 +1328,7 @@ span.cart-price {
 }
 
 .partner-slider img {
-    width: unset!important;
+    width: unset !important;
 }
 
 .partner-slider ul {
@@ -1363,6 +1363,18 @@ span.cart-price {
 
 @media (max-width: 900px) {
     .Want-to-receive {
-        font-size: 12px!important;
+        font-size: 12px !important;
     }
+}
+
+.filter-according .accordion-header {
+    padding: 0px;
+    border: none;
+}
+.filter-according .accordion-button {
+    color: #ffffff !important;
+    background-color: #0047ab !important;
+}
+.filter-according .accordion-body {
+    background: #fff;
 }

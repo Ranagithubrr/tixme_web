@@ -76,6 +76,7 @@ const Type = ({ title, editid }) => {
     const [TicketStartdate, setTicketStartdate] = useState(new Date());
     const [TicketEndtdate, setTicketEndtdate] = useState(new Date());
     const [Price, setPrice] = useState();
+    const [Tax, setTax] = useState();
     const [Pricedisable, setPricedisable] = useState(false);
     const [EditId, setEditId] = useState();
     const [Currency, setCurrency] = useState();
@@ -556,8 +557,12 @@ const Type = ({ title, editid }) => {
             if (!Price && Tickettype == 1) {
                 return toast.error('Enter ticket price');
             }
+            if (!Tax) {
+                return toast.error('Enter tax amount or 0');
+            }
             setLoader(true);
             const requestData = {
+                tax: Tax,
                 updateid: updateid,
                 ticket_type: Tickettype,
                 name: Ticketname,
@@ -690,7 +695,7 @@ const Type = ({ title, editid }) => {
                         if (data.data.event_desc) {
                             setEventdesc(data.data.event_desc)
                         }
-                        // fetchAllTicket()
+                        fetchAllTicket()
                     }
                     setEditApiloader(false);
                 })
@@ -735,7 +740,12 @@ const Type = ({ title, editid }) => {
                                             <ul id="progressbar">
                                                 <li onClick={() => setFormSection(2)} className={FormSection === 2 ? "active yesedit" : 'yesedit'} id="account"><strong>Basic Info</strong></li>
                                                 <li onClick={() => setFormSection(3)} className={FormSection === 3 ? "active yesedit" : 'yesedit'} id="account"><strong>Details</strong></li>
-                                                <li onClick={() => setFormSection(4)} className={FormSection === 4 ? "active yesedit" : 'yesedit'} id="account"><strong>Price</strong></li>
+                                                <li 
+                                                onClick={() => {
+                                                    setFormSection(4);
+                                                    fetchAllTicket();
+                                                  }}
+                                                className={FormSection === 4 ? "active yesedit" : 'yesedit'} id="account"><strong>Price</strong></li>
                                             </ul>
                                         </div>
                                     ) : (
@@ -1158,7 +1168,8 @@ const Type = ({ title, editid }) => {
                                                                         <p className="ticket-sold-count">Sold : 0 / {item.quantity}</p>
                                                                     </Col>
                                                                     <Col md={1}>
-                                                                        <p className="ticket-price-p"> {item.price ? (<>{Currencyname} {item.price}</>) : (Currencyname + '00')} </p>
+                                                                        <p className="ticket-price-p"> {item.price ? (<>{Currencyname} {item.price}</>) : (Currencyname + '00')}</p>
+                                                                        <p>{item.tax > 0 ? (<>(Tax : {item.tax}%)</>) : ''}</p>
                                                                     </Col>
                                                                     <Col md={2}>
                                                                         <div class="dropdown">
@@ -1166,7 +1177,7 @@ const Type = ({ title, editid }) => {
                                                                                 <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
                                                                             </button>
                                                                             <div class="dropdown-menu">
-                                                                                <Button variant="link" class="dropdown-item">Edit</Button>
+                                                                                {/* <Button variant="link" class="dropdown-item">Edit</Button> */}
                                                                                 <Button variant="link" onClick={() => CheckDelete(Editid, item.name)} class="dropdown-item">Delete</Button>
                                                                             </div>
                                                                         </div>
@@ -1217,13 +1228,17 @@ const Type = ({ title, editid }) => {
                             <label htmlFor="" className="text-black">Name</label>
                             <input type="text" class="form-control input-default" onChange={(e) => setTicketname(e.target.value)} value={Ticketname} placeholder="Name" />
                         </Col>
-                        <Col md={6} className="mb-2">
+                        <Col md={4} className="mb-2">
                             <label htmlFor="" className="text-black">Available quantity</label>
                             <input type="number" class="form-control input-default" onChange={(e) => setQuantity(e.target.value)} value={Quantity} placeholder="Available quantity" />
                         </Col>
-                        <Col md={6} className="mb-2">
+                        <Col md={4} className="mb-2">
                             <label htmlFor="" className="text-black">Price</label>
                             <Input type="number" disabled={Pricedisable} class="form-control input-default" value={Price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
+                        </Col>
+                        <Col md={4} className="mb-2">
+                            <label htmlFor="" className="text-black">Tax (%)</label>
+                            <Input type="number" disabled={Pricedisable} class="form-control input-default" value={Tax} onChange={(e) => setTax(e.target.value)} placeholder="Tax" />
                         </Col>
                         <Col md={4} className="mb-2 mt-4">
                             <label htmlFor="" className="text-black">Start date</label>

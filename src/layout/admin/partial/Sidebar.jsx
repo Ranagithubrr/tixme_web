@@ -158,7 +158,7 @@ const Sidebar = () => {
                                 <span className="nav-text">Payout request</span>
                             </Link>
                         </li > */}
-                        {/* <li onClick={() => d()}>
+                        <li onClick={() => d()}>
                             <a href="javascript:void(0);" class="has-arrow ai-icon" aria-expanded="false">
                                 <img src={EventIcon} alt="Your Logo" />
                                 <span class="nav-text">Payout request</span>
@@ -169,7 +169,7 @@ const Sidebar = () => {
                                         <Link className='text-black' to={`${admin_url}payout-request/${item._id}/${item.name}`}>{item.name}</Link></li>
                                 ))}
                             </ul>
-                        </li> */}
+                        </li>
                         <li onClick={() => d()}>
                             <Link to={admin_url + 'contact-us'} className="ai-icon" aria-expanded="false">
                                 <img src={DashboardIcon} alt="Your Logo" />

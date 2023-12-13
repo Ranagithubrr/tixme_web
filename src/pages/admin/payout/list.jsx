@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../../common/elements/JoinStartButton";
 import WhiteButton from '../../../component/Whitestarbtn';
+import { useParams } from 'react-router-dom';
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
@@ -10,14 +11,14 @@ import withReactContent from 'sweetalert2-react-content';
 import { apiurl, admin_url, organizer_url } from '../../../common/Helpers';
 import { Link } from "react-router-dom";
 const Dashboard = ({ title }) => {
-
+    const { id, name } = useParams();
     const [Loader, setLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
     const fetchList = async () => {
         try {
             setLoader(true)
             const requestData = {
-                countryname: null,
+                country: name,
             };
             fetch(apiurl + 'admin/payout-request-list', {
                 method: 'POST',
@@ -47,7 +48,7 @@ const Dashboard = ({ title }) => {
     }
     useEffect(() => {
         fetchList();
-    }, []);
+    }, [name]);
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -67,7 +68,7 @@ const Dashboard = ({ title }) => {
                                                 <div className="linear-background w-100"> </div>
                                             ) : (
                                                 <>
-                                                    {Listitems ? (
+                                                    {Listitems.length > 0 ? (
                                                         <>
                                                             <div class="table-responsive">
                                                                 <table class="table table-responsive-md">
