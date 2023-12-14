@@ -6,7 +6,7 @@ import { app_url } from '../../../common/Helpers';
 const Sidebar = () => {
     return (
         <>
-            <Col md={10} className="pt-3 pb-3 only-pc">
+            <Col md={8} className="pt-3 pb-3 only-pc">
                 <ul className="website_top_menu float-right">
                     {/* <li className="nav-item">
                         <Link to={app_url + 'event'}>

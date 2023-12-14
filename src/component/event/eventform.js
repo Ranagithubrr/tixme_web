@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import '../../common/css/autocompletestyle.css';
 import GroupIcon from '../../common/icon/Group.svg';
 import OnlineIcon from '../../common/icon/Host Online.svg';
+import { Container, Form, Image } from 'react-bootstrap';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import OffliveIcon from '../../common/icon/oflineeventlogo.svg';
 import whitestar from '../../common/icon/whitestar.svg';
@@ -13,6 +14,7 @@ import DateIcon from "../../common/icon/date 1.svg";
 import TimeIcon from "../../common/icon/time 1.svg";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
@@ -25,7 +27,7 @@ import Lottie from "lottie-react";
 import TicketLotte from '../../lotte/ticketanimation.json';
 import '../../common/css/wiz.css';
 import TimezoneSelect from 'react-timezone-select'
-import { organizer_url, apiurl, get_date_time, get_min_date } from '../../common/Helpers';
+import { organizer_url, imgurl, apiurl, get_date_time, get_min_date } from '../../common/Helpers';
 import {
     Modal,
     Input,
@@ -85,11 +87,29 @@ const Type = ({ title, editid }) => {
     const [Country, setCountry] = useState();
     const [CountryId, setCountryId] = useState();
     const [Countryname, setCountryname] = useState();
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [Bannerimg, setBannerimg] = useState(null);
     const organizerid = localStorage.getItem('organizerid')
+    const [image, setImage] = useState(null);
+    const [BannerImage, setBannerImage] = useState(null);
 
     const [selectedTimezone, setSelectedTimezone] = useState(
         Intl.DateTimeFormat().resolvedOptions().timeZone
     )
+    const handleImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            let img = e.target.files[0];
+            setSelectedImage(URL.createObjectURL(img));
+            setImage(e.target.files[0]);
+        }
+    };
+    const handleBannerImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            let img = e.target.files[0];
+            setBannerimg(URL.createObjectURL(img));
+            setBannerImage(e.target.files[0]);
+        }
+    };
     // JSON.stringify(selectedTimezone, null, 2)
     const lottewidth = {
         width: '100%',
@@ -289,40 +309,41 @@ const Type = ({ title, editid }) => {
             if (!Eventdesc) {
                 return toast.error("Event description require");
             }
+            if(!image && !selectedImage){
+                return toast.error("Please upload Event Thumbnail");
+            }
+            if(!BannerImage && !Bannerimg){
+                return toast.error("Please upload Event banner");
+            }
             setLoader(true);
-            const requestData = {
-                event_desc: Eventdesc,
-                updateid: updateid
-                // event_image: [],
-            };
-            fetch(apiurl + 'event/update/eventdesc', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setLoader(false);
-                    if (data.success == true) {
-                        toast.success('Updated', {
-                            duration: 3000,
-                        });
-                        fetchAllTicket();
-                        setFormSection(4);
-                    } else {
-                        toast.error(data.message);
-                    }
-                })
-                .catch(error => {
-                    setLoader(false);
-                    console.error('Insert error:', error);
+            const formData = new FormData();
+            formData.append("image", image);
+            formData.append("bannerimage", BannerImage);
+            formData.append("event_desc", Eventdesc);
+            formData.append("updateid", updateid);
+            const result = await axios.post(
+                apiurl + 'event/update/eventdesc',
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
+            if (result.data.success === true) {
+                toast.success('Updated', {
+                    duration: 3000,
                 });
+                fetchAllTicket();
+                setFormSection(4);
+            } else {
+                toast.error(result.data.message);
+            }
+            setLoader(false);
         } catch (error) {
             console.error('Login api error:', error);
+            setLoader(false);
         }
     }
+
     const HandelSubmit = async () => {
         try {
             setLoader(true);
@@ -687,9 +708,12 @@ const Type = ({ title, editid }) => {
                         setDisplaystarttime(data.data.display_start_time)
                         setDisplayendtime(data.data.display_end_time)
                         setEventdesc(data.data.event_desc)
+                        setSelectedImage(data.data.thum_image ? imgurl + data.data.thum_image : null)
+                        setBannerimg(data.data.banner_image ? imgurl + data.data.banner_image : null)
                         setDisplayprice(data.data.displayprice)
                         setDisplaycutprice(data.data.displaycutprice)
                         setSelectedTimezone(data.data.timezone)
+                        setTicketList(data.data.allprice)
                         setTicketList(data.data.allprice)
                         setTags(data.data.tags)
                         if (data.data.event_desc) {
@@ -729,371 +753,313 @@ const Type = ({ title, editid }) => {
             {EditApiloader ? (
                 <div className="linear-background w-100"> </div>
             ) : (
-            <Row className="pb-2">
-                <Col md={12}>
-                    <Card>
-                        <Card.Body className="py-5">
-                            <Row>
-                                <Col md={12} className="text-center">
-                                    {EditId ? (
-                                        <div className="">
-                                            <ul id="progressbar">
-                                                <li onClick={() => setFormSection(2)} className={FormSection === 2 ? "active yesedit" : 'yesedit'} id="account"><strong>Basic Info</strong></li>
-                                                <li onClick={() => setFormSection(3)} className={FormSection === 3 ? "active yesedit" : 'yesedit'} id="account"><strong>Details</strong></li>
-                                                <li 
-                                                onClick={() => {
-                                                    setFormSection(4);
-                                                    fetchAllTicket();
-                                                  }}
-                                                className={FormSection === 4 ? "active yesedit" : 'yesedit'} id="account"><strong>Price</strong></li>
-                                            </ul>
-                                        </div>
-                                    ) : (
-                                        <div className="">
-                                            <ul id="progressbar">
-                                                <li className={FormSection >= 1 ? "active noedit" : 'noedit'} id="account"><strong>Event Type</strong></li>
-                                                <li className={FormSection >= 2 ? "active noedit" : 'noedit'} id="account"><strong>Basic Info</strong></li>
-                                                <li className={FormSection >= 3 ? "active noedit" : 'noedit'} id="account"><strong>Details</strong></li>
-                                                <li className={FormSection >= 4 ? "active noedit" : 'noedit'} id="account"><strong>Price</strong></li>
-                                            </ul>
-                                        </div>
-                                    )}
-                                </Col>
-                            </Row>
-                            {FormSection === 1 ?
-                                (
-                                    <Row className="pb-5">
-                                        <Col md={12} className="text-center mb-5">
-                                            <h2 className="theme-color mb-2 ">Select Event Type</h2>
-                                            <p className="text-black">Your one stop solution for managing and conducting events</p>
-                                        </Col>
-                                        <Col md={6} className="mt-5">
-                                            <div className="event_category_box gradient-blue text-center float-right">
-                                                <h3 className="event-category-title theme-color">Online Event</h3>
-                                                <p className="event-category-desc text-black mb-4">Host online events using  Zoom, Google Meet, YouTube Live etc</p>
-                                                <span onClick={() => { setEventtype(1); setFormSection(2); }}>
-                                                    <WhitestarBtn title={'Create Event'} />
-                                                </span>
-                                                <div className="icon_section">
-                                                    <img src={GroupIcon} />
-                                                    <img src={OnlineIcon} />
-                                                </div>
+                <Row className="pb-2">
+                    <Col md={12}>
+                        <Card>
+                            <Card.Body className="py-5">
+                                <Row>
+                                    <Col md={12} className="text-center">
+                                        {EditId ? (
+                                            <div className="">
+                                                <ul id="progressbar">
+                                                    <li onClick={() => setFormSection(2)} className={FormSection === 2 ? "active yesedit" : 'yesedit'} id="account"><strong>Basic Info</strong></li>
+                                                    <li onClick={() => setFormSection(3)} className={FormSection === 3 ? "active yesedit" : 'yesedit'} id="account"><strong>Details</strong></li>
+                                                    <li
+                                                        onClick={() => {
+                                                            setFormSection(4);
+                                                            fetchAllTicket();
+                                                        }}
+                                                        className={FormSection === 4 ? "active yesedit" : 'yesedit'} id="account"><strong>Price</strong></li>
+                                                </ul>
                                             </div>
-                                        </Col>
-                                        <Col md={6} className="mt-5">
-                                            <div className="event_category_box gradient-grey text-center">
-                                                <h3 className="event-category-title theme-color">Physical Event</h3>
-                                                <p className="event-category-desc text-black mb-4">Host in-person or outdoor events using our event management platform</p>
-                                                <div className="button-group">
-                                                    <span onClick={() => { setEventtype(2); setFormSection(2); }}>
+                                        ) : (
+                                            <div className="">
+                                                <ul id="progressbar">
+                                                    <li className={FormSection >= 1 ? "active noedit" : 'noedit'} id="account"><strong>Event Type</strong></li>
+                                                    <li className={FormSection >= 2 ? "active noedit" : 'noedit'} id="account"><strong>Basic Info</strong></li>
+                                                    <li className={FormSection >= 3 ? "active noedit" : 'noedit'} id="account"><strong>Details</strong></li>
+                                                    <li className={FormSection >= 4 ? "active noedit" : 'noedit'} id="account"><strong>Price</strong></li>
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </Col>
+                                </Row>
+                                {FormSection === 1 ?
+                                    (
+                                        <Row className="pb-5">
+                                            <Col md={12} className="text-center mb-5">
+                                                <h2 className="theme-color mb-2 ">Select Event Type</h2>
+                                                <p className="text-black">Your one stop solution for managing and conducting events</p>
+                                            </Col>
+                                            <Col md={6} className="mt-5">
+                                                <div className="event_category_box gradient-blue text-center float-right">
+                                                    <h3 className="event-category-title theme-color">Online Event</h3>
+                                                    <p className="event-category-desc text-black mb-4">Host online events using  Zoom, Google Meet, YouTube Live etc</p>
+                                                    <span onClick={() => { setEventtype(1); setFormSection(2); }}>
                                                         <WhitestarBtn title={'Create Event'} />
                                                     </span>
-                                                </div>
-                                                <div className="icon_section">
-                                                    <img src={GroupIcon} />
-                                                    <img src={OffliveIcon} />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                ) : (<></>)}
-                            {FormSection === 2 ? (
-                                <Row className="pb-5">
-                                    <Col md={12} className="text-center mb-5">
-                                        <h2 className="theme-color mb-2 ">Event Basic Info</h2>
-                                    </Col>
-                                    <div className="col-md-6">
-                                        <label htmlFor="" className="text-black">Event Name</label>
-                                        <input type="text" class="form-control input-default" value={Name} onChange={(e) => setName(e.target.value)} placeholder="Enter Event Name" />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <label htmlFor="" className="text-black">Event Display Name <img src={InfoIcon} /></label>
-                                        <input type="text" class="form-control input-default " value={Displayname} onChange={(e) => setDisplayname(e.target.value)} placeholder="Enter Event Display Name" />
-                                    </div>
-                                    <div className="col-md-4 mt-4">
-                                        <label htmlFor="" className="text-black">Select Category</label>
-                                        <Select
-                                            isClearable={false}
-                                            options={CategoryOption}
-                                            className='react-select select-theme'
-                                            classNamePrefix='select'
-                                            onChange={selectCategory}
-                                            value={Category}
-                                        />
-                                    </div>
-                                    <div className="col-md-8 mt-4"></div>
-                                    <div className="col-md-4 mt-4">
-                                        <label htmlFor="" className="text-black">Select Currency</label>
-                                        <Select
-                                            isClearable={false}
-                                            options={CurrencyOption}
-                                            className='react-select select-theme'
-                                            classNamePrefix='select'
-                                            onChange={selectCurrency}
-                                            value={Currency}
-                                        />
-                                    </div>
-                                    <div className="col-md-4 mt-4">
-                                        <label htmlFor="" className="text-black">Display price</label>
-                                        <input type="text" class="form-control input-default" value={Displayprice} onChange={(e) => setDisplayprice(e.target.value)} placeholder="Enter Amount" />
-                                    </div>
-                                    <div className="col-md-4  mt-4">
-                                        <label htmlFor="" className="text-black">Display cut price</label>
-                                        <input type="text" class="form-control input-default" value={Displaycutprice} onChange={(e) => setDisplaycutprice(e.target.value)} placeholder="Enter Amount" />
-                                    </div>
-                                    <div className="col-md-12 mt-4">
-                                        <label htmlFor="">Tags</label>
-                                        <p>Improve discoverability of your event by adding tags relevant to subject matter.</p>
-                                        <input
-                                            type="text"
-                                            className="form-control input-default"
-                                            placeholder="Add search keywords to your event"
-                                            value={inputValue}
-                                            onChange={handleInputChange}
-                                            onKeyDown={handleInputKeyDown}
-                                        />
-                                        <span className="mt-2">{tags.length} / 10 tags.</span>
-                                        <div className="tag-preview-option my-4">
-                                            <ul>
-                                                {tags.map((tag, index) => (
-                                                    <li key={index}>
-                                                        {tag}
-                                                        <button onClick={() => handleDeleteTag(index)} className="delete-button">
-                                                            X
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-8"></div>
-                                    <div className="col-md-8 mt-4">
-                                        <label htmlFor="">Event Visibility</label>
-                                        <div className="tab-button-box">
-                                            {/* tab-button-active */}
-                                            <span onClick={() => setVisibility(1)} className={Visibility == 1 ? "tab-button-active" : ""}><img src={WorldIcon} alt="" /> Public</span>
-                                            <span onClick={() => setVisibility(2)} className={Visibility == 2 ? "tab-button-active" : ""}><img src={LockIcon} alt="" /> Private</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-8 mt-4">
-                                        <label htmlFor="">Location</label>
-                                        <p>Help people in the area discover your event and let attendees know where to show up.</p>
-                                        <div className="tab-button-box">
-                                            <span onClick={() => setEventtype(1)} className={Eventtype == 1 ? "tab-button-active" : "tab-button-grey-active"}>Venue</span>
-                                            <span onClick={() => setEventtype(2)} className={Eventtype == 2 ? "tab-button-active" : "tab-button-grey-active"}> Online Event</span>
-                                            {/* <span onClick={() => setEventtype(3)} className={Eventtype == 3 ? "tab-button-active" : ""}>To be announced</span> */}
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 mt-4"></div>
-                                    <div className="col-md-3 mt-4">
-                                        <label htmlFor="" className="text-black">Select Country</label>
-                                        <Select
-                                            isClearable={false}
-                                            options={CountryOption}
-                                            className='react-select select-theme'
-                                            classNamePrefix='select'
-                                            onChange={selectCountry}
-                                            value={Country}
-                                        />
-                                    </div>
-                                    <div className="col-md-6 mt-4">
-                                        {/* ... (other code) */}
-                                        <label htmlFor="" className="text-black">Address</label>
-                                        <PlacesAutocomplete
-                                            value={Location}
-                                            onChange={(e) => setLocation(e)}
-                                            onSelect={handleSelect}
-                                        >
-                                            {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                                                <div>
-                                                    <input
-                                                        {...getInputProps({
-                                                            placeholder: 'Search for venue or address',
-                                                            className: 'form-control',
-                                                        })}
-                                                    />
-                                                    <div>
-                                                        {loading ? <div>Loading...</div> : null}
-
-                                                        {suggestions.map((suggestion) => (
-                                                            <div className="location-sugg" {...getSuggestionItemProps(suggestion)}>
-                                                                {suggestion.description}
-                                                            </div>
-                                                        ))}
+                                                    <div className="icon_section">
+                                                        <img src={GroupIcon} />
+                                                        <img src={OnlineIcon} />
                                                     </div>
                                                 </div>
-                                            )}
-                                        </PlacesAutocomplete>
-                                    </div>
-                                    <div className="col-md-12 pt-4">
-                                        <p className="mb-0">Tell event-goers when your event starts and ends so they can make plans to attend.</p>
-                                    </div>
-                                    <div className="col-md-4 mt-4">
-                                        <label htmlFor="">Date & Time</label>
-                                        <div className="tab-button-box">
-                                            <span onClick={() => setEventSubtype(1)} className={EventSubtype == 1 ? "tab-button-active" : ""}>Single Event</span>
-                                            <span onClick={() => setEventSubtype(2)} className={EventSubtype == 2 ? "tab-button-active" : ""}> Recurring Event</span>
+                                            </Col>
+                                            <Col md={6} className="mt-5">
+                                                <div className="event_category_box gradient-grey text-center">
+                                                    <h3 className="event-category-title theme-color">Physical Event</h3>
+                                                    <p className="event-category-desc text-black mb-4">Host in-person or outdoor events using our event management platform</p>
+                                                    <div className="button-group">
+                                                        <span onClick={() => { setEventtype(2); setFormSection(2); }}>
+                                                            <WhitestarBtn title={'Create Event'} />
+                                                        </span>
+                                                    </div>
+                                                    <div className="icon_section">
+                                                        <img src={GroupIcon} />
+                                                        <img src={OffliveIcon} />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                    ) : (<></>)}
+                                {FormSection === 2 ? (
+                                    <Row className="pb-5">
+                                        <Col md={12} className="text-center mb-5">
+                                            <h2 className="theme-color mb-2 ">Event Basic Info</h2>
+                                        </Col>
+                                        <div className="col-md-6">
+                                            <label htmlFor="" className="text-black">Event Name</label>
+                                            <input type="text" class="form-control input-default" value={Name} onChange={(e) => setName(e.target.value)} placeholder="Enter Event Name" />
                                         </div>
-                                    </div>
-                                    <div className="col-md-4 mt-4 d-flex align-items-end">
-                                        <div className="select-wrapper w-100">
-                                            <p>Select time zone</p>
-                                            <TimezoneSelect
-                                                value={selectedTimezone}
-                                                onChange={setSelectedTimezone}
+                                        <div className="col-md-6">
+                                            <label htmlFor="" className="text-black">Event Display Name <img src={InfoIcon} /></label>
+                                            <input type="text" class="form-control input-default " value={Displayname} onChange={(e) => setDisplayname(e.target.value)} placeholder="Enter Event Display Name" />
+                                        </div>
+                                        <div className="col-md-4 mt-4">
+                                            <label htmlFor="" className="text-black">Select Category</label>
+                                            <Select
+                                                isClearable={false}
+                                                options={CategoryOption}
+                                                className='react-select select-theme'
+                                                classNamePrefix='select'
+                                                onChange={selectCategory}
+                                                value={Category}
                                             />
                                         </div>
-                                    </div>
-                                    <div className="col-md-4 checkout-style-bottom">
-                                        <div className="row checkout-style-element Display-date-time-tic">
-                                            <div className="col-md-2">
-                                                <div class="input-group mb-3">
-                                                    <input checked={IsclockCountdown} onChange={handleIsclockCountdown} type="checkbox" class="form-check-input" />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-10">
-                                                <p className="mb-0">Clock Timer ( Countdown )</p>
-                                                <p className="mb-0">Clock timer of your event will be displayed to attendess.</p>
+                                        <div className="col-md-8 mt-4"></div>
+                                        <div className="col-md-4 mt-4">
+                                            <label htmlFor="" className="text-black">Select Currency</label>
+                                            <Select
+                                                isClearable={false}
+                                                options={CurrencyOption}
+                                                className='react-select select-theme'
+                                                classNamePrefix='select'
+                                                onChange={selectCurrency}
+                                                value={Currency}
+                                            />
+                                        </div>
+                                        <div className="col-md-4 mt-4">
+                                            <label htmlFor="" className="text-black">Display price</label>
+                                            <input type="text" class="form-control input-default" value={Displayprice} onChange={(e) => setDisplayprice(e.target.value)} placeholder="Enter Amount" />
+                                        </div>
+                                        <div className="col-md-4  mt-4">
+                                            <label htmlFor="" className="text-black">Display cut price</label>
+                                            <input type="text" class="form-control input-default" value={Displaycutprice} onChange={(e) => setDisplaycutprice(e.target.value)} placeholder="Enter Amount" />
+                                        </div>
+                                        <div className="col-md-12 mt-4">
+                                            <label htmlFor="">Tags</label>
+                                            <p>Improve discoverability of your event by adding tags relevant to subject matter.</p>
+                                            <input
+                                                type="text"
+                                                className="form-control input-default"
+                                                placeholder="Add search keywords to your event"
+                                                value={inputValue}
+                                                onChange={handleInputChange}
+                                                onKeyDown={handleInputKeyDown}
+                                            />
+                                            <span className="mt-2">{tags.length} / 10 tags.</span>
+                                            <div className="tag-preview-option my-4">
+                                                <ul>
+                                                    {tags.map((tag, index) => (
+                                                        <li key={index}>
+                                                            {tag}
+                                                            <button onClick={() => handleDeleteTag(index)} className="delete-button">
+                                                                X
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
                                         </div>
-                                    </div>
+                                        <div className="col-md-8"></div>
+                                        <div className="col-md-8 mt-4">
+                                            <label htmlFor="">Event Visibility</label>
+                                            <div className="tab-button-box">
+                                                {/* tab-button-active */}
+                                                <span onClick={() => setVisibility(1)} className={Visibility == 1 ? "tab-button-active" : ""}><img src={WorldIcon} alt="" /> Public</span>
+                                                <span onClick={() => setVisibility(2)} className={Visibility == 2 ? "tab-button-active" : ""}><img src={LockIcon} alt="" /> Private</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-8 mt-4">
+                                            <label htmlFor="">Location</label>
+                                            <p>Help people in the area discover your event and let attendees know where to show up.</p>
+                                            <div className="tab-button-box">
+                                                <span onClick={() => setEventtype(1)} className={Eventtype == 1 ? "tab-button-active" : "tab-button-grey-active"}>Venue</span>
+                                                <span onClick={() => setEventtype(2)} className={Eventtype == 2 ? "tab-button-active" : "tab-button-grey-active"}> Online Event</span>
+                                                {/* <span onClick={() => setEventtype(3)} className={Eventtype == 3 ? "tab-button-active" : ""}>To be announced</span> */}
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 mt-4"></div>
+                                        <div className="col-md-3 mt-4">
+                                            <label htmlFor="" className="text-black">Select Country</label>
+                                            <Select
+                                                isClearable={false}
+                                                options={CountryOption}
+                                                className='react-select select-theme'
+                                                classNamePrefix='select'
+                                                onChange={selectCountry}
+                                                value={Country}
+                                            />
+                                        </div>
+                                        <div className="col-md-6 mt-4">
+                                            {/* ... (other code) */}
+                                            <label htmlFor="" className="text-black">Address</label>
+                                            <PlacesAutocomplete
+                                                value={Location}
+                                                onChange={(e) => setLocation(e)}
+                                                onSelect={handleSelect}
+                                            >
+                                                {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                                                    <div>
+                                                        <input
+                                                            {...getInputProps({
+                                                                placeholder: 'Search for venue or address',
+                                                                className: 'form-control',
+                                                            })}
+                                                        />
+                                                        <div>
+                                                            {loading ? <div>Loading...</div> : null}
 
-                                    <div className="col-md-12">
-                                        <p>Event Starts</p>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
-                                            <span class="input-group-text"><img src={DateIcon} alt="" /></span>
-                                            <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={startdate} />
-                                            <div className="date-style-picker">
-                                                <Flatpickr
-                                                    value={Startdateselect}
-                                                    data-enable-time
-                                                    id='date-picker'
-                                                    className='form-control'
-                                                    onChange={date => setStartdateselect(date)}
+                                                            {suggestions.map((suggestion) => (
+                                                                <div className="location-sugg" {...getSuggestionItemProps(suggestion)}>
+                                                                    {suggestion.description}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </PlacesAutocomplete>
+                                        </div>
+                                        <div className="col-md-12 pt-4">
+                                            <p className="mb-0">Tell event-goers when your event starts and ends so they can make plans to attend.</p>
+                                        </div>
+                                        <div className="col-md-4 mt-4">
+                                            <label htmlFor="">Date & Time</label>
+                                            <div className="tab-button-box">
+                                                <span onClick={() => setEventSubtype(1)} className={EventSubtype == 1 ? "tab-button-active" : ""}>Single Event</span>
+                                                <span onClick={() => setEventSubtype(2)} className={EventSubtype == 2 ? "tab-button-active" : ""}> Recurring Event</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 mt-4 d-flex align-items-end">
+                                            <div className="select-wrapper w-100">
+                                                <p>Select time zone</p>
+                                                <TimezoneSelect
+                                                    value={selectedTimezone}
+                                                    onChange={setSelectedTimezone}
                                                 />
                                             </div>
                                         </div>
-
-                                    </div>
-                                    <div className="col-md-4">
-                                        <div class="input-group mb-3 input-warning-o">
-                                            <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
-                                            <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={starttime} />
-                                        </div>
-                                    </div>
-                                    <div className="col-md-4 checkout-style-bottom">
-                                        <div className="row checkout-style-element">
-                                            <div className="col-md-2 col-2">
-                                                <div class="input-group mb-3">
-                                                    <input checked={Displaystarttime} onChange={handleDisplaystarttime} type="checkbox" class="form-check-input" />
+                                        <div className="col-md-4 checkout-style-bottom">
+                                            <div className="row checkout-style-element Display-date-time-tic">
+                                                <div className="col-md-2">
+                                                    <div class="input-group mb-3">
+                                                        <input checked={IsclockCountdown} onChange={handleIsclockCountdown} type="checkbox" class="form-check-input" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-10">
+                                                    <p className="mb-0">Clock Timer ( Countdown )</p>
+                                                    <p className="mb-0">Clock timer of your event will be displayed to attendess.</p>
                                                 </div>
                                             </div>
-                                            <div className="col-md-10 col-10 Display-date-time-tic">
-                                                <p className="mb-0">Display start time.</p>
-                                                <p className="mb-0">The start time of your event will be displayed to attendess.</p>
-                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="col-md-12 mt-4">
-                                        <p>Event Ends</p>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
-                                            <span class="input-group-text"><img src={DateIcon} alt="" /></span>
-                                            <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={Enddate} />
-                                            <div className="date-style-picker">
-                                                <Flatpickr
-                                                    value={Enddateselect}
-                                                    data-enable-time
-                                                    id='date-picker'
-                                                    className='form-control'
-                                                    onChange={date => setEnddateselect(date)}
-                                                />
-                                            </div>
+
+                                        <div className="col-md-12">
+                                            <p>Event Starts</p>
                                         </div>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <div class="input-group mb-3 input-warning-o">
-                                            <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
-                                            <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={Rndtime} />
-                                        </div>
-                                    </div>
-                                    <div className="col-md-4 checkout-style-bottom">
-                                        <div className="row checkout-style-element">
-                                            <div className="col-md-2">
-                                                <div class="input-group mb-3">
-                                                    <input checked={Displayendtime} onChange={handleDisplayendtime} type="checkbox" class="form-check-input" />
+                                        <div className="col-md-4">
+                                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                                <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={startdate} />
+                                                <div className="date-style-picker">
+                                                    <Flatpickr
+                                                        value={Startdateselect}
+                                                        data-enable-time
+                                                        id='date-picker'
+                                                        className='form-control'
+                                                        onChange={date => setStartdateselect(date)}
+                                                    />
                                                 </div>
                                             </div>
-                                            <div className="col-md-10 Display-date-time-tic">
-                                                <p className="mb-0">Display end time.</p>
-                                                <p className="mb-0">The end time of your event will be displayed to attendess.</p>
+
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div class="input-group mb-3 input-warning-o">
+                                                <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
+                                                <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={starttime} />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-md-12 mt-2">
-                                        <div className="button-group mt-10">
-                                            <span onClick={() => setFormSection(1)}>
-                                                <WhitestarBtn title={'Back'} />
-                                            </span>
-                                            {Loader ? (
-                                                <span onClick={HandelPriceform}>
-                                                    <WhitestarBtn title={'Please wait...'} />
-                                                </span>
-                                            ) : (
-                                                <>
-                                                    {EditId ? (
-                                                        <span onClick={() => HandelUpdatedetails()}>
-                                                            <WhitestarBtn title={'Update'} />
-                                                        </span>
-
-                                                    ) : (
-                                                        <span onClick={() => HandelSubmit()}>
-                                                            <WhitestarBtn title={'Save'} />
-                                                        </span>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Row>
-                            ) : (<></>)}
-                            {FormSection === 3 ? (
-                                <Row>
-                                    <Col md={12} className="text-center mb-5">
-                                        <h2 className="theme-color mb-2 ">Event Images</h2>
-                                    </Col>
-                                    <div className="col-md-12 mb-5">
-                                        <h4 className="mb-2">About this event</h4>
-                                        <p>Add photos to show what your event will be about. You can upload up to 10 images.</p>
-                                        <div className="dropzone">
-                                            <div class="fallback">
-                                                <input name="file " type="file" multiple />
+                                        <div className="col-md-4 checkout-style-bottom">
+                                            <div className="row checkout-style-element">
+                                                <div className="col-md-2 col-2">
+                                                    <div class="input-group mb-3">
+                                                        <input checked={Displaystarttime} onChange={handleDisplaystarttime} type="checkbox" class="form-check-input" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-10 col-10 Display-date-time-tic">
+                                                    <p className="mb-0">Display start time.</p>
+                                                    <p className="mb-0">The start time of your event will be displayed to attendess.</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <Col md={12} className="text-center mb-5">
-                                        <h2 className="theme-color mb-2 ">Event Description</h2>
-                                    </Col>
-                                    <div className="col-md-12">
-                                        <h4 className="mb-2">About this event</h4>
-                                        <textarea className="custome-text-area" placeholder="Description" value={Eventdesc} onChange={(e) => setEventdesc(e.target.value)}></textarea>
-
-                                    </div>
-                                    {/* <div className="col-md-12 mt-2">
-                                        <h3 className="text-grey">Add more sections to your event page</h3>
-                                        <p className="text-light-grey">Help people in the area discover your event and let attendees know where to <br /> show up.</p>
-                                    </div> */}
-                                    {/* <div className="col-md-12 mt-2 d-flex align-items-center">
-                                        <span className="theme-color text-bold-600 font-30 mr-3">FAQ</span> <button className="btn-2" type="button">Add <img src={Locationstart} /></button>
-                                    </div> */}
-                                    <div className="col-md-12 mt-2">
+                                        <div className="col-md-12 mt-4">
+                                            <p>Event Ends</p>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                                <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={Enddate} />
+                                                <div className="date-style-picker">
+                                                    <Flatpickr
+                                                        value={Enddateselect}
+                                                        data-enable-time
+                                                        id='date-picker'
+                                                        className='form-control'
+                                                        onChange={date => setEnddateselect(date)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div class="input-group mb-3 input-warning-o">
+                                                <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
+                                                <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={Rndtime} />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 checkout-style-bottom">
+                                            <div className="row checkout-style-element">
+                                                <div className="col-md-2">
+                                                    <div class="input-group mb-3">
+                                                        <input checked={Displayendtime} onChange={handleDisplayendtime} type="checkbox" class="form-check-input" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-10 Display-date-time-tic">
+                                                    <p className="mb-0">Display end time.</p>
+                                                    <p className="mb-0">The end time of your event will be displayed to attendess.</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12 mt-2">
                                             <div className="button-group mt-10">
-
-                                                <span onClick={() => setFormSection(2)}>
+                                                <span onClick={() => setFormSection(1)}>
                                                     <WhitestarBtn title={'Back'} />
                                                 </span>
                                                 {Loader ? (
@@ -1103,9 +1069,10 @@ const Type = ({ title, editid }) => {
                                                 ) : (
                                                     <>
                                                         {EditId ? (
-                                                            <span onClick={() => HandelUpdateEventDesc(EditId)}>
+                                                            <span onClick={() => HandelUpdatedetails()}>
                                                                 <WhitestarBtn title={'Update'} />
                                                             </span>
+
                                                         ) : (
                                                             <span onClick={() => HandelSubmit()}>
                                                                 <WhitestarBtn title={'Save'} />
@@ -1113,104 +1080,219 @@ const Type = ({ title, editid }) => {
                                                         )}
                                                     </>
                                                 )}
-
                                             </div>
                                         </div>
-                                    </div>
-                                </Row>
-                            ) : (<></>)}
-                            {FormSection === 4 ? (
-                                <Row>
-                                    <Col md={12} className="text-center mb-5">
-                                        <h2 className="theme-color mb-2 ">Event Price</h2>
-                                    </Col>
-                                    <Col md={12} className="">
-                                        <Button variant="link" className="button-join" onClick={HandelCreateticket}>
-                                            <span>
-                                                <span className="bg-style"><img height={30} width={30} src={whitestar} /></span><span className="bg-style bg-title-style">Add Ticket</span>
-                                            </span>
-                                        </Button>
-                                    </Col>
-                                    {Apiloader ? (
-                                        <div className="linear-background w-100"> </div>
-                                    ) : (
-                                        <>
-                                            {
-                                                IsEventTicket ? (
-                                                    <Col md={12} className="mt-5 text-center" >
-                                                        <div className="no-data-found">
-                                                            <Lottie animationData={TicketLotte} style={lottewidth} />
-                                                            <p className="no_ticket_added">Ticket has not been added yet !</p>
-                                                        </div>
-                                                    </Col>
-                                                ) : (
-
-                                                    <Col md={12} className="mt-5">
-                                                        <div className="price-list-box">
-                                                            {TicketList.map((item, index) => (
-                                                                <Row className="">
-                                                                    <Col md={12}>
-                                                                        <p className="price-title">
-                                                                            {item.name}
-                                                                        </p>
-                                                                    </Col>
-                                                                    <Col md={1}>
-                                                                        <span class="badge light badge-success">On sale</span>
-                                                                    </Col>
-                                                                    <Col md={3}>
-                                                                        <div>
-                                                                            <p className="price-section-box" style={{ marginBottom: '0px' }}>
-                                                                                <span className="devide-dot">|</span> <span className="ticket-date">{item.startdate} at {item.starttime}</span>
-                                                                            </p>
-                                                                        </div>
-                                                                    </Col>
-                                                                    <Col md={3}>
-                                                                        <p className="ticket-sold-count">Sold : 0 / {item.quantity}</p>
-                                                                    </Col>
-                                                                    <Col md={1}>
-                                                                        <p className="ticket-price-p"> {item.price ? (<>{Currencyname} {item.price}</>) : (Currencyname + '00')}</p>
-                                                                        <p>{item.tax > 0 ? (<>(Tax : {item.tax}%)</>) : ''}</p>
-                                                                    </Col>
-                                                                    <Col md={2}>
-                                                                        <div class="dropdown">
-                                                                            <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                            </button>
-                                                                            <div class="dropdown-menu">
-                                                                                {/* <Button variant="link" class="dropdown-item">Edit</Button> */}
-                                                                                <Button variant="link" onClick={() => CheckDelete(Editid, item.name)} class="dropdown-item">Delete</Button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </Col>
-                                                                </Row>
-                                                            ))}
-                                                        </div>
-                                                    </Col>
-                                                )}
-                                        </>
-                                    )}
-                                    <div className="col-md-12 mt-2">
-                                        <div className="button-group mt-10">
-                                            <span onClick={() => setFormSection(3)}>
-                                                <WhitestarBtn title={'Back'} />
-                                            </span>
-                                            {Loader ? (
-                                                <span onClick={HandelPriceform}>
-                                                    <WhitestarBtn title={'Please wait...'} />
-                                                </span>
-                                            ) : (
-                                                <span onClick={HandelPriceform}>
-                                                    <WhitestarBtn title={'Update'} />
-                                                </span>
-                                            )}
+                                    </Row>
+                                ) : (<></>)}
+                                {FormSection === 3 ? (
+                                    <Row>
+                                        <Col md={12} className="text-center mb-5">
+                                            <h2 className="theme-color mb-2 ">Event Images</h2>
+                                        </Col>
+                                        <div className="col-md-12 mb-5">
+                                            <h4 className="mb-2">About this event</h4>
                                         </div>
-                                    </div>
-                                </Row>
-                            ) : (<></>)}
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row >
+                                        <Col md={12}>
+                                            <div className="">
+                                                <p>Upload Event Thumbnail <span className="text-danger">*</span></p>
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
+                                                    <div
+                                                        style={{
+                                                            width: '500px',
+                                                            height: '300px',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            flexDirection: 'column',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={() => document.getElementById('imageInput').click()}
+                                                    >
+                                                        {selectedImage ? (
+                                                            <img src={selectedImage} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                        ) : (
+                                                            <p>Upload Event Thumbnail</p>
+                                                        )}
+                                                        <input
+                                                            type="file"
+                                                            id="imageInput"
+                                                            accept="image/*"
+                                                            onChange={handleImageChange}
+                                                            style={{ display: 'none' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md={12}>
+                                            <div className="mt-4">
+                                                <p>Upload Event Banner <span className="text-danger">*</span></p>
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
+                                                    <div
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '300px',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            flexDirection: 'column',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={() => document.getElementById('imageInputbanner').click()}
+                                                    >
+                                                        {Bannerimg ? (
+                                                            <img src={Bannerimg} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                        ) : (
+                                                            <p>Upload Event Banner</p>
+                                                        )}
+                                                        <input
+                                                            type="file"
+                                                            id="imageInputbanner"
+                                                            accept="image/*"
+                                                            onChange={handleBannerImageChange}
+                                                            style={{ display: 'none' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md={12} className="text-center mb-3 mt-4">
+                                            <h2 className="theme-color mb-2 ">Event Description</h2>
+                                        </Col>
+                                        <div className="col-md-12">
+                                            <h4 className="mb-2">About this event</h4>
+                                            <textarea className="custome-text-area" placeholder="Description" value={Eventdesc} onChange={(e) => setEventdesc(e.target.value)}></textarea>
+
+                                        </div>
+                                        {/* <div className="col-md-12 mt-2">
+                                        <h3 className="text-grey">Add more sections to your event page</h3>
+                                        <p className="text-light-grey">Help people in the area discover your event and let attendees know where to <br /> show up.</p>
+                                    </div> */}
+                                        {/* <div className="col-md-12 mt-2 d-flex align-items-center">
+                                        <span className="theme-color text-bold-600 font-30 mr-3">FAQ</span> <button className="btn-2" type="button">Add <img src={Locationstart} /></button>
+                                    </div> */}
+                                        <div className="col-md-12 mt-2">
+                                            <div className="col-md-12 mt-2">
+                                                <div className="button-group mt-10">
+
+                                                    <span onClick={() => setFormSection(2)}>
+                                                        <WhitestarBtn title={'Back'} />
+                                                    </span>
+                                                    {Loader ? (
+                                                        <span onClick={HandelPriceform}>
+                                                            <WhitestarBtn title={'Please wait...'} />
+                                                        </span>
+                                                    ) : (
+                                                        <>
+                                                            {EditId ? (
+                                                                <span onClick={() => HandelUpdateEventDesc(EditId)}>
+                                                                    <WhitestarBtn title={'Update'} />
+                                                                </span>
+                                                            ) : (
+                                                                <span onClick={() => HandelSubmit()}>
+                                                                    <WhitestarBtn title={'Save'} />
+                                                                </span>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Row>
+                                ) : (<></>)}
+                                {FormSection === 4 ? (
+                                    <Row>
+                                        <Col md={12} className="text-center mb-5">
+                                            <h2 className="theme-color mb-2 ">Event Price</h2>
+                                        </Col>
+                                        <Col md={12} className="">
+                                            <Button variant="link" className="button-join" onClick={HandelCreateticket}>
+                                                <span>
+                                                    <span className="bg-style"><img height={30} width={30} src={whitestar} /></span><span className="bg-style bg-title-style">Add Ticket</span>
+                                                </span>
+                                            </Button>
+                                        </Col>
+                                        {Apiloader ? (
+                                            <div className="linear-background w-100"> </div>
+                                        ) : (
+                                            <>
+                                                {
+                                                    IsEventTicket ? (
+                                                        <Col md={12} className="mt-5 text-center" >
+                                                            <div className="no-data-found">
+                                                                <Lottie animationData={TicketLotte} style={lottewidth} />
+                                                                <p className="no_ticket_added">Ticket has not been added yet !</p>
+                                                            </div>
+                                                        </Col>
+                                                    ) : (
+
+                                                        <Col md={12} className="mt-5">
+                                                            <div className="price-list-box">
+                                                                {TicketList.map((item, index) => (
+                                                                    <Row className="">
+                                                                        <Col md={12}>
+                                                                            <p className="price-title">
+                                                                                {item.name}
+                                                                            </p>
+                                                                        </Col>
+                                                                        <Col md={1}>
+                                                                            <span class="badge light badge-success">On sale</span>
+                                                                        </Col>
+                                                                        <Col md={3}>
+                                                                            <div>
+                                                                                <p className="price-section-box" style={{ marginBottom: '0px' }}>
+                                                                                    <span className="devide-dot">|</span> <span className="ticket-date">{item.startdate} at {item.starttime}</span>
+                                                                                </p>
+                                                                            </div>
+                                                                        </Col>
+                                                                        <Col md={3}>
+                                                                            <p className="ticket-sold-count">Sold : 0 / {item.quantity}</p>
+                                                                        </Col>
+                                                                        <Col md={1}>
+                                                                            <p className="ticket-price-p"> {item.price ? (<>{Currencyname} {item.price}</>) : (Currencyname + '00')}</p>
+                                                                            <p>{item.tax > 0 ? (<>(Tax : {item.tax}%)</>) : ''}</p>
+                                                                        </Col>
+                                                                        <Col md={2}>
+                                                                            <div class="dropdown">
+                                                                                <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
+                                                                                    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
+                                                                                </button>
+                                                                                <div class="dropdown-menu">
+                                                                                    {/* <Button variant="link" class="dropdown-item">Edit</Button> */}
+                                                                                    <Button variant="link" onClick={() => CheckDelete(Editid, item.name)} class="dropdown-item">Delete</Button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </Col>
+                                                                    </Row>
+                                                                ))}
+                                                            </div>
+                                                        </Col>
+                                                    )}
+                                            </>
+                                        )}
+                                        <div className="col-md-12 mt-2">
+                                            <div className="button-group mt-10">
+                                                <span onClick={() => setFormSection(3)}>
+                                                    <WhitestarBtn title={'Back'} />
+                                                </span>
+                                                {Loader ? (
+                                                    <span onClick={HandelPriceform}>
+                                                        <WhitestarBtn title={'Please wait...'} />
+                                                    </span>
+                                                ) : (
+                                                    <span onClick={HandelPriceform}>
+                                                        <WhitestarBtn title={'Update'} />
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Row>
+                                ) : (<></>)}
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row >
             )}
             <Modal isOpen={Ticketshow} toggle={() => setTicketshow(!Ticketshow)} className='modal-dialog-centered modal-lg'>
                 <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Create new ticket</ModalHeader>

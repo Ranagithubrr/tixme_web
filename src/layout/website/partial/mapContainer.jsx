@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-
+import Whitestartbtn from '../../../component/Whitestarbtn';
 const MapContainer = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
 
@@ -24,8 +24,10 @@ const MapContainer = () => {
 
   return (
     <div>
-      <button onClick={getLocation}>Location</button>
-      <div >
+      <span onClick={getLocation}>
+        <Whitestartbtn title={'Location'} />
+      </span>
+      <div>
         <LoadScript googleMapsApiKey="key=AIzaSyDhWeUv_PRpblvaIoascl69mpTFEE7F2kc">
           <GoogleMap
             mapContainerStyle={{ height: "100%", width: "100%" }}

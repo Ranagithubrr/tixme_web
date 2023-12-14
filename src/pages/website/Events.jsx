@@ -28,24 +28,34 @@ const Events = () => {
     const [Dateapitype, setDateapitype] = useState('');
     const [Eventtype, setEventtype] = useState('');
     const [Startdateselect, setStartdateselect] = useState(new Date());
+    const [RangeStartdateselect, setRangeStartdateselect] = useState(new Date());
     const [Enddateselect, setEnddateselect] = useState(new Date());
     const [values, setValues] = useState([0]);
     const [Datevalue, setDatevalue] = useState();
+    const [PriceFilter, setPriceFilter] = useState();
     const [Datetype, setDatetype] = useState();
+
+    const [Onlydatevalue, setOnlydatevalue] = useState();
 
     const fromgetdate = get_date_time(Startdateselect);
     const endgetdate = get_date_time(Enddateselect);
+    const rangeendgetdate = get_date_time(RangeStartdateselect);
     const STEP = 1;
     const MIN = 0;
     const MAX = 100;
     var startdate = '';
+    var rangestartdate = '';
     var enddate = '';
     if (fromgetdate) {
         startdate = fromgetdate[0].Dateview;
     }
+    if (rangeendgetdate) {
+        rangestartdate = rangeendgetdate[0].Dateview;
+    }
     if (endgetdate) {
         enddate = endgetdate[0].Dateview;
     }
+
     const navigate = useNavigate();
     const viewEvent = async (id, name) => {
         navigate(`${app_url}event/${id}/${name}`)
@@ -86,6 +96,10 @@ const Events = () => {
                 eventtype: Eventtype ? Eventtype : null,
                 tickettype: Ticketstype ? Ticketstype : null,
                 dateapitype: Dateapitype ? Dateapitype : null,
+                onlydate: Datetype == "Pick a date" ? startdate : null,
+                fromdate: Datetype == "Pick between two dates" ? rangestartdate : null,
+                todate: Datetype == "Pick between two dates" ? enddate : null,
+                price: PriceFilter > 0 ? PriceFilter : null,
             }
             fetch(apiurl + "website/all-events-list", {
                 method: "POST",
@@ -119,9 +133,14 @@ const Events = () => {
         setDateapitype('');
         setValues([0]);
         setFilterCategory('');
+        setPriceFilter('');
         setDatevalue({ value: "", label: "Select" });
+        startdate = '';
+        rangestartdate = '';
+        enddate = '';
         fetchEvent()
     }
+    
     const DatefilterOption = [
         {
             options: [
@@ -139,10 +158,10 @@ const Events = () => {
     const selectDatefiltertype = (selectedValue) => {
         setDatevalue(selectedValue);
         setDatetype(selectedValue.value);
-        if (selectedValue.value == 'Today' || selectedValue.value == 'Tomorrow' || selectedValue.value == 'This month' || selectedValue.value == 'Next month') {
+        if (selectedValue.value == 'Today' || selectedValue.value == 'Tomorrow' || selectedValue.value == 'This month' || selectedValue.value == 'Next month'  || selectedValue.value == 'Next 7 days') {
             setDateapitype(selectedValue.value);
         }
-        if(!selectedValue.value){
+        if (!selectedValue.value) {
             setDateapitype('');
         }
     };
@@ -151,7 +170,7 @@ const Events = () => {
     }, []);
     useEffect(() => {
         fetchEvent();
-    }, [filtercategory, Eventtype, Ticketstype, Dateapitype]);
+    }, [filtercategory, Eventtype, Ticketstype, Dateapitype, startdate, enddate, PriceFilter]);
     return (
         <div className='content-data'>
             <Container fluid className="body-container">
@@ -178,8 +197,8 @@ const Events = () => {
                                             <div>
                                                 <p className="mb-0">Event mode</p>
                                                 <div className="filterbutton-container">
-                                                    <a onClick={() => setEventtype(Eventtype ==  1? '' : 1)} className={Eventtype == 1 ? 'active hobby-box' : 'hobby-box'}>Online</a>
-                                                    <a onClick={() => setEventtype(Eventtype ==  2? '' : 2)} className={Eventtype == 2 ? 'active hobby-box' : 'hobby-box'}>In-Person</a>
+                                                    <a onClick={() => setEventtype(Eventtype == 1 ? '' : 1)} className={Eventtype == 1 ? 'active hobby-box' : 'hobby-box'}>Online</a>
+                                                    <a onClick={() => setEventtype(Eventtype == 2 ? '' : 2)} className={Eventtype == 2 ? 'active hobby-box' : 'hobby-box'}>In-Person</a>
                                                 </div>
                                             </div>
                                         </Col>
@@ -230,13 +249,13 @@ const Events = () => {
                                                     <p className="mb-1">Start Date</p>
                                                     <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
                                                         <span class="input-group-text"><img src={DateIcon} alt="" /></span>
-                                                        <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={startdate} />
+                                                        <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={rangestartdate} />
                                                         <div className="date-style-picker">
                                                             <Flatpickr
-                                                                value={Startdateselect}
+                                                                value={RangeStartdateselect}
                                                                 id='date-picker'
                                                                 className='form-control'
-                                                                onChange={date => setStartdateselect(date)}
+                                                                onChange={date => setRangeStartdateselect(date)}
                                                             />
                                                         </div>
                                                     </div>
@@ -336,6 +355,9 @@ const Events = () => {
                                             </div>
                                         </Col>
                                         <Col md={4} className="mt-5">
+                                            <span onClick={() => setPriceFilter(values[0].toFixed(0) > 0 ? values[0].toFixed(0) : null)}>
+                                                <Whitestartbtn title={'Filter price'} />
+                                            </span>
                                             <span onClick={Resetfilter}>
                                                 <Whitestartbtn title={'Reset filter'} />
                                             </span>

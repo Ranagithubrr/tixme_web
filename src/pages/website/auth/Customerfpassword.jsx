@@ -208,7 +208,7 @@ const Home = ({ title }) => {
                                                 <p>OTP</p>
                                                 <input
                                                     className="form-control"
-                                                    type="text"  // Use type="text" to allow for maxLength attribute
+                                                    type="number"  // Use type="text" to allow for maxLength attribute
                                                     maxLength="6"
                                                     placeholder="Enter OTP"
                                                     value={otp}

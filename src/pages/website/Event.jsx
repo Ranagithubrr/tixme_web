@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import { useParams } from 'react-router-dom';
+import { Button } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import TimerComponent from '../../component/event/timer';
@@ -13,6 +14,7 @@ import DateIcon from "../../common/icon/date 2.svg";
 import MapIcon from "../../common/icon/mapicon.svg";
 import { BsHeart, BsFillHeartFill } from "react-icons/bs";
 import HeartIcon from "../../common/icon/heart.svg";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ShareIcon from "../../common/icon/share.svg";
 import EventImg from "../../common/event1.png";
 import MailIcon from "../../common/icon/mail.svg";
@@ -40,13 +42,20 @@ const Page = ({ title }) => {
   const [Eventdata, setEventdata] = useState();
   const [Followtype, setFollowtype] = useState(false);
   const [IssaveEvent, setIssaveEvent] = useState(false);
+  const [Iscopy, setIscopy] = useState(false);
   const [Followtypeloader, setFollowtypeloader] = useState(false);
   const [Organizerdata, setOrganizerdata] = useState();
+  const [currentUrl, setCurrentUrl] = useState(window.location.href);
   const [Paynowbtnstatus, setPaynowbtnstatus] = useState(true);
+  const [newmodal, setNewModal] = useState(false);
   const [Eventlist, setEventlist] = useState([]);
   const [OrganizerEventlist, setOrganizerEventlist] = useState([]);
 
-
+  const CopyUrlhandel = async () => {
+    await navigator.clipboard.writeText(currentUrl);
+    toast.success("Copied");
+    setIscopy(true)
+  }
   const SaveEvent = async (id) => {
     try {
       if (!Beartoken) {
@@ -207,6 +216,7 @@ const Page = ({ title }) => {
       const requestData = {
         id: id
       };
+      window.scrollTo(0, 0);
       fetch(apiurl + 'event/view-event-details', {
         method: 'POST',
         headers: {
@@ -223,6 +233,7 @@ const Page = ({ title }) => {
               fetchOrganizerEvent(data.data.organizer_id);
               checkfollowOrganizer(data.data.organizer_id);
               checkSaveevent(data.data._id);
+
             }
             if (data.data) {
               setApiloader(false)
@@ -257,7 +268,6 @@ const Page = ({ title }) => {
     }, 0);
 
     setEventTotalPrice(eventTotal);
-    window.scrollTo(0, 0);
   }
   const fetchEvent = async () => {
     try {
@@ -287,6 +297,7 @@ const Page = ({ title }) => {
     }
   };
   const fetchData = async () => {
+    window.scrollTo(0, 0);
     try {
       setApiloader(true)
       const requestData = {
@@ -308,7 +319,7 @@ const Page = ({ title }) => {
               fetchOrganizerEvent(data.data.organizer_id);
               checkSaveevent(data.data._id)
               setOrganizerdata(data.organizer)
-              window.scrollTo(0, 0);
+
 
             }
             if (data.data) {
@@ -478,6 +489,33 @@ const Page = ({ title }) => {
           <div className="linear-background w-100"> </div>
         ) : (
           <>
+            <Modal isOpen={newmodal} toggle={() => setNewModal(!newmodal)}>
+              <ModalHeader toggle={!newmodal}>Share this event</ModalHeader>
+              <ModalBody>
+                <div>
+                  <Row>
+                    <Col md={12}>
+                      <p className="mb-0">Event url</p>
+                      <input className="form-control" type="readonly" value={currentUrl}></input>
+                    </Col>
+                    <Col md={12} className="mt-2">
+                      <span onClick={() => CopyUrlhandel()}>
+                        {Iscopy ? (
+                          <Whitestarbtn title={'Copied'} />
+                        ) : (
+                          <Whitestarbtn title={'Copy URL'} />
+                        )}
+                      </span>
+                    </Col>
+                  </Row>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={() => setNewModal(!newmodal)}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Modal >
             <div className="event-page-header mt-5 mb-5">
               <Container fluid>
                 <div className="mt-5">
@@ -544,7 +582,7 @@ const Page = ({ title }) => {
                         ) : (
                           <BsHeart onClick={() => SaveEvent(Eventdata._id)} className="HeartIcon cursor-pointre" />
                         )}
-                        <img className="mx-1" src={ShareIcon} alt="" />
+                        <img onClick={() => {setNewModal(!newmodal); setIscopy(false);}} className="mx-1 cursor-pointer" src={ShareIcon} alt="" />
                       </span>
                     )}
                   </Col>

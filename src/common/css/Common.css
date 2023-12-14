@@ -1300,7 +1300,7 @@ span.cart-price {
     float: right;
 }
 .cat-image-box {
-    min-height: 145px;
+    min-height: 90px;
     display: flex;
     justify-content: center;
     align-items: end;

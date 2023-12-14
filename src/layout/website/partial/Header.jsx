@@ -14,15 +14,15 @@ import Sidebar from "./Sidebar";
 import { app_url, organizer_url, customer_url } from "../../../common/Helpers";
 import Mobilemenu from "../../../component/mobilemenu";
 import Whitestar from "../../../common/icon/whitestart.svg";
-// import MapContainer from "./mapContainer";
+import MapContainer from "./mapContainer";
 const Header = () => {
   const customer_token = localStorage.getItem("userauth");
   const organizer_token = localStorage.getItem("organizerauth");
   const accountTargetUrl = customer_token
     ? customer_url + "dashboard"
     : organizer_token
-    ? organizer_url + "dashboard"
-    : app_url + "auth/customer/login";
+      ? organizer_url + "dashboard"
+      : app_url + "auth/customer/login";
   return (
     <>
       <header className="only-pc">
@@ -38,12 +38,9 @@ const Header = () => {
                     <img className="header-logo mobile-screen" src={AppLogo} />
                   </Link>
                 </li>
-                <li className="nav-item mob-sc-css-head-btn-mar">
-                  <Link to={organizer_url + "dashboard"}>
-                    <WhitestarBtn title={"Location"} />
-                    {/* <WhitestarBtn title={<MapContainer />} /> */}
-                  </Link>
-                </li>
+                {/* <li className="nav-item header-btn-res">
+                  <MapContainer />
+                </li> */}
                 <li className="nav-item header-btn-res">
                   {customer_token || organizer_token ? (
                     <>
