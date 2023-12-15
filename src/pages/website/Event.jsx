@@ -10,6 +10,7 @@ import Timelogo from "../../common/icon/time 1.svg";
 import Hourglasslogo from "../../common/icon/hourglass.svg";
 import LocationIcon from "../../common/icon/location.svg";
 import Eventimg from "../../common/event.jpg";
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import DateIcon from "../../common/icon/date 2.svg";
 import MapIcon from "../../common/icon/mapicon.svg";
 import { BsHeart, BsFillHeartFill } from "react-icons/bs";
@@ -49,7 +50,19 @@ const Page = ({ title }) => {
   const [Paynowbtnstatus, setPaynowbtnstatus] = useState(true);
   const [newmodal, setNewModal] = useState(false);
   const [Eventlist, setEventlist] = useState([]);
+  const [IsMap, setIsMap] = useState(false);
   const [OrganizerEventlist, setOrganizerEventlist] = useState([]);
+
+  const [position, setPosition] = useState(null);
+
+  useEffect(() => {
+    if (IsMap) {
+      // Replace with your desired latitude and longitude or use the browser's geolocation API
+      const initialPosition = { lat: parseFloat(Eventdata.lat), lng: parseFloat(Eventdata.Lag) };
+      setPosition(initialPosition);
+    }
+  }, [Eventdata]); // Run this effect only once
+
 
   const CopyUrlhandel = async () => {
     await navigator.clipboard.writeText(currentUrl);
@@ -213,6 +226,7 @@ const Page = ({ title }) => {
     navigate(`${app_url}event/${id}/${name}`)
     try {
       setApiloader(true)
+      setIsMap(false);
       const requestData = {
         id: id
       };
@@ -233,8 +247,8 @@ const Page = ({ title }) => {
               fetchOrganizerEvent(data.data.organizer_id);
               checkfollowOrganizer(data.data.organizer_id);
               checkSaveevent(data.data._id);
-
             }
+            setIsMap(true);
             if (data.data) {
               setApiloader(false)
             }
@@ -300,6 +314,7 @@ const Page = ({ title }) => {
     window.scrollTo(0, 0);
     try {
       setApiloader(true)
+      setIsMap(false);
       const requestData = {
         id: id
       };
@@ -319,12 +334,11 @@ const Page = ({ title }) => {
               fetchOrganizerEvent(data.data.organizer_id);
               checkSaveevent(data.data._id)
               setOrganizerdata(data.organizer)
-
-
             }
             if (data.data) {
               setApiloader(false)
             }
+            setIsMap(true);
           } else {
 
           }
@@ -582,7 +596,7 @@ const Page = ({ title }) => {
                         ) : (
                           <BsHeart onClick={() => SaveEvent(Eventdata._id)} className="HeartIcon cursor-pointre" />
                         )}
-                        <img onClick={() => {setNewModal(!newmodal); setIscopy(false);}} className="mx-1 cursor-pointer" src={ShareIcon} alt="" />
+                        <img onClick={() => { setNewModal(!newmodal); setIscopy(false); }} className="mx-1 cursor-pointer" src={ShareIcon} alt="" />
                       </span>
                     )}
                   </Col>
@@ -607,8 +621,18 @@ const Page = ({ title }) => {
                       </Fade>
                     </div>
                     {/* <div className="desc-sec">
-                      <span className="sec-title">Map</span>
+                      <span className="sec-title">Map xxx</span>
                     </div> */}
+                    <div>
+
+                      <GoogleMap
+                        center={position}
+                        zoom={15}
+                        mapContainerStyle={{ height: '500px', width: '100%' }}
+                      >
+                        {position && <Marker position={position} />}
+                      </GoogleMap>
+                    </div>
                     <div className="desc-sec">
                       <span onClick={() => navigate(app_url + 'privacy-policy')} className="sec-title cursor-pointer">
                         Return Policy{" "}

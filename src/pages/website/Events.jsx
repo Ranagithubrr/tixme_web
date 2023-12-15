@@ -34,7 +34,8 @@ const Events = () => {
     const [Datevalue, setDatevalue] = useState();
     const [PriceFilter, setPriceFilter] = useState();
     const [Datetype, setDatetype] = useState();
-
+    const countryName = localStorage.getItem("countryname");
+    
     const [Onlydatevalue, setOnlydatevalue] = useState();
 
     const fromgetdate = get_date_time(Startdateselect);
@@ -97,6 +98,7 @@ const Events = () => {
                 tickettype: Ticketstype ? Ticketstype : null,
                 dateapitype: Dateapitype ? Dateapitype : null,
                 onlydate: Datetype == "Pick a date" ? startdate : null,
+                country: countryName ? countryName : null,
                 fromdate: Datetype == "Pick between two dates" ? rangestartdate : null,
                 todate: Datetype == "Pick between two dates" ? enddate : null,
                 price: PriceFilter > 0 ? PriceFilter : null,
@@ -168,9 +170,11 @@ const Events = () => {
     useEffect(() => {
         fetchCategory();
     }, []);
+    
     useEffect(() => {
         fetchEvent();
-    }, [filtercategory, Eventtype, Ticketstype, Dateapitype, startdate, enddate, PriceFilter]);
+        console.log(countryName);
+    }, [filtercategory, Eventtype, Ticketstype, Dateapitype, startdate, enddate, PriceFilter, countryName]);
     return (
         <div className='content-data'>
             <Container fluid className="body-container">

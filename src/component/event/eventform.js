@@ -56,6 +56,8 @@ const Type = ({ title, editid }) => {
     const [Tag, setTag] = useState([]);
     const [Visibility, setVisibility] = useState(1);
     const [Location, setLocation] = useState();
+    const [LocationLat, setLocationLat] = useState('');
+    const [LocationLag, setLocationLag] = useState('');
     const [EventSubtype, setEventSubtype] = useState(1);
     const [Startdateselect, setStartdateselect] = useState(new Date());
     const [Enddateselect, setEnddateselect] = useState(new Date());
@@ -93,6 +95,8 @@ const Type = ({ title, editid }) => {
     const [image, setImage] = useState(null);
     const [BannerImage, setBannerImage] = useState(null);
 
+
+
     const [selectedTimezone, setSelectedTimezone] = useState(
         Intl.DateTimeFormat().resolvedOptions().timeZone
     )
@@ -122,6 +126,53 @@ const Type = ({ title, editid }) => {
         console.warn('Latlng:', latLng);
         console.warn('result:', results);
         setLocation(selectedLocation);
+        setLocationLat(latLng.lat);
+        setLocationLag(latLng.lng);
+        const valLat = latLng.lat;
+        const valLng = latLng.lng;
+        if (valLat && valLng) {
+            reverseGeocode(valLat, valLng);
+        }
+    };
+
+    const reverseGeocode = (latitude, longitude) => {
+        const geocoder = new window.google.maps.Geocoder();
+        const latlng = { lat: latitude, lng: longitude };
+
+        geocoder.geocode({ location: latlng }, (results, status) => {
+            if (status === 'OK') {
+                if (results[0]) {
+                    // Extract address components from the results
+                    const addressComponents = results[0].address_components;
+
+                    // Initialize variables to store address details
+                    let country, state, city, postalCode;
+
+                    for (let component of addressComponents) {
+                        if (component.types.includes('country')) {
+                            country = component.long_name;
+                        }
+                        if (component.types.includes('administrative_area_level_1')) {
+                            state = component.long_name;
+                        }
+                        if (component.types.includes('locality') || component.types.includes('administrative_area_level_2')) {
+                            city = component.long_name;
+                        }
+                        if (component.types.includes('postal_code')) {
+                            postalCode = component.long_name;
+                        }
+                    }
+                    console.log("country", country);
+                    console.log("state", state);
+                    console.log("city", city);
+                    console.log("postalCode", postalCode);
+                } else {
+                    console.error('No results found for reverse geocoding.');
+                }
+            } else {
+                console.error('Reverse geocoding failed due to:', status);
+            }
+        });
     };
     function CheckDelete(editid, pricename) {
         MySwal.fire({
@@ -252,6 +303,8 @@ const Type = ({ title, editid }) => {
                 name: Name,
                 display_name: Displayname,
                 type: Type,
+                lat: LocationLat,
+                Lag: LocationLag,
                 category: CategoryId,
                 category_name: Categoryname,
                 eventtypecategory: EventtypeCategoryId,
@@ -309,10 +362,10 @@ const Type = ({ title, editid }) => {
             if (!Eventdesc) {
                 return toast.error("Event description require");
             }
-            if(!image && !selectedImage){
+            if (!image && !selectedImage) {
                 return toast.error("Please upload Event Thumbnail");
             }
-            if(!BannerImage && !Bannerimg){
+            if (!BannerImage && !Bannerimg) {
                 return toast.error("Please upload Event banner");
             }
             setLoader(true);
@@ -368,6 +421,8 @@ const Type = ({ title, editid }) => {
                 name: Name,
                 display_name: Displayname,
                 type: Type,
+                lat: LocationLat,
+                Lag: LocationLag,
                 category: CategoryId,
                 category_name: Categoryname,
                 eventtypecategory: EventtypeCategoryId,

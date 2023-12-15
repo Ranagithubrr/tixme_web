@@ -42,6 +42,7 @@ const Home = ({ title }) => {
   const [Eventloader, setEventloader] = useState(false);
   const [Listitems, setListitems] = useState([]);
   const [filtercategory, setFilterCategory] = useState('');
+  const countryName = localStorage.getItem("countryname");
   const navigate = useNavigate();
   const settings = {
     dots: false,
@@ -98,6 +99,7 @@ const Home = ({ title }) => {
       const requestData = {
         limit: 10,
         organizerid: null,
+        country: countryName ? countryName : null,
         category: filtercategory ? filtercategory : null
       }
       fetch(apiurl + "website/all-events-list", {
@@ -151,7 +153,7 @@ const Home = ({ title }) => {
   useEffect(() => {
     fetchEvent();
     fetchCategory();
-  }, [filtercategory]);
+  }, [filtercategory, countryName]);
   const texts = [
     "Unlock Your Entertainment Gateway",
     "Where Thrills Commence",
@@ -212,7 +214,6 @@ const Home = ({ title }) => {
   ];
   const firstSixCategories = Listitems.slice(0, 6);
   const filteredList = Listitems.filter(item => item.is_homepage === 1);
-  console.log(filteredList);
   return (
     <>
       <Container fluid className="body-container">

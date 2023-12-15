@@ -1381,3 +1381,8 @@ span.cart-price {
 svg.HeartIcon {
     font-size: 29px;
 }
+p.cursor-pointer.my-location-btn {
+    border: 1px solid #222fb9;
+    border-radius: 51px;
+    color: #222fb9;
+}
