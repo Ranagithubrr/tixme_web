@@ -34,6 +34,7 @@ import EditEvent from './pages/organizer/Event/EditEvent';
 import EventView from './pages/organizer/Event/EventView';
 import EventList from './pages/organizer/Event/List';
 import Ticketlist from './pages/organizer/Event/ticketlist';
+import ManageTicket from './pages/organizer/Event/Manageticket';
 import TicketSoldlist from './pages/organizer/ticketsold/List';
 import PayoutList from './pages/organizer/payout/list';
 import Tixmescanner from './pages/organizer/Tixmescanner';
@@ -114,7 +115,8 @@ function App() {
           <Route path={organizer_url + 'event/add-event'} element={<OrganizerLayout> <EventType title={'Create new event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/edit-event/:id/:name`} element={<OrganizerLayout> <EditEvent title={'Edit event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/view-event/:id/:name`} element={<OrganizerLayout> <EventView title={'Event details'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout> <EventList title={'All event list'} /> </OrganizerLayout>} />
+          <Route path={`${organizer_url}event/manage-ticket/:id/:name`} element={<OrganizerLayout title={'Mange Tickets'}> <ManageTicket title={'Mange Tickets'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout title={'Event Management'}> <EventList title={'All event list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout> <OrganizerSupportlist title={'Support Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'ticket-sold-list'} element={<OrganizerLayout> <TicketSoldlist title={'Tickets sold list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tickets-list'} element={<OrganizerLayout> <Ticketlist title={'Tickets list'} /> </OrganizerLayout>} />

@@ -138,37 +138,21 @@ const Dashboard = ({ title }) => {
                                     <Row className="justify-content-center">
                                         <Col md={12}>
                                             <Row>
-                                                <Col md={3}>
+                                                <Col md={5}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
                                                         <input type="text" class="form-control" placeholder="Search events" />
                                                     </div>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <select name="" id="" className="theme-dropdown dropdown-custome category-select">
-                                                        <option value=''>Category</option>
-                                                        {CategoryList.map((item, index) => (
-                                                            <option value={item._id}>{item.name}</option>
-                                                        ))}
-                                                    </select>
+                                                    <button className="w-100 theme-btn-warning" onClick={() => navigate(organizer_url + 'event/add-event')}>
+                                                        <span>Mange All Attendee</span>
+                                                    </button>
                                                 </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
+                                                <Col md={2}></Col>
                                                 <Col md={2}>
                                                     <button className="w-100 theme-btn" onClick={() => navigate(organizer_url + 'event/add-event')}>
-                                                        <span className="theme-btn-icon"><FiPlus /></span> <span>Add event</span>
+                                                        <span className="theme-btn-icon"><FiPlus /></span> <span>Add Ticket</span>
                                                     </button>
                                                 </Col>
                                             </Row>
@@ -257,7 +241,7 @@ const Dashboard = ({ title }) => {
                                                                                 </div>
                                                                                 <div className="text-end mr-5">
                                                                                     <p className="mb-0 mr-5 list-Ticket-1">Ticket</p>
-                                                                                    <button className="btn btn-success list-Ticket-mng-1" type="button" onClick={() => navigate(`${organizer_url}event/manage-ticket/${item._id}/${item.name}`)}>Manage</button>
+                                                                                    <button className="btn btn-success list-Ticket-mng-1" type="button" onClick={() => navigate(`${organizer_url}event/manage-ticket/${item.id}/${item.name}`)}>Manage</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>
@@ -273,68 +257,6 @@ const Dashboard = ({ title }) => {
                                                 )}
                                             </>
                                         )}
-                                        {/* <Col md={12}>
-                                            {Loader ? (
-                                                <div className="linear-background w-100"> </div>
-                                            ) : (
-                                                <>
-                                                    {Listitems.length > 0 ? (
-                                                        <>
-                                                            <div class="table-responsive">
-                                                                <table class="table table-responsive-md">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                            <th><strong>Name</strong></th>
-                                                                            <th><strong>Date</strong></th>
-                                                                            <th><strong>Tickets Sold</strong></th>
-                                                                            <th><strong>Status</strong></th>
-                                                                            <th></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-
-                                                                        {Listitems.map((item, index) => (
-                                                                            <tr>
-                                                                                <td><strong>{index + 1}</strong></td>
-                                                                                <td>{item.name}</td>
-                                                                                <td>{item.date}</td>
-                                                                                <td>
-                                                                                    {item.allprice ? (
-                                                                                        <>
-                                                                                            {item.orderCount} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}
-                                                                                        </>
-                                                                                    ) : (
-                                                                                        <p className="text-white">No tickets</p>
-                                                                                    )}
-                                                                                </td>
-                                                                                <td><span class="badge light badge-success">Active</span></td>
-                                                                                <td>
-                                                                                    <div class="dropdown">
-                                                                                        <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                            <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                                        </button>
-                                                                                        <div class="dropdown-menu">
-                                                                                        <Link to={`${organizer_url}event/view-event/${item._id}/${item.name}`} class="dropdown-item">View</Link>
-                                                                                        <Link to={`${organizer_url}event/edit-event/${item._id}/${item.name}`} class="dropdown-item">Edit</Link>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
-
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
-                                        </Col> */}
                                     </Row>
                                 </Card.Body>
                             </Card>
