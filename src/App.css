@@ -630,12 +630,11 @@ span.flatpickr-weekday {
 
 .new_user_menu_header {
   background: #fff !important;
-  width: 208px;
   height: 53px;
   text-align: center;
   display: flex;
   justify-content: center;
-  padding: 0px 9px;
+  padding: 0px 9px !important;
   border-radius: 25px;
 }
 
@@ -651,6 +650,7 @@ span.user_name {
   margin-right: 11px;
   font-weight: 600;
   color: #000;
+  font-size: 13px;
 }
 
 span.user_drop_icon {
@@ -799,7 +799,7 @@ img.list-thum-img {
   font-size: 13px;
   font-weight: 400;
   border: 0px;
-  padding: 28px 50px 6px 50px;
+  padding: 28px 30px 6px 30px;
   border-radius: 0px 0px 10px 10px;
   position: absolute;
   right: 16px;
@@ -833,4 +833,122 @@ img.list-thum-img {
 
 .list-event-desc {
   font-size: 12px;
+}
+
+.in-ticket-list-1 {
+  margin-bottom: 15px;
+}
+
+.in-ticket-list-1 .event_list_box {
+  padding: 10px 30px;
+  border-radius: 14px;
+}
+
+.in-ticket-list-1 .ticket-list-name {
+  color: #0047ab;
+  font-weight: 600;
+  font-size: 21px;
+  margin-right: 10px;
+  margin-bottom: 17px;
+  display: inline-block;
+}
+
+.in-ticket-list-1 .ticket-list-price_title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.in-ticket-list-1 .ticket-list-price_value {
+  font-size: 21px;
+  font-weight: 600;
+  color: #0047ab;
+}
+
+.ticket-sts-box h2 {
+  font-weight: 600;
+  color: #000;
+}
+
+.my-follower-account-box {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 13px, transparent 13px) 0% 0%/15px 15px no-repeat,
+    radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 13px, transparent 13px) 100% 0%/15px 15px no-repeat,
+    radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 13px, transparent 13px) 0% 100%/15px 15px no-repeat,
+    radial-gradient(circle at 0 0, #ffffff 0, #ffffff 13px, transparent 13px) 100% 100%/15px 15px no-repeat,
+    linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 4px) calc(100% - 30px) no-repeat,
+    linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 30px) calc(100% - 4px) no-repeat,
+    linear-gradient(#0047ab 48%, #ffffff 100%);
+  border-radius: 15px;
+  padding: 15px 4px;
+  box-sizing: border-box;
+}
+
+.my-follower-account-box p.org-name {
+  font-weight: 600;
+  color: #0047ab;
+  font-size: 14px;
+}
+
+.my-follower-account-box p.org-event-count {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+button.Unfollow-btn-1 {
+  background: #fff;
+  border: 2px solid #0047ab;
+  border-radius: 7px;
+  padding: 3px 20px;
+  font-weight: 600;
+  color: #0047ab;
+}
+
+.reward-ui-box {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 13px, transparent 13px) 0% 0%/15px 15px no-repeat,
+    radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 13px, transparent 13px) 100% 0%/15px 15px no-repeat,
+    radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 13px, transparent 13px) 0% 100%/15px 15px no-repeat,
+    radial-gradient(circle at 0 0, #ffffff 0, #ffffff 13px, transparent 13px) 100% 100%/15px 15px no-repeat,
+    linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 4px) calc(100% - 30px) no-repeat,
+    linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 30px) calc(100% - 4px) no-repeat,
+    linear-gradient(#0047ab 48%, #ffffff 100%);
+  border-radius: 15px;
+  padding: 15px 4px;
+  box-sizing: border-box;
+}
+p.rewarx-box-c-title {
+  color: #000;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+p.rewarx-box-c-sts {
+  font-weight: 600;
+  color: #000;
+  font-size: 22px;
+}
+span.colplete-yext-1 {
+  font-weight: 500;
+  font-size: 15px;
+}
+p.reward-point-text {
+  font-weight: 600;
+  color: #000;
+  font-size: 21px;
+  margin-bottom: 2px;
+}
+p.reward-point-count {
+  color: #0047ab;
+  font-weight: 600;
+  font-size: 38px;
+}
+p.Booking-progress-towards span {
+  font-weight: 600;
+}
+p.Booking-progress-towards {
+  color: #000;
+  font-size: 16px;
+}
+span.rewrd-user-name1 {
+  color: #000;
+  font-weight: 500;
+  font-size: 21px;
+  margin-left: 20px;
 }

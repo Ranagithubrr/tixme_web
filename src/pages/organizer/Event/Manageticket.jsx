@@ -4,128 +4,305 @@ import Searchicon from '../../../common/icon/searchicon.png';
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
-import Swal from 'sweetalert2';
-import Timelogo from "../../../common/icon/time 1.svg";
-import withReactContent from 'sweetalert2-react-content';
-import LocationIcon from "../../../common/icon/location.svg";
-import Eimg from '../../../common/icon/Edit.svg';
-import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
-import DateIcon from "../../../common/icon/date 2.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth } from '../../../common/Helpers';
-import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
+import ArrowPng from "../../../common/icon/Arrow.svg";
+import DateIcon from "../../../common/icon/date 1.svg";
+import TimeIcon from "../../../common/icon/time 1.svg";
+import WhitestarBtn from '../../../component/Whitestarbtn';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { useParams } from 'react-router-dom';
+import { apiurl, organizer_url, get_date_time } from '../../../common/Helpers';
+import { FiPlus } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
+import {
+    Modal,
+    Input,
+    ModalBody,
+    ModalHeader
+} from 'reactstrap'
 const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
+    const { id, name } = useParams();
     const navigate = useNavigate();
+    const [Ticketshow, setTicketshow] = useState(false);
     const [Listitems, setListitems] = useState([]);
-    const [CategoryList, setCategoryList] = useState([]);
-    const organizerid = localStorage.getItem('organizerid')
+    const [Eventdata, setEventdata] = useState([]);
+    const [Tickettype, setTickettype] = useState(1);
+    const [Ticketname, setTicketname] = useState();
+    const [Ticketoldname, setTicketoldname] = useState();
+    const [Quantity, setQuantity] = useState();
+    const [TicketStartdate, setTicketStartdate] = useState(new Date());
+    const [TicketEndtdate, setTicketEndtdate] = useState(new Date());
+    const [Price, setPrice] = useState();
+    const [Tax, setTax] = useState();
+    const [Pricedisable, setPricedisable] = useState(false);
+    const [ApiLoader, setApiLoader] = useState(false);
+    const [EditApiLoader, setEditApiLoader] = useState(false);
+    const [IsEdit, setIsEdit] = useState(false);
+
     const MySwal = withReactContent(Swal);
-    function CheckDelete(id) {
-        MySwal.fire({
-            title: 'Are you sure you want to delete?',
-            showDenyButton: true,
-            showCancelButton: false,
-            confirmButtonText: 'Yes',
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-                Delete(id)
-            } else if (result.isDenied) {
+    const fetchAllTicket = async () => {
+        try {
+            setLoader(true);
+            const requestData = {
+                updateid: id
+            };
+            fetch(apiurl + 'event/ticket-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
 
+                    if (data.success == true) {
+                        const fetchdata = data.data.allprice;
+                        setListitems(fetchdata);
+                    }
+                    setLoader(false);
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setLoader(false);
+                });
+
+        } catch (error) {
+            console.error('Login api error:', error);
+            setLoader(false);
+        }
+    }
+    const fetchEvent = async () => {
+        try {
+            setLoader(true);
+            const requestData = {
+                id: id
+            };
+            fetch(apiurl + 'event/get-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.success == true) {
+                        setEventdata(data.data);
+                    }
+                    setLoader(false);
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setLoader(false);
+                });
+
+        } catch (error) {
+            console.error('Login api error:', error);
+            setLoader(false);
+        }
+    }
+    const fromticketgetdate = get_date_time(TicketStartdate);
+    var ticketstartdate = '';
+    var ticketstarttime = '';
+    if (fromticketgetdate) {
+        ticketstartdate = fromticketgetdate[0].Dateview;
+        ticketstarttime = fromticketgetdate[0].Timeview;
+    }
+    const toticketgetdate = get_date_time(TicketEndtdate);
+    var ticketenddate = '';
+    var ticketendtime = '';
+    if (toticketgetdate) {
+        ticketenddate = toticketgetdate[0].Dateview;
+        ticketendtime = toticketgetdate[0].Timeview;
+    }
+    const handelCreateTicket = async () => {
+        try {
+            if (!Tickettype) {
+                return toast.error('Select ticket type');
             }
-        })
-    }
-    const Delete = async (id) => {
-        try {
-            setLoader(true)
+            if (!Ticketname) {
+                return toast.error('Enter ticket name');
+            }
+            if (!Quantity) {
+                return toast.error('Enter ticket quantity');
+            }
+            if (!Price && Tickettype == 1) {
+                return toast.error('Enter ticket price');
+            }
+            if (!Tax) {
+                return toast.error('Enter tax amount or 0');
+            }
+            setApiLoader(true);
             const requestData = {
-                id: id,
-                isdelete: 1
+                tax: Tax,
+                updateid: id,
+                ticket_type: Tickettype,
+                name: Ticketname,
+                quantity: Quantity,
+                startdate: ticketstartdate,
+                endtdate: ticketenddate,
+                starttime: ticketstarttime,
+                endttime: ticketendtime,
+                price: Price,
+                start_date_min: TicketStartdate,
+                end_date_min: TicketEndtdate
             };
-            fetch(apiurl + 'category/delete-category', {
+            fetch(apiurl + 'event/update/price', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData),
             })
                 .then(response => response.json())
                 .then(data => {
+                    setApiLoader(false);
+                    setTicketshow(false);
                     if (data.success == true) {
-                        toast.success('Deleted successfully');
-                        fetchmyEvent();
-                    }
-                    setLoader(false)
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                    setLoader(false)
-                });
-        } catch (error) {
-            console.error('Login api error:', error);
-            setLoader(false)
-        }
-    }
-    const fetchmyEvent = async () => {
-        try {
-            setLoader(true)
-            const requestData = {
-                id: organizerid,
-            };
-            fetch(apiurl + 'event/list', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        setListitems(data.data);
-                    }
-                    setLoader(false)
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                    setLoader(false)
-                });
-        } catch (error) {
-            console.error('Login api error:', error);
-            setLoader(false)
-        }
-    }
-    const fetchCategory = async () => {
-        try {
-            fetch(apiurl + 'category/get-category-list', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        setCategoryList(data.data);
+                        toast.success('Updated', {
+                            duration: 3000,
+                        });
+                        emptyPriceForm();
+                        fetchAllTicket();
                     } else {
+                        toast.error(data.message);
+                    }
+                    setApiLoader(false);
+                })
+                .catch(error => {
+                    setApiLoader(false);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Login api error:', error);
+            setApiLoader(false);
+        }
+    }
+    const handelEditTicketform = async () => {
+        try {
+            if (!Tickettype) {
+                return toast.error('Select ticket type');
+            }
+            if (!Ticketname) {
+                return toast.error('Enter ticket name');
+            }
+            if (!Quantity) {
+                return toast.error('Enter ticket quantity');
+            }
+            if (!Price && Tickettype == 1) {
+                return toast.error('Enter ticket price');
+            }
+            if (!Tax) {
+                return toast.error('Enter tax amount or 0');
+            }
+            setApiLoader(true);
+            const requestData = {
+                tax: Tax,
+                updateid: id,
+                ticket_type: Tickettype,
+                name: Ticketname,
+                oldname: Ticketoldname,
+                quantity: Quantity,
+                startdate: ticketstartdate,
+                endtdate: ticketenddate,
+                starttime: ticketstarttime,
+                endttime: ticketendtime,
+                price: Price,
+                start_date_min: TicketStartdate,
+                end_date_min: TicketEndtdate
+            };
+            fetch(apiurl + 'event/edit/price', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    setApiLoader(false);
+                    setTicketshow(false);
+                    if (data.success == true) {
+                        toast.success('Updated', {
+                            duration: 3000,
+                        });
+                        emptyPriceForm();
+                        fetchAllTicket();
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setApiLoader(false);
+                })
+                .catch(error => {
+                    setApiLoader(false);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Login api error:', error);
+            setApiLoader(false);
+        }
+    }
+    const HandelTicketEdit = async (name) => {
+        try {
+            const requestData = {
+                updateid: id
+            };
+            fetch(apiurl + 'event/ticket-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
 
+                    if (data.success == true) {
+                        const fetchdata = data.data.allprice;
+                        const targetName = name; // Provide the name you want to filter
+                        const filteredData = fetchdata.filter(item => item.name === targetName);
+                        if (filteredData.length > 0) {
+                            setIsEdit(true);
+                            setTicketshow(!Ticketshow);
+                            // setEditApiLoader(true);
+                            setTickettype(filteredData[0].ticket_type);
+                            setTicketname(filteredData[0].name);
+                            setQuantity(filteredData[0].quantity);
+                            setPrice(filteredData[0].ticket_amount);
+                            setTicketoldname(filteredData[0].name);
+                            setTax(filteredData[0].tax_value ? filteredData[0].tax_value : 0);
+                            setTicketStartdate(filteredData[0].start_date_min[0] ? filteredData[0].start_date_min : null);
+                            setTicketEndtdate(filteredData[0].end_date_min[0] ? filteredData[0].end_date_min : null);
+                            setEditApiLoader(false);
+                        } else {
+                            toast.error("Server issue");
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
                 });
+
         } catch (error) {
             console.error('Login api error:', error);
         }
     }
-    const EditEvent = async (id, name) => {
-        navigate(`${organizer_url}event/edit-event/${id}/${name}`);
+    function emptyPriceForm() {
+        setTickettype(1);
+        setTicketname('');
+        setQuantity('');
+        setPrice('');
+        setPricedisable(false);
     }
     useEffect(() => {
-        fetchmyEvent();
-        fetchCategory();
+        fetchAllTicket();
+        fetchEvent();
     }, []);
     return (
         <>
@@ -151,7 +328,7 @@ const Dashboard = ({ title }) => {
                                                 </Col>
                                                 <Col md={2}></Col>
                                                 <Col md={2}>
-                                                    <button className="w-100 theme-btn" onClick={() => navigate(organizer_url + 'event/add-event')}>
+                                                    <button className="w-100 theme-btn" onClick={() => { setTicketshow(true); setIsEdit(false); }}>
                                                         <span className="theme-btn-icon"><FiPlus /></span> <span>Add Ticket</span>
                                                     </button>
                                                 </Col>
@@ -164,85 +341,33 @@ const Dashboard = ({ title }) => {
                                                 {Listitems.length > 0 ? (
                                                     <>
                                                         {Listitems.map((item, index) => (
-                                                            <Col md={12} className="event_list_box_main">
-                                                                <button className="list-rais-ticket-btn" type="button">Raise Ticket</button>
-                                                                <button className="list-active-ticket-btn" type="button">Active</button>
+                                                            <Col md={12} className="event_list_box_main in-ticket-list-1">
+                                                                <button className="list-active-ticket-btn" type="button">Attendee  <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.thum_image ? imgurl + item.thum_image : Eimg} className="list-thum-img" alt="" />
-                                                                        </Col>
-                                                                        <Col md={5} className="list-data">
-                                                                            <div>
-                                                                                <span className="list-event-name">{item.name}</span> <span className="cursor-pointre list-event-edit-btn"><img onClick={() => EditEvent(item._id, item.name)} src={EditPng} alt="" /></span>
-                                                                                <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
-                                                                            </div>
-                                                                            <div className="list-event-location">
-                                                                                <div className="d-flex align-items-center text-center location-name">
-                                                                                    <img
-                                                                                        height={30}
-                                                                                        width={30}
-                                                                                        src={LocationIcon}
-                                                                                        alt=""
-                                                                                    />{" "}
-                                                                                    <span>{item.location}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="desc_data">
-                                                                                <div className="organizer-name-sec px-2 py-2">
-                                                                                    <div className="d-inline-flex align-items-center border-right event-time-area">
-                                                                                        <div className="d-inline-block mr-1">
-                                                                                            <img height={30} width={30} src={Timelogo} alt="" />
-                                                                                        </div>
-                                                                                        <div className="d-inline-block">
-                                                                                            <span className="event-duration d-block">
-                                                                                                Event Time
-                                                                                            </span>
-                                                                                            <span className="event-time d-block">{item.start_time}</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="d-inline-flex align-items-center">
-                                                                                        <div className="d-inline-block mr-1">
-                                                                                            <img
-                                                                                                height={30}
-                                                                                                width={30}
-                                                                                                src={Hourglasslogo}
-                                                                                                alt=""
-                                                                                            />
-                                                                                        </div>
-                                                                                        <div className="d-inline-block">
-                                                                                            <span className="event-duration d-block">
-                                                                                                Event Duration
-                                                                                            </span>
-                                                                                            <span className="event-time d-block">2Hr 11Min</span>
-                                                                                        </div>
-                                                                                        {item.allprice ? (
-                                                                                            <>
-                                                                                                <div className="list-ticket-count">
-                                                                                                    <p className="mb-0 list-Total-Ticket">Total Ticket</p>
-                                                                                                    <span className="list-Ticket-amount">{item.orderCount} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}</span> <span className="list-Ticket-sold">SOLD</span>
-                                                                                                </div>
-                                                                                            </>
-                                                                                        ) : ''}
-                                                                                    </div>
-                                                                                </div>
+                                                                            <div className="text-center">
+                                                                                <span className="ticket-list-name">{item.name}</span> <span className="cursor-pointre list-event-edit-btn" onClick={() => HandelTicketEdit(item.name)}><img src={EditPng} alt="" /></span>
+                                                                                <p className="ticket-list-price_title mb-0">Price</p>
+                                                                                <p className="ticket-list-price_value">{item.ticket_type == 1 ? Eventdata.countrysymbol + ' ' + item.price : 'Free'}</p>
                                                                             </div>
                                                                         </Col>
-                                                                        <Col md={3} className="py-3">
+                                                                        <Col md={8}>
                                                                             <div>
-                                                                                <div className="text-end mr-5">
-                                                                                    <span className="list-event-category-img">{item.category_name}</span>
-                                                                                </div>
-                                                                                <div className="text-end mr-5 mt-3 mb-3">
-                                                                                    <span className="mb-5">
-                                                                                        <img src={DateIcon} alt="" />
-                                                                                        <span className="on-img-date-val">{onlyDayMonth(item.start_date)}</span>
-                                                                                    </span>
-                                                                                </div>
-                                                                                <div className="text-end mr-5">
-                                                                                    <p className="mb-0 mr-5 list-Ticket-1">Ticket</p>
-                                                                                    <button className="btn btn-success list-Ticket-mng-1" type="button" onClick={() => navigate(`${organizer_url}event/manage-ticket/${item.id}/${item.name}`)}>Manage</button>
-                                                                                </div>
+                                                                                <Row className="pt-4">
+                                                                                    <Col md={4} className="ticket-sts-box  text-center border-right">
+                                                                                        <p>Total Ticket</p>
+                                                                                        <h2>{item.quantity}</h2>
+                                                                                    </Col>
+                                                                                    <Col md={4} className="ticket-sts-box  text-center  border-right">
+                                                                                        <p>Ticket Sold</p>
+                                                                                        <h2>00</h2>
+                                                                                    </Col>
+                                                                                    <Col md={4} className="ticket-sts-box  text-center">
+                                                                                        <p>Ticket Available</p>
+                                                                                        <h2>{item.quantity}</h2>
+                                                                                    </Col>
+                                                                                </Row>
                                                                             </div>
                                                                         </Col>
                                                                     </Row>
@@ -264,7 +389,109 @@ const Dashboard = ({ title }) => {
                     </Row>
                 </div>
             </div >
-
+            <Modal isOpen={Ticketshow} toggle={() => setTicketshow(!Ticketshow)} className='modal-dialog-centered modal-lg'>
+                <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Create new ticket</ModalHeader>
+                <ModalBody className=''>
+                    {EditApiLoader ? (
+                        <div className="linear-background w-100"> </div>
+                    ) : (
+                        <Row>
+                            <Col md={12} className="justify-content-center d-flex">
+                                <div className="tab-button-box">
+                                    {/* tab-button-active */}
+                                    <span onClick={() => { setTickettype(1); setPricedisable(false); }} className={Tickettype === 1 ? "tab-button-active" : ""}>Paid</span>
+                                    <span onClick={() => { setTickettype(2); setPricedisable(true); setPrice(''); }} className={Tickettype === 2 ? "tab-button-active" : ""}>Free</span>
+                                    {/* <span onClick={() => { setTickettype(3); setPricedisable(true); setPrice(''); }} className={Tickettype === 3 ? "tab-button-active" : ""}>Donation</span> */}
+                                </div>
+                            </Col>
+                            <Col md={12} className="mb-2 mt-4">
+                                <label htmlFor="" className="text-black">Name</label>
+                                <input type="text" class="form-control input-default" onChange={(e) => setTicketname(e.target.value)} value={Ticketname} placeholder="Name" />
+                            </Col>
+                            <Col md={4} className="mb-2">
+                                <label htmlFor="" className="text-black">Available quantity</label>
+                                <input type="number" class="form-control input-default" onChange={(e) => setQuantity(e.target.value)} value={Quantity} placeholder="Available quantity" />
+                            </Col>
+                            <Col md={4} className="mb-2">
+                                <label htmlFor="" className="text-black">Price</label>
+                                <Input type="number" disabled={Pricedisable} class="form-control input-default" value={Price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
+                            </Col>
+                            <Col md={4} className="mb-2">
+                                <label htmlFor="" className="text-black">Tax (%)</label>
+                                <Input type="number" disabled={Pricedisable} class="form-control input-default" value={Tax} onChange={(e) => setTax(e.target.value)} placeholder="Tax" />
+                            </Col>
+                            <Col md={4} className="mb-2 mt-4">
+                                <label htmlFor="" className="text-black">Start date</label>
+                                <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                    <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                    <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={ticketstartdate} />
+                                    <div className="date-style-picker">
+                                        <Flatpickr
+                                            value={TicketStartdate}
+                                            data-enable-time
+                                            id='date-picker'
+                                            className='form-control'
+                                            onChange={date => setTicketStartdate(date)}
+                                        />
+                                    </div>
+                                </div>
+                            </Col>
+                            <Col md={4} className="mb-2  mt-4">
+                                <label htmlFor="" className="text-black">Start time</label>
+                                <div class="input-group mb-3 input-warning-o">
+                                    <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
+                                    <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={ticketstarttime} />
+                                </div>
+                            </Col>
+                            <Col md={12} className="mb-2"></Col>
+                            <Col md={4} className="mb-2">
+                                <label htmlFor="" className="text-black">End date</label>
+                                <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                    <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                    <input type="text" class="form-control date-border-redius date-border-redius-input" placeholder="" readOnly value={ticketenddate} />
+                                    <div className="date-style-picker">
+                                        <Flatpickr
+                                            value={TicketEndtdate}
+                                            data-enable-time
+                                            id='date-picker'
+                                            className='form-control'
+                                            onChange={date => setTicketEndtdate(date)}
+                                        />
+                                    </div>
+                                </div>
+                            </Col>
+                            <Col md={4} className="mb-2">
+                                <label htmlFor="" className="text-black">End time</label>
+                                <div class="input-group mb-3 input-warning-o">
+                                    <span class="input-group-text"><img src={TimeIcon} alt="" /></span>
+                                    <input type="text" class="form-control date-border-redius-input" placeholder="" readOnly value={ticketendtime} />
+                                </div>
+                            </Col>
+                            <Col md={12}>
+                                <>
+                                    {ApiLoader ? (
+                                        <button className="w-100 theme-btn">
+                                            <span className="theme-btn-icon"><FiPlus /></span> <span>Please wait...</span>
+                                        </button>
+                                    ) : (
+                                        <>
+                                            {IsEdit ? (
+                                                <button className="w-100 theme-btn" onClick={() => handelEditTicketform()}>
+                                                    <span className="theme-btn-icon"><FiPlus /></span> <span>Edit ticket</span>
+                                                </button>
+                                            ) : (
+                                                <button className="w-100 theme-btn" onClick={() => handelCreateTicket()}>
+                                                    <span className="theme-btn-icon"><FiPlus /></span> <span>Add ticket</span>
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            </Col>
+                        </Row >
+                    )}
+                </ModalBody >
+            </Modal >
         </>
     )
 }

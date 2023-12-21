@@ -12,6 +12,7 @@ import Eimg from '../../../common/icon/Edit.svg';
 import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
+import ArrowPng from "../../../common/icon/Arrow.svg";
 import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -182,7 +183,7 @@ const Dashboard = ({ title }) => {
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
                                                                 <button className="list-rais-ticket-btn" type="button">Raise Ticket</button>
-                                                                <button className="list-active-ticket-btn" type="button">Active</button>
+                                                                <button className="list-active-ticket-btn" type="button">Active <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -273,68 +274,6 @@ const Dashboard = ({ title }) => {
                                                 )}
                                             </>
                                         )}
-                                        {/* <Col md={12}>
-                                            {Loader ? (
-                                                <div className="linear-background w-100"> </div>
-                                            ) : (
-                                                <>
-                                                    {Listitems.length > 0 ? (
-                                                        <>
-                                                            <div class="table-responsive">
-                                                                <table class="table table-responsive-md">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                            <th><strong>Name</strong></th>
-                                                                            <th><strong>Date</strong></th>
-                                                                            <th><strong>Tickets Sold</strong></th>
-                                                                            <th><strong>Status</strong></th>
-                                                                            <th></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-
-                                                                        {Listitems.map((item, index) => (
-                                                                            <tr>
-                                                                                <td><strong>{index + 1}</strong></td>
-                                                                                <td>{item.name}</td>
-                                                                                <td>{item.date}</td>
-                                                                                <td>
-                                                                                    {item.allprice ? (
-                                                                                        <>
-                                                                                            {item.orderCount} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}
-                                                                                        </>
-                                                                                    ) : (
-                                                                                        <p className="text-white">No tickets</p>
-                                                                                    )}
-                                                                                </td>
-                                                                                <td><span class="badge light badge-success">Active</span></td>
-                                                                                <td>
-                                                                                    <div class="dropdown">
-                                                                                        <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                            <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                                        </button>
-                                                                                        <div class="dropdown-menu">
-                                                                                        <Link to={`${organizer_url}event/view-event/${item._id}/${item.name}`} class="dropdown-item">View</Link>
-                                                                                        <Link to={`${organizer_url}event/edit-event/${item._id}/${item.name}`} class="dropdown-item">Edit</Link>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
-
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
-                                        </Col> */}
                                     </Row>
                                 </Card.Body>
                             </Card>

@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, admin_url, isEmail, app_url } from '../../common/Helpers';
+import Searchicon from '../../common/icon/searchicon.png';
+import LocationIcon from "../../common/icon/location.svg";
+import Eimg from '../../common/icon/Edit.svg';
+import EditPng from '../../common/icon/Edit.png';
+import Timelogo from "../../common/icon/time 1.svg";
+import DateIcon from "../../common/icon/date 2.svg";
+import Savesvg from "../../common/icon/savesvh.svg";
+import { apiurl, admin_url, isEmail, app_url, shortPer, onlyDayMonth, imgurl } from '../../common/Helpers';
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
+import Hourglasslogo from "../../common/icon/hourglass.svg";
+import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import QRCode from 'react-qr-code';
@@ -12,6 +21,7 @@ const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const Beartoken = localStorage.getItem('userauth');
     const [Loader, setLoader] = useState(false);
+    const [CategoryList, setCategoryList] = useState([]);
     const [Listitems, setListitems] = useState([]);
     const MySwal = withReactContent(Swal);
     function CheckDelete(id) {
@@ -60,6 +70,29 @@ const Dashboard = ({ title }) => {
             setLoader(false)
         }
     }
+    const fetchCategory = async () => {
+        try {
+            fetch(apiurl + 'category/get-category-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setCategoryList(data.data);
+                    } else {
+
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Login api error:', error);
+        }
+    }
     const fetchList = async () => {
         try {
             setLoader(true)
@@ -99,21 +132,49 @@ const Dashboard = ({ title }) => {
             return;
         }
         fetchList();
+        fetchCategory();
     }, []);
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <Row className="justify-content-center">
                         <Col md={12}>
-                            <Card className="py-4">
+                            <Card className="py-4  grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
+                                        <Col md={12}>
+                                            <Row>
+                                                <Col md={3}>
+                                                    <div class="input-group mb-3 input-warning-o">
+                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                    </div>
+                                                </Col>
+                                                <Col md={3}>
+                                                    <select name="" id="" className="theme-dropdown dropdown-custome category-select">
+                                                        <option value=''>Category</option>
+                                                        {CategoryList.map((item, index) => (
+                                                            <option value={item._id}>{item.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </Col>
+                                                <Col md={3}>
+                                                    <div class="input-group mb-3 input-warning-o">
+                                                        <span class="input-group-text search-box-icon-1"><FiClock /></span>
+                                                        <input type="text" class="form-control" placeholder="Date range" />
+                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
+                                                    </div>
+                                                </Col>
+                                                <Col md={3}>
+                                                    <div class="input-group mb-3 input-warning-o">
+                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
+                                                        <input type="text" class="form-control" placeholder="Status" />
+                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </Col>
                                         <Col md={12}>
                                             {Loader ? (
                                                 <div className="linear-background w-100"> </div>
@@ -125,36 +186,84 @@ const Dashboard = ({ title }) => {
                                                                 {Loader ? (
                                                                     <div className="linear-background w-100"> </div>
                                                                 ) : (
-                                                                    <table class="table table-responsive-md">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                                <th><strong>Name</strong></th>
-                                                                                <th><strong>Start Date / Time</strong></th>
-                                                                                <th><strong>End Date / Time</strong></th>
-                                                                                <th><strong>View</strong></th>
-                                                                                <th><strong>Action</strong></th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {Listitems.map((item, index) => (
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>{index + 1}</strong>
-                                                                                    </td>
-                                                                                    <td>{item.eventname}</td>
-                                                                                    <td>{item.start_date} {item.start_time}</td>
-                                                                                    <td>{item.end_date} {item.end_time}</td>
-                                                                                    <td>
-                                                                                        <button onClick={() => viewEvent(item.eventid, item.eventname)} type="button" class="btn btn-success">View</button>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <button onClick={() => CheckDelete(item._id)} type="button" class="btn btn-danger">Remove</button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
+                                                                    <>
+                                                                        {Listitems.map((item, index) => (
+                                                                            <Col md={12} className="event_list_box_main">
+                                                                                <div className="event_list_box">
+                                                                                    <Row>
+                                                                                        <Col md={5}>
+                                                                                            <img src={imgurl + item.thum_image}  className="list-thum-img" alt="" />
+                                                                                        </Col>
+                                                                                        <Col md={4} className="list-data pt-3">
+                                                                                            <div className="mb-4">
+                                                                                                <span className="list-event-name">{item.name}</span> <span className="cursor-pointre list-event-edit-btn"></span>
+                                                                                                <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
+                                                                                            </div>
+                                                                                            <div className="list-event-location mb-4">
+                                                                                                <div className="d-flex align-items-center text-center location-name">
+                                                                                                    <img
+                                                                                                        height={30}
+                                                                                                        width={30}
+                                                                                                        src={LocationIcon}
+                                                                                                        alt=""
+                                                                                                    />{" "}
+                                                                                                    <span>{item.location}</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="desc_data">
+                                                                                                <div className="organizer-name-sec px-2 py-2">
+                                                                                                    <div className="d-inline-flex align-items-center border-right event-time-area">
+                                                                                                        <div className="d-inline-block mr-1">
+                                                                                                            <img height={30} width={30} src={Timelogo} alt="" />
+                                                                                                        </div>
+                                                                                                        <div className="d-inline-block">
+                                                                                                            <span className="event-duration d-block">
+                                                                                                                Event Time
+                                                                                                            </span>
+                                                                                                            <span className="event-time d-block">{item.start_time}</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className="d-inline-flex align-items-center">
+                                                                                                        <div className="d-inline-block mr-1">
+                                                                                                            <img
+                                                                                                                height={30}
+                                                                                                                width={30}
+                                                                                                                src={Hourglasslogo}
+                                                                                                                alt=""
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                        <div className="d-inline-block">
+                                                                                                            <span className="event-duration d-block">
+                                                                                                                Event Duration
+                                                                                                            </span>
+                                                                                                            <span className="event-time d-block">2Hr 11Min</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                        <Col md={3} className="py-3">
+                                                                                            <div>
+                                                                                            <div className="text-end mr-5 mb-5 cursor-pointer">
+                                                                                                    <img src={Savesvg} className="" height={'50px'} width={'50px'} alt="" />
+                                                                                                </div>
+                                                                                                <div className="text-end mr-5 mt-5">
+                                                                                                    <span className="list-event-category-img">{item.category_name}</span>
+                                                                                                </div>
+                                                                                                
+                                                                                                <div className="text-end mr-5 mt-3 mb-3">
+                                                                                                    <span className="mb-5">
+                                                                                                        <img src={DateIcon} alt="" />
+                                                                                                        <span className="on-img-date-val">{onlyDayMonth(item.start_date)}</span>
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                    </Row>
+                                                                                </div>
+                                                                            </Col>
+                                                                        ))}
+                                                                    </>
                                                                 )}
                                                             </div>
                                                         </>

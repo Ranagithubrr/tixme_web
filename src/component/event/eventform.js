@@ -1315,7 +1315,7 @@ const Type = ({ title, editid }) => {
                                                                                 </button>
                                                                                 <div class="dropdown-menu">
                                                                                     {/* <Button variant="link" class="dropdown-item">Edit</Button> */}
-                                                                                    <Button variant="link" onClick={() => CheckDelete(Editid, item.name)} class="dropdown-item">Delete</Button>
+                                                                                    <Button variant="link" onClick={() => CheckDelete(EditId, item.name)} class="dropdown-item">Delete</Button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>
