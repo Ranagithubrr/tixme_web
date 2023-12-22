@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
+
 import { apiurl, admin_url, isEmail } from '../../../common/Helpers';
+import Searchicon from '../../../common/icon/searchicon.png';
+
 import WhiteButton from '../../../component/Whitestarbtn';
+import Norecord from '../../../component/Norecordui';
 import { Link } from "react-router-dom";
+import Select from 'react-select'
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { FaCircle } from "react-icons/fa6";
 const Dashboard = ({ title }) => {
     const MySwal = withReactContent(Swal)
     const OrganizerId = localStorage.getItem('organizerid');
@@ -19,6 +25,7 @@ const Dashboard = ({ title }) => {
     const [newmodal, setNewModal] = useState(false);
     const [Btnloader, setBtnloader] = useState(false);
     const [Loader, setLoader] = useState(false);
+    const [ListLoader, setListLoader] = useState(false);
     const [apiLoader, setapiLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
 
@@ -31,7 +38,7 @@ const Dashboard = ({ title }) => {
 
     const [ReplyMessage, setReplyMessage] = useState();
     const fetchList = async () => {
-        setLoader(true)
+        setListLoader(true)
         try {
             const requestData = {
                 id: OrganizerId
@@ -47,19 +54,19 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
-                        setLoader(false)
+                        setListLoader(false)
                     } else {
 
                     }
-                    setLoader(false)
+                    setListLoader(false)
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
-                    setLoader(false)
+                    setListLoader(false)
                 });
         } catch (error) {
             console.error('Login api error:', error);
-            setLoader(false)
+            setListLoader(false)
         }
 
     }
@@ -241,195 +248,289 @@ const Dashboard = ({ title }) => {
         fetchList();
     }, []);
 
+
+    // select code
+    const [TicketTypelist, setTicketTypelist] = useState([{ value: "Ticket Type test", label: "Ticket Type test" }]);
+    const [TicketTypevalue, setTicketTypevalue] = useState();
+    const [TicketType, setTicketType] = useState();
+    const TicketTypeOption = [
+        {
+            options: TicketTypelist
+        }
+    ]
+    const selectTicketType = (SelectValue) => {
+        setTicketType(SelectValue);
+        setTicketTypevalue(SelectValue.value);
+    };
+    // select code
+    const [TicketPrioritylist, setTicketPrioritylist] = useState([{ value: "High Priority", label: "High Priority" }]);
+    const [TicketPriorityvalue, setTicketPriorityvalue] = useState();
+    const [TicketPriority, setTicketPriority] = useState();
+    const TicketPriorityOption = [
+        {
+            options: TicketPrioritylist
+        }
+    ]
+    const selectTicketPriority = (SelectValue) => {
+        setTicketPriority(SelectValue);
+        setTicketPriorityvalue(SelectValue.value);
+    };
+
+    const StoreNewTicket = async () => {
+        try {
+            if (!Email) {
+                return toast.error('Type your email');
+            }
+            if (!isEmail(Email)) {
+                return toast.error('Enter valid email');
+            }
+            if (!Message) {
+                return toast.error('Type your Message');
+            }
+            const requestData = {
+                id: OrganizerId,
+                email: Email,
+                message: Message,
+                tickettype: TicketTypevalue,
+                priority: TicketPriorityvalue,
+            };
+            setLoader(true);
+            fetch(apiurl + 'website/organizer/support/insert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            }).then(response => response.json()).then(data => {
+                setLoader(false);
+                if (data.success == true) {
+                    toast.success('Submitted successfully');
+                    setEmail('');
+                    setMessage('');
+                    setTicketType('');
+                    setTicketTypevalue('');
+                    setTicketPriority('');
+                    setTicketPriorityvalue('');
+                } else {
+                    toast.error(data.message);
+                }
+                setLoader(false);
+            }).catch(error => {
+                setLoader(false);
+                toast.error('Error: ' + error.message);
+            });
+        } catch (error) {
+            toast.error(error);
+        }
+    }
+
+    const [Datetype, setDatetype] = useState();
+    const [Datevalue, setDatevalue] = useState();
+    const selectDatefiltertype = (selectedValue) => {
+        setDatevalue(selectedValue);
+        setDatetype(selectedValue.value);
+    };
+    const DatefilterOption = [
+        {
+            options: [
+                { value: "Today", label: "Today" },
+                { value: "Tomorrow", label: "Tomorrow" },
+                { value: "Next 7 days", label: "Next 7 days" },
+                { value: "This month", label: "This month" },
+                { value: "Next month", label: "Next month" },
+                { value: "Pick a date", label: "Pick a date" },
+                { value: "Pick between two dates", label: "Pick between two dates" },
+            ]
+        }
+    ]
+
+    const [Priorityfiltertype, setPriorityfiltertype] = useState();
+    const [Priorityfiltervalue, setPriorityfiltervalue] = useState();
+    const selectPriorityfilter = (selectedValue) => {
+        setPriorityfiltervalue(selectedValue);
+        setPriorityfiltertype(selectedValue.value);
+    };
+
+    const CustomOption = ({ innerProps, label, value }) => {
+        let iconColor = '';
+
+        // Apply different icon colors based on the value
+        switch (value) {
+            case 'New Tickets':
+                iconColor = 'text-warning';
+                break;
+            case 'On-Going Tickets':
+                iconColor = 'text-success';
+                break;
+            case 'Resolved Tickets':
+                iconColor = 'text-primary';
+                break;
+            default:
+                iconColor = '';
+        }
+
+        return (
+            <div {...innerProps}>
+                <span><span style={{ paddingLeft: '5px' }} className={`ticket-sts-icon ${iconColor}`}><FaCircle /></span> <span className="cpointer">{label}</span></span>
+            </div>
+        );
+    };
+    const customStyles = {
+        option: (provided, state) => ({
+            ...provided,
+            padding: 10,
+        }),
+    };
+    const PriorityfilterOption = [
+        {
+            options: [
+                { value: "New Tickets", label: "New Tickets" },
+                { value: "On-Going Tickets", label: "On-Going Tickets" },
+                { value: "Resolved Tickets", label: "Resolved Tickets" },
+            ]
+        }
+    ]
+
     return (
         <>
-            <Modal isOpen={modal} toggle={() => setModal(!modal)}>
-                <ModalHeader toggle={!modal}>Support</ModalHeader>
-                <ModalBody>
-                    {apiLoader || Loader ? (
-                        <div className="linear-background w-100"> </div>
-                    ) : (
-                        <>
-                            <Row>
-                                <Col md={12}>
-                                    <h5 className="text-black">Email</h5>
-                                    <p class="mb-0">{Email}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Title</h5>
-                                    <p class="mb-0 text-info">{Title}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Message</h5>
-                                    <p class="mb-0 text-danger">{Message}</p>
-                                </Col>
-                                <Col md={12} className='border-bottom py-2 mb-4'></Col>
-                                <Col md={12}>
-                                    {Messagelog ? (
-                                        <div id="DZ_W_TimeLine" className="widget-timeline dz-scroll px-4 height300 overflow-y-scroll">
-                                            <ul className="timeline">
-                                                {[...Messagelog].reverse().map((item, index) => (
-                                                    <li key={index}>
-                                                        <div className={item.usertype === 'Admin' ? 'timeline-badge primary' : 'timeline-badge warning'}></div>
-                                                        <a className="timeline-panel text-muted" href="javascript:void(0);">
-                                                            <span>{item.date} | {item.usertype === 'Admin' ? 'ADMIN' : 'USER'}</span>
-                                                            <h6 className="mb-0">{item.replymessage}</h6>
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="alert alert-primary alert-dismissible fade show">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                                <strong>No Reply Found!</strong>
-                                                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </Col>
-                                <Col md={12} className='border-bottom py-2'></Col>
-                                {Isopen === 1 ? (
-                                    <div className="alert alert-danger alert-dismissible fade show">
-                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                        <strong>Support ticket closed</strong>
-                                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Col md={12} className="mt-3">
-                                            <div className="form-group">
-                                                <p>Message <span className="text-danger">*</span></p>
-                                                <textarea placeholder="Type your message" class="form-control" rows="3" value={ReplyMessage} onChange={(e) => setReplyMessage(e.target.value)}></textarea>
-                                            </div>
-                                        </Col>
-                                        <Col md={12}>
-                                            <div className="form-group">
-                                                {Btnloader ? (
-                                                    <Button className='signup-page-btn'>Please wait...</Button>
-                                                ) : (
-                                                    <span onClick={HandelReplyapi}><WhiteButton title={'Send'} /></span>
-                                                )}
-                                            </div>
-                                        </Col>
-                                    </>
-                                )}
-                            </Row>
-                        </>
-                    )}
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" onClick={() => setModal(!modal)}>
-                        Cancel
-                    </Button>
-                </ModalFooter>
-            </Modal>
-            <Modal isOpen={newmodal} toggle={() => setNewModal(!newmodal)}>
-                <ModalHeader toggle={!newmodal}>Raise new ticket</ModalHeader>
-                <ModalBody>
-                    <div className="form-group">
-                        <p>Title <span className="text-danger">*</span></p>
-                        <input className="form-control" type="text" value={newTitle} placeholder="Enter title" onChange={(e) => setnewTitle(e.target.value)}></input>
-                    </div>
-                    <div className="form-group">
-                        <p>Message <span className="text-danger">*</span></p>
-                        <textarea class="form-control" rows="3" value={newMessage} onChange={(e) => setnewMessage(e.target.value)}></textarea>
-                    </div>
-                    <div className="form-group">
-                        {Loader ? (
-                            <Button className='signup-page-btn'>Please wait...</Button>
-                        ) : (
-                            <span onClick={HandelOrganizerform}><WhiteButton title={'Submit'} /></span>
-                        )}
-                    </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" onClick={() => setNewModal(!newmodal)}>
-                        Cancel
-                    </Button>
-                </ModalFooter>
-            </Modal >
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <Button variant="link" className="page-theme-btn position-right" onClick={() => Handelnewmodal()}>Raise new ticket</Button>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
+
                     <Row className="justify-content-center">
                         <Col md={12}>
                             <Card className="py-4">
                                 <Card.Body>
-                                    <Row className="justify-content-center">
-                                        <Col md={12}>
-                                            {Loader ? (
-                                                <div className="linear-background w-100"> </div>
-                                            ) : (
-                                                <>
-                                                    {Listitems.length > 0 ? (
+                                    <Row>
+                                        <Col md={8}>
+                                            <div className="ticket-list">
+                                                <Row className="react-select-h">
+                                                    <Col md={3}>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={DatefilterOption}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Filter'
+                                                            onChange={selectDatefiltertype}
+                                                            value={Datevalue}
+                                                        />
+                                                    </Col>
+                                                    <Col md={3}>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={PriorityfilterOption[0].options}
+                                                            components={{ Option: CustomOption }}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Status'
+                                                            onChange={selectPriorityfilter}
+                                                            value={Priorityfiltervalue}
+                                                        />
+                                                    </Col>
+                                                    <Col md={3}></Col>
+                                                    <Col md={3}>
+                                                        <div class="input-group mb-3 input-warning-o grey-border">
+                                                            <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+                                                            <input type="text" class="form-control" placeholder="Search for ticket" />
+                                                        </div>
+                                                    </Col>
+                                                    {ListLoader ? (
                                                         <>
-                                                            <div class="table-responsive">
-                                                                {Loader ? (
-                                                                    <div className="linear-background w-100"> </div>
-                                                                ) : (
-                                                                    <table class="table table-responsive-md">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                                <th><strong>User email</strong></th>
-                                                                                <th><strong>Date</strong></th>
-                                                                                <th><strong>Title</strong></th>
-                                                                                <th><strong>Message</strong></th>
-                                                                                <th><strong>Status</strong></th>
-                                                                                <th></th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {Listitems.map((item, index) => (
-                                                                                <tr>
-                                                                                    <td><strong>{index + 1}</strong></td>
-                                                                                    <td>{item.email}</td>
-                                                                                    <td>{item.date}</td>
-                                                                                    <td>{item.title}</td>
-                                                                                    <td>{item.message}</td>
-                                                                                    <td>{item.isclose === 0 ? (<span class="badge badge-rounded badge-success">Open</span>) : (<span class="badge badge-rounded badge-danger">Closed</span>)}</td>
-                                                                                    <td>
-                                                                                        <div class="dropdown">
-                                                                                            <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                                <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                                            </button>
-                                                                                            <div class="dropdown-menu">
-                                                                                                <Button variant="link" onClick={() => Handelviewmodal(item._id)} class="dropdown-item">View</Button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
-                                                                )}
-                                                            </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
                                                         </>
                                                     ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
+                                                        <>
+                                                            {Listitems.length > 0 ? (
+                                                                <>
+                                                                    {Listitems.map((item, index) => (
+                                                                        <Col md={12} className="mb-5">
+                                                                            <div className="support-tickets-list-1">
+                                                                                <div className="xyz-ticket-desc-box">
+                                                                                    <p><span className="ticket-sts-icon text-success"><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span></p>
+                                                                                    <p className="ticket-type-12">{item.tickettype}</p>
+                                                                                    <p className="ticket-message7">{item.message}</p>
+                                                                                </div>
+                                                                                <Row className="ticket-box-time1">
+                                                                                    <Col md={6}>
+                                                                                        <p className="date-and-time-ticket">Posted at {item.time}</p>
+                                                                                    </Col>
+                                                                                    <Col md={6} className="text-end">
+                                                                                        <a className="Open-Ticket-link">Open Ticket</a>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                            </div>
+                                                                        </Col>
+                                                                    ))}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Norecord />
+                                                                </>
+                                                            )}
 
+                                                        </>
+                                                    )}
+                                                </Row>
+                                            </div>
+                                        </Col>
+                                        <Col md={4}>
+                                            <div className="ticket-form">
+                                                <div className="pb-3 border-bottom" style={{ borderColor: '#000', borderWidth: '1px' }}>
+                                                    <h3 className="mb-1" style={{ fontWeight: '600' }}>Create Quick Ticket</h3>
+                                                    <p className="mb-1" style={{ fontWeight: '500', fontSize: '14px' }}>Write and address new queries and issues</p>
+                                                </div>
+                                                <div className="form-area-1 py-4">
+                                                    <div className="form-group">
+                                                        <p className="mb-2">Customer Email</p>
+                                                        <input className="form-control" type="text" placeholder="Type Email" value={Email} onChange={(e) => setEmail(e.target.value)}></input>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <p className="mb-2">Request Ticket Type</p>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={TicketTypeOption}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Choose Type'
+                                                            onChange={selectTicketType}
+                                                            value={TicketType}
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <p className="mb-2">Priority Status</p>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={TicketPriorityOption}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Status'
+                                                            onChange={selectTicketPriority}
+                                                            value={TicketPriority}
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <p className="mb-2">Ticket Body</p>
+                                                        <textarea class="form-control" rows="5" placeholder="Type ticket issue here.." value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        {Loader ? (
+                                                            <button className="btn btn-primary w-100" type="button">Please wait...</button>
+                                                        ) : (
+                                                            <button className="btn btn-primary w-100" onClick={StoreNewTicket} type="button">Submit</button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </Col>
                                     </Row>
                                 </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-            </div>
+                            </Card >
+                        </Col >
+                    </Row >
+                </div >
+            </div >
 
         </>
     )

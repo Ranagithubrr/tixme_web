@@ -952,3 +952,79 @@ span.rewrd-user-name1 {
   font-size: 21px;
   margin-left: 20px;
 }
+.ticket-form .css-13cymwt-control, .ticket-form .css-t3ipsp-control {
+  min-height: 45px !important;
+}
+.react-select-h .css-13cymwt-control, .react-select-h .css-t3ipsp-control {
+  min-height: 45px !important;
+}
+
+.react-select-h  .css-1u9des2-indicatorSeparator {
+  width: 0px;
+}
+
+[data-theme-version="light"] .grey-border.input-warning-o .input-group-text,
+[data-theme-version="dark"] .grey-border.input-warning-o .input-group-text {
+  border-color: #eee !important;
+}
+
+.grey-border .form-control {
+  border-left: none;
+  border-top: 0.0625rem solid #eee !important;
+  border-right: 0.0625rem solid #eee !important;
+  border-bottom: 0.0625rem solid #eee !important;
+}
+
+
+.support-tickets-list-1 {
+  border: 1px solid #eee;
+  padding: 15px 15px 0px 15px;
+  border-radius: 5px;
+}
+span.ticket-sts-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+span.ticket-head-tt1 {
+  font-weight: 600;
+  color: #000;
+  font-size: 18px;
+}
+p.ticket-type-12 {
+  margin: 0;
+  font-weight: 500;
+  color: #000;
+  font-size: 15px;
+}
+p.ticket-message7 {
+  font-size: 14px;
+}
+.xyz-ticket-desc-box {
+  padding: 6px 0px ;
+  border-bottom: 1px solid #eee;
+}
+.ticket-box-time1 {
+  padding-top: 13px;
+}
+a.Open-Ticket-link {
+  color: #2f68b8;
+  border-bottom: 1px solid #2f68b8;
+  cursor: pointer;
+}
+.cpointer{
+  cursor: pointer;
+}
+.no-result-div p {
+  font-weight: 600;
+  color: #000;
+  font-size: 25px;
+  text-transform: uppercase;
+}
+.no-result-div {
+  border: 1px solid #eee;
+  border-radius: 7px;
+  padding: 20px 0px;
+  box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
+-webkit-box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
+-moz-box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
+}
