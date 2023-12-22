@@ -65,7 +65,6 @@ const Page = ({ title }) => {
         setWantRedeem(true);
     }
     const getUserdata = async () => {
-
         if (Beartoken) {
             try {
                 fetch(apiurl + 'website/get-user-package', {
@@ -99,6 +98,8 @@ const Page = ({ title }) => {
                 setamountLoader(false)
                 setmoneyLoader(true)
             }
+        }else{
+            setmoneyLoader(true)
         }
     }
 

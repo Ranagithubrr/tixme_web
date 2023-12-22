@@ -24,6 +24,7 @@ import CustomerOrderlist from './pages/customer/Orderlist';
 import FollowingList from './pages/customer/FollowingList';
 import SavedeventsList from './pages/customer/SavedeventsList';
 import CustomerProfile from './pages/customer/CustomerProfile';
+import Myrewards from './pages/customer/Myrewards';
 import CustomerLayout from './layout/customer/Layout'
 // Organizer
 import Dashboard from './pages/organizer/Dashboard';
@@ -34,6 +35,7 @@ import EditEvent from './pages/organizer/Event/EditEvent';
 import EventView from './pages/organizer/Event/EventView';
 import EventList from './pages/organizer/Event/List';
 import Ticketlist from './pages/organizer/Event/ticketlist';
+import ManageTicket from './pages/organizer/Event/Manageticket';
 import TicketSoldlist from './pages/organizer/ticketsold/List';
 import PayoutList from './pages/organizer/payout/list';
 import Tixmescanner from './pages/organizer/Tixmescanner';
@@ -107,15 +109,17 @@ function App() {
           <Route path={customer_url + 'support-tickets'} element={<CustomerLayout> <CustomerSupportlist title={'Support Tickets'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-order-list'} element={<CustomerLayout> <CustomerOrderlist title={'All Order List'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-profile'} element={<CustomerLayout> <CustomerProfile title={'My profile'} /> </CustomerLayout>} />
-          <Route path={customer_url + 'following'} element={<CustomerLayout> <FollowingList title={'My following'} /> </CustomerLayout>} />
-          <Route path={customer_url + 'savedevents'} element={<CustomerLayout> <SavedeventsList title={'My saved event'} /> </CustomerLayout>} />
+          <Route path={customer_url + 'following'} element={<CustomerLayout title={'My following'}> <FollowingList title={'My following'} /> </CustomerLayout>} />
+          <Route path={customer_url + 'savedevents'} element={<CustomerLayout title={'My saved event'}> <SavedeventsList title={'My saved event'} /> </CustomerLayout>} />
+          <Route path={customer_url + 'my-rewards'} element={<CustomerLayout title={'My Rewards'}> <Myrewards title={'My Rewards'} /> </CustomerLayout>} />
           {/* Organizer */}
           <Route path={organizer_url + 'dashboard'} element={<OrganizerLayout> <Dashboard title={'Organizer Dashboard'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'event/add-event'} element={<OrganizerLayout> <EventType title={'Create new event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/edit-event/:id/:name`} element={<OrganizerLayout> <EditEvent title={'Edit event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/view-event/:id/:name`} element={<OrganizerLayout> <EventView title={'Event details'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout> <EventList title={'All event list'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout> <OrganizerSupportlist title={'Support Tickets'} /> </OrganizerLayout>} />
+          <Route path={`${organizer_url}event/manage-ticket/:id/:name`} element={<OrganizerLayout title={'Mange Tickets'}> <ManageTicket title={'Mange Tickets'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout title={'Event Management'}> <EventList title={'All event list'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout title={'Mange Tickets'}> <OrganizerSupportlist title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'ticket-sold-list'} element={<OrganizerLayout> <TicketSoldlist title={'Tickets sold list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tickets-list'} element={<OrganizerLayout> <Ticketlist title={'Tickets list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'payout-request'} element={<OrganizerLayout> <PayoutList title={'Payout list'} /> </OrganizerLayout>} />

@@ -8940,7 +8940,7 @@ a {
   z-index: 1;
   position: relative;
   padding: 0rem;
-  background-color: #fff;
+  background-color: #F1F1F1;
   z-index: 10;
   padding-left: 18.563rem;
   transition: all .2s ease; }
@@ -26514,7 +26514,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 
 .page-titles {
   padding: 0.9375rem 1.875rem;
-  background: #fff;
+  background: #F1F1F1;
   margin-bottom: 1.875rem;
   border-radius: 0.5rem;
   margin-top: 0;

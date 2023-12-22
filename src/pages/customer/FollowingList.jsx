@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import { apiurl, admin_url, isEmail, app_url } from '../../common/Helpers';
+import Searchicon from '../../common/icon/searchicon.png';
+import Eventlogo from "../../common/icon/eventlogo.svg";
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
@@ -101,24 +103,72 @@ const Dashboard = ({ title }) => {
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <Row className="justify-content-center">
                         <Col md={12}>
-                            <Card className="py-4">
+                            <Card className="py-4  grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
+                                    <Col md={12}>
+                                            <Row>
+                                                <Col md={6}>
+                                                    <div class="input-group mb-3 input-warning-o">
+                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+                                                        <input type="text" class="form-control" placeholder="Search Organizer" />
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </Col>
                                         <Col md={12}>
                                             {Loader ? (
                                                 <div className="linear-background w-100"> </div>
                                             ) : (
                                                 <>
-                                                    {Listitems.length > 0 ? (
-                                                        <>
-                                                            <div class="table-responsive">
+                                                    <Row>
+                                                        {Listitems.length > 0 ? (
+                                                            <>
+                                                                {
+                                                                    Listitems.map((item, index) => (
+                                                                        <Col md={3}>
+                                                                            <div className="my-follower-account-box text-center">
+                                                                                <img
+                                                                                    height={70}
+                                                                                    width={70}
+                                                                                    src={Eventlogo}
+                                                                                    alt=""
+                                                                                    className="organiger-logo mb-2"
+                                                                                />
+                                                                                <p className="org-name">{item.organizername}</p>
+                                                                                <p className="org-event-count">10 Events</p>
+                                                                                <button onClick={() => CheckDelete(item.organizerid)} type="button" class="Unfollow-btn-1">Unfollow</button>
+                                                                            </div>
+                                                                        </Col>
+                                                                    ))
+                                                                }
+                                                            </>
+                                                        ) : (
+                                                            <div class="no-data-box">
+                                                                <p>No Data Found !</p>
+                                                            </div>
+                                                        )}
+                                                    </Row>
+                                                </>
+                                            )}
+
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+            </div>
+
+        </>
+    )
+}
+export default Dashboard;
+
+{/* <div class="table-responsive">
                                                                 {Loader ? (
                                                                     <div className="linear-background w-100"> </div>
                                                                 ) : (
@@ -147,26 +197,4 @@ const Dashboard = ({ title }) => {
                                                                         </tbody>
                                                                     </table>
                                                                 )}
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
-
-                                        </Col>
-                                    </Row>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-            </div>
-
-        </>
-    )
-}
-export default Dashboard;
+                                                            </div> */}

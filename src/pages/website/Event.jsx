@@ -844,9 +844,7 @@ const Page = ({ title }) => {
                               ) : (
                                 <>
                                   {Followtype ? (
-                                    <button onClick={() => followOrganizer()} type="button" className="following-btn">
-                                      Following
-                                    </button>
+                                    <button onClick={() => followOrganizer()} type="button" class="Unfollow-btn-1">Unfollow</button>
                                   ) : (
                                     <button onClick={() => followOrganizer()} type="button" className="follow-btn">
                                       Follow

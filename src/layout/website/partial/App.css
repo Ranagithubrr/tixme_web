@@ -627,7 +627,7 @@ img.LogoIcon-footer {
 }
 
 select.theme-dropdown {
-    border: 1px solid #B8B9B9;
+    border: 1px solid transparent;
     height: 45px;
     width: 200px;
     border-radius: 11px;

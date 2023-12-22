@@ -14,7 +14,6 @@ import Sidebar from "./Sidebar";
 import { app_url, apiurl, organizer_url, customer_url } from "../../../common/Helpers";
 import Mobilemenu from "../../../component/mobilemenu";
 import Whitestar from "../../../common/icon/whitestart.svg";
-import Mapicon from "../common/icon/whitestart.svg";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 const Header = () => {
   const [location, setLocation] = useState(null);
@@ -95,7 +94,7 @@ const Header = () => {
             setCurrentCountry(country);
             setCurrentState(state);
             setCurrentCity(city);
-            if(!localStorage.getItem("countryname")){
+            if (!localStorage.getItem("countryname")) {
               localStorage.setItem('countryname', country);
             }
           } else {
@@ -253,6 +252,11 @@ const Header = () => {
                       <WhipersonBtn title={"Login"} />
                     </Link>
                   )}
+                </li>
+                <li className="nav-item header-btn-res">
+                  <div className="header-cart-icon">
+                    <FiShoppingCart />
+                  </div>
                 </li>
               </ul>
             </Col>
