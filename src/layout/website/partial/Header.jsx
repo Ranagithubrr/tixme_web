@@ -14,6 +14,7 @@ import Sidebar from "./Sidebar";
 import { app_url, apiurl, organizer_url, customer_url } from "../../../common/Helpers";
 import Mobilemenu from "../../../component/mobilemenu";
 import Whitestar from "../../../common/icon/whitestart.svg";
+import Mapicon from "../common/icon/whitestart.svg";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 const Header = () => {
   const [location, setLocation] = useState(null);
@@ -281,8 +282,8 @@ const Header = () => {
           </div>
           <div className="header-items">
             <div className="header-icons">
-              <Link to={organizer_url + "dashboard"}>
-                <img height={16} width={16} src={Whitestar} />
+              <Link onClick={() => setNewModal(!newmodal)}>
+                <img height={16} width={16} src={Mapicon} />
               </Link>
             </div>
             <div className="header-icons">
