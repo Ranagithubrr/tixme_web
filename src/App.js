@@ -10,6 +10,7 @@ import AllEventtype from './pages/admin/eventtype/List';
 import ActiveOrganizer from './pages/admin/organizer/ActiveOrganizer';
 import PendingOrganizer from './pages/admin/organizer/PendingOrganizer';
 import Supportlist from './pages/admin/support/Supportlist';
+import AdminTicketView from './pages/admin/support/SupportReply';
 import Contactlist from './pages/admin/contact/Contactlist';
 import AllEventlist from './pages/admin/event/AllEventlist';
 import Membership from './pages/admin/membership/Membership';
@@ -35,6 +36,7 @@ import EditEvent from './pages/organizer/Event/EditEvent';
 import EventView from './pages/organizer/Event/EventView';
 import EventList from './pages/organizer/Event/List';
 import Ticketlist from './pages/organizer/Event/ticketlist';
+import TicketView from './pages/organizer/support/SupportReply';
 import ManageTicket from './pages/organizer/Event/Manageticket';
 import TicketSoldlist from './pages/organizer/ticketsold/List';
 import PayoutList from './pages/organizer/payout/list';
@@ -120,6 +122,7 @@ function App() {
           <Route path={`${organizer_url}event/manage-ticket/:id/:name`} element={<OrganizerLayout title={'Mange Tickets'}> <ManageTicket title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout title={'Event Management'}> <EventList title={'All event list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout title={'Mange Tickets'}> <OrganizerSupportlist title={'Mange Tickets'} /> </OrganizerLayout>} />
+          <Route path={`${organizer_url}view-support-ticket/:id`} element={<OrganizerLayout title={'Mange Tickets'}> <TicketView title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'ticket-sold-list'} element={<OrganizerLayout> <TicketSoldlist title={'Tickets sold list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tickets-list'} element={<OrganizerLayout> <Ticketlist title={'Tickets list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'payout-request'} element={<OrganizerLayout> <PayoutList title={'Payout list'} /> </OrganizerLayout>} />
@@ -143,9 +146,10 @@ function App() {
           <Route path={`${admin_url}payout-request/:id/:name`} element={<AdminLayout> <AdminPayoutrequest title={'Payout request'} /> </AdminLayout>} />
           <Route path={admin_url + 'active-organizer'} element={<AdminLayout> <ActiveOrganizer title={'Active Organizer'} /> </AdminLayout>} />
           <Route path={admin_url + 'pending-organizer'} element={<AdminLayout> <PendingOrganizer title={'Pending Organizer'} /> </AdminLayout>} />
-          <Route path={admin_url + 'support-tickets'} element={<AdminLayout> <Supportlist title={'Support Tickets'} /> </AdminLayout>} />
+          <Route path={admin_url + 'support-tickets'} element={<AdminLayout title={'Manage Tickets'}> <Supportlist title={'Support Tickets'} /> </AdminLayout>} />
           <Route path={admin_url + 'contact-us'} element={<AdminLayout> <Contactlist title={'Contact us list'} /> </AdminLayout>} />
           <Route path={admin_url + 'membership'} element={<AdminLayout> <Membership title={'Membership'} /> </AdminLayout>} />
+          <Route path={`${admin_url}view-support-ticket/:id`} element={<AdminLayout title={'Mange Tickets'}> <AdminTicketView title={'Mange Tickets'} /> </AdminLayout>} />
         </Routes>
       </BrowserRouter>
     </>

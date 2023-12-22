@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { apiurl, organizer_url, isEmail, getSupportbagecolor } from '../../../common/Helpers';
+
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 
-import { apiurl, admin_url, isEmail } from '../../../common/Helpers';
 import Searchicon from '../../../common/icon/searchicon.png';
 
 import WhiteButton from '../../../component/Whitestarbtn';
@@ -311,6 +312,7 @@ const Dashboard = ({ title }) => {
                     setTicketTypevalue('');
                     setTicketPriority('');
                     setTicketPriorityvalue('');
+                    fetchList();
                 } else {
                     toast.error(data.message);
                 }
@@ -360,10 +362,10 @@ const Dashboard = ({ title }) => {
                 iconColor = 'text-warning';
                 break;
             case 'On-Going Tickets':
-                iconColor = 'text-success';
+                iconColor = 'text-primary';
                 break;
             case 'Resolved Tickets':
-                iconColor = 'text-primary';
+                iconColor = 'text-success';
                 break;
             default:
                 iconColor = '';
@@ -404,7 +406,7 @@ const Dashboard = ({ title }) => {
                                         <Col md={8}>
                                             <div className="ticket-list">
                                                 <Row className="react-select-h">
-                                                    <Col md={3}>
+                                                    <Col md={4}>
                                                         <Select
                                                             isClearable={false}
                                                             options={DatefilterOption}
@@ -415,7 +417,7 @@ const Dashboard = ({ title }) => {
                                                             value={Datevalue}
                                                         />
                                                     </Col>
-                                                    <Col md={3}>
+                                                    <Col md={4}>
                                                         <Select
                                                             isClearable={false}
                                                             options={PriorityfilterOption[0].options}
@@ -427,8 +429,7 @@ const Dashboard = ({ title }) => {
                                                             value={Priorityfiltervalue}
                                                         />
                                                     </Col>
-                                                    <Col md={3}></Col>
-                                                    <Col md={3}>
+                                                    <Col md={4}>
                                                         <div class="input-group mb-3 input-warning-o grey-border">
                                                             <span class="input-group-text"><img src={Searchicon} alt="" /></span>
                                                             <input type="text" class="form-control" placeholder="Search for ticket" />
@@ -448,7 +449,7 @@ const Dashboard = ({ title }) => {
                                                                         <Col md={12} className="mb-5">
                                                                             <div className="support-tickets-list-1">
                                                                                 <div className="xyz-ticket-desc-box">
-                                                                                    <p><span className="ticket-sts-icon text-success"><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span></p>
+                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority && item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)} </p>
                                                                                     <p className="ticket-type-12">{item.tickettype}</p>
                                                                                     <p className="ticket-message7">{item.message}</p>
                                                                                 </div>
@@ -457,7 +458,7 @@ const Dashboard = ({ title }) => {
                                                                                         <p className="date-and-time-ticket">Posted at {item.time}</p>
                                                                                     </Col>
                                                                                     <Col md={6} className="text-end">
-                                                                                        <a className="Open-Ticket-link">Open Ticket</a>
+                                                                                        <Link to={`${organizer_url}view-support-ticket/${item._id}`} className="Open-Ticket-link">Open Ticket</Link>
                                                                                     </Col>
                                                                                 </Row>
                                                                             </div>

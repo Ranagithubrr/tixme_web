@@ -4,11 +4,11 @@ export const admin_url = app_url + 'admin/';
 export const organizer_url = app_url + 'organizer/';
 export const customer_url = app_url + 'customer/';
 
-// export const apiurl = 'http://localhost:5001/api/v1/';
-// export const imgurl = 'http://localhost:5001/uploads/';
+export const apiurl = 'http://localhost:5001/api/v1/';
+export const imgurl = 'http://localhost:5001/uploads/';
 
-export const apiurl = 'https://nodejsapidev.vercel.app/api/v1/';
-export const imgurl = 'https://nodejsapidev.vercel.app/uploads/';
+// export const apiurl = 'https://nodejsapidev.vercel.app/api/v1/';
+// export const imgurl = 'https://nodejsapidev.vercel.app/uploads/';
 export function isEmail(email) {
     var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     return regex.test(email);
@@ -31,15 +31,26 @@ export const get_min_date = (date) => {
 };
 
 export const shortPer = (paragraph, maxLength) => {
-    if(paragraph){
+    if (paragraph) {
         if (paragraph.length <= maxLength) {
             return paragraph; // No need to truncate if the text is already short
         } else {
             const truncatedText = paragraph.substring(0, maxLength).trim();
             return truncatedText + '...';
         }
-    }else{
+    } else {
         return '...';
+    }
+}
+export const getSupportbagecolor = (status) => {
+    if (status == 0) {
+        return 'text-warning';
+    } else if(status == 1){
+        return 'text-primary';
+    }else if(status == 2){
+        return 'text-success';
+    }else{
+        return '';
     }
 }
 export const onlyDayMonth = (dateString) => {

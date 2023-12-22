@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, admin_url } from '../../../common/Helpers';
+import { apiurl, admin_url, getSupportbagecolor } from '../../../common/Helpers';
+import Searchicon from '../../../common/icon/searchicon.png';
 import WhiteButton from '../../../component/Whitestarbtn';
+import Norecord from '../../../component/Norecordui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
+import Select from 'react-select'
+import { FaCircle } from "react-icons/fa6"; 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 const Dashboard = ({ title }) => {
     const MySwal = withReactContent(Swal)
     const [modal, setModal] = useState(false);
     const [Btnloader, setBtnloader] = useState(false);
     const [Loader, setLoader] = useState(false);
+    const [ListLoader, setListLoader] = useState(false);
     const [apiLoader, setapiLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
 
@@ -27,9 +32,7 @@ const Dashboard = ({ title }) => {
     const [Isclosestatus, setIsclosestatus] = useState();
     const fetchList = async () => {
         try {
-            // const requestData = {
-            //     isclose: 0
-            // };
+            setListLoader(true);
             fetch(apiurl + 'admin/support/list', {
                 method: 'POST',
                 headers: {
@@ -41,18 +44,19 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
-                        setLoader(false)
                     } else {
 
                     }
+                    setListLoader(false);
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
+                    setListLoader(false);
                 });
         } catch (error) {
             console.error('Login api error:', error);
+            setListLoader(false);
         }
-
     }
     const HandelReplyapi = async () => {
         if (!ReplyMessage && Isclosestatus === 0) {
@@ -143,161 +147,154 @@ const Dashboard = ({ title }) => {
         fetchList();
     }, []);
 
+    const [Datetype, setDatetype] = useState();
+    const [Datevalue, setDatevalue] = useState();
+    const selectDatefiltertype = (selectedValue) => {
+        setDatevalue(selectedValue);
+        setDatetype(selectedValue.value);
+    };
+    const DatefilterOption = [
+        {
+            options: [
+                { value: "Today", label: "Today" },
+                { value: "Tomorrow", label: "Tomorrow" },
+                { value: "Next 7 days", label: "Next 7 days" },
+                { value: "This month", label: "This month" },
+                { value: "Next month", label: "Next month" },
+                { value: "Pick a date", label: "Pick a date" },
+                { value: "Pick between two dates", label: "Pick between two dates" },
+            ]
+        }
+    ]
+
+    const [Priorityfiltertype, setPriorityfiltertype] = useState();
+    const [Priorityfiltervalue, setPriorityfiltervalue] = useState();
+    const selectPriorityfilter = (selectedValue) => {
+        setPriorityfiltervalue(selectedValue);
+        setPriorityfiltertype(selectedValue.value);
+    };
+
+    const CustomOption = ({ innerProps, label, value }) => {
+        let iconColor = '';
+
+        // Apply different icon colors based on the value
+        switch (value) {
+            case 'New Tickets':
+                iconColor = 'text-warning';
+                break;
+            case 'On-Going Tickets':
+                iconColor = 'text-primary';
+                break;
+            case 'Resolved Tickets':
+                iconColor = 'text-success';
+                break;
+            default:
+                iconColor = '';
+        }
+
+        return (
+            <div {...innerProps}>
+                <span><span style={{ paddingLeft: '5px' }} className={`ticket-sts-icon ${iconColor}`}><FaCircle /></span> <span className="cpointer">{label}</span></span>
+            </div>
+        );
+    };
+    const customStyles = {
+        option: (provided, state) => ({
+            ...provided,
+            padding: 10,
+        }),
+    };
+    const PriorityfilterOption = [
+        {
+            options: [
+                { value: "New Tickets", label: "New Tickets" },
+                { value: "On-Going Tickets", label: "On-Going Tickets" },
+                { value: "Resolved Tickets", label: "Resolved Tickets" },
+            ]
+        }
+    ]
+
     return (
         <>
-            <Modal isOpen={modal} toggle={() => setModal(!modal)}>
-                <ModalHeader toggle={!modal}>Support</ModalHeader>
-                <ModalBody>
-                    {apiLoader ? (
-                        <div className="linear-background w-100"> </div>
-                    ) : (
-                        <>
-                            <Row>
-                                <Col md={12}>
-                                    <h5 className="text-black">Email</h5>
-                                    <p class="mb-0">{Email}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Title</h5>
-                                    <p class="mb-0 text-info">{Title}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Message</h5>
-                                    <p class="mb-0 text-danger">{Message}</p>
-                                </Col>
-                                <Col md={12} className='border-bottom py-2 mb-4'></Col>
-                                <Col md={12}>
-                                    {Messagelog ? (
-                                        <div id="DZ_W_TimeLine" className="widget-timeline dz-scroll px-4 height300 overflow-y-scroll">
-                                            <ul className="timeline">
-                                                {[...Messagelog].reverse().map((item, index) => (
-                                                    <li key={index}>
-                                                        <div className={item.usertype === 'Admin' ? 'timeline-badge primary' : 'timeline-badge warning'}></div>
-                                                        <a className="timeline-panel text-muted" href="javascript:void(0);">
-                                                            <span>{item.date} | {item.usertype === 'Admin' ? 'ADMIN' : 'USER'}</span>
-                                                            <h6 className="mb-0">{item.replymessage}</h6>
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="alert alert-primary alert-dismissible fade show">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                                <strong>No Reply Found!</strong>
-                                                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </Col>
-                                <Col md={12} className='border-bottom py-2'></Col>
-                                {Isopen === 1 ? (
-                                    <div className="alert alert-danger alert-dismissible fade show">
-                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                        <strong>Support ticket closed</strong>
-                                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Col md={12} className="mt-3">
-                                            <div className="form-group">
-                                                <p>Message <span className="text-danger">*</span></p>
-                                                <textarea placeholder="Type your message" class="form-control" rows="3" value={ReplyMessage} onChange={(e) => setReplyMessage(e.target.value)}></textarea>
-                                            </div>
-                                            <div className="form-group">
-                                                <p>Support status</p>
-                                                <select className="form-control" onChange={(e) => setIsclosestatus(e.target.value)}>
-                                                    <option selected={Isopen === '0' ? true : false} value="0">Open</option>
-                                                    <option selected={Isopen === '1' ? true : false} value="1">Close</option>
-                                                </select>
-                                            </div>
-                                        </Col>
-                                        <Col md={12}>
-                                            <div className="form-group">
-                                                {Btnloader ? (
-                                                    <Button className='signup-page-btn'>Please wait...</Button>
-                                                ) : (
-                                                    <span onClick={HandelReplyapi}><WhiteButton title={'Send'} /></span>
-                                                )}
-                                            </div>
-                                        </Col>
-                                    </>
-                                )}
-                            </Row>
-                        </>
-                    )}
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" onClick={() => setModal(!modal)}>
-                        Cancel
-                    </Button>
-                </ModalFooter>
-            </Modal>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <Link className="page-theme-btn position-right" to={admin_url + 'active-organizers'}>View organizer</Link>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <Row className="justify-content-center">
                         <Col md={12}>
                             <Card className="py-4">
                                 <Card.Body>
-                                    <Row className="justify-content-center">
+                                    <Row>
                                         <Col md={12}>
-                                            <div class="table-responsive">
-                                                {Loader ? (
-                                                    <div className="linear-background w-100"> </div>
-                                                ) : (
-                                                    <table class="table table-responsive-md">
-                                                        <thead>
-                                                            <tr>
-                                                                <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                <th><strong>User type</strong></th>
-                                                                <th><strong>User email</strong></th>
-                                                                <th><strong>Date</strong></th>
-                                                                <th><strong>Title</strong></th>
-                                                                <th><strong>Message</strong></th>
-                                                                <th><strong>Status</strong></th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {Listitems.map((item, index) => (
-                                                                <tr>
-                                                                    <td><strong>{index + 1}</strong></td>
-                                                                    <td>
-                                                                        {item.usertype == "customer" ? (
-                                                                            <span class="badge badge-xs light badge-success">{item.usertype}</span>
-                                                                        ) : (
-                                                                            <span class="badge badge-xs light badge-primary">{item.usertype}</span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td>{item.email}</td>
-                                                                    <td>{item.date}</td>
-                                                                    <td>{item.title}</td>
-                                                                    <td>{item.message}</td>
-                                                                    <td>{item.isclose === 0 ? (<span class="badge badge-rounded badge-success">Open</span>) : (<span class="badge badge-rounded badge-danger">Closed</span>)}</td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                            </button>
-                                                                            <div class="dropdown-menu">
-                                                                                <Button variant="link" onClick={() => Handelviewmodal(item._id)} class="dropdown-item">View</Button>
+                                            <div className="ticket-list">
+                                                <Row className="react-select-h">
+                                                    <Col md={3}>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={DatefilterOption}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Filter'
+                                                            onChange={selectDatefiltertype}
+                                                            value={Datevalue}
+                                                        />
+                                                    </Col>
+                                                    <Col md={3}>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={PriorityfilterOption[0].options}
+                                                            components={{ Option: CustomOption }}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Status'
+                                                            onChange={selectPriorityfilter}
+                                                            value={Priorityfiltervalue}
+                                                        />
+                                                    </Col>
+                                                    <Col md={3}></Col>
+                                                    <Col md={3}>
+                                                        <div class="input-group mb-3 input-warning-o grey-border">
+                                                            <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+                                                            <input type="text" class="form-control" placeholder="Search for ticket" />
+                                                        </div>
+                                                    </Col>
+                                                    {ListLoader ? (
+                                                        <>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {Listitems.length > 0 ? (
+                                                                <>
+                                                                    {Listitems.map((item, index) => (
+                                                                        <Col md={12} className="mb-5">
+                                                                            <div className="support-tickets-list-1">
+                                                                                <div className="xyz-ticket-desc-box">
+                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority && item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)} </p>
+                                                                                    <p className="ticket-type-12">{item.tickettype}</p>
+                                                                                    <p className="ticket-message7">{item.message}</p>
+                                                                                </div>
+                                                                                <Row className="ticket-box-time1">
+                                                                                    <Col md={6}>
+                                                                                        <p className="date-and-time-ticket">Posted at {item.time}</p>
+                                                                                    </Col>
+                                                                                    <Col md={6} className="text-end">
+                                                                                        <Link to={`${admin_url}view-support-ticket/${item._id}`} className="Open-Ticket-link">Open Ticket</Link>
+                                                                                    </Col>
+                                                                                </Row>
                                                                             </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                )}
+                                                                        </Col>
+                                                                    ))}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Norecord />
+                                                                </>
+                                                            )}
+
+                                                        </>
+                                                    )}
+                                                </Row>
                                             </div>
                                         </Col>
                                     </Row>

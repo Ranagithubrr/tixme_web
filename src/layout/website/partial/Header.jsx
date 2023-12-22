@@ -253,11 +253,7 @@ const Header = () => {
                     </Link>
                   )}
                 </li>
-                <li className="nav-item header-btn-res">
-                  <div className="header-cart-icon">
-                    <FiShoppingCart />
-                  </div>
-                </li>
+                
               </ul>
             </Col>
             <Col md={4} className="p-0">
@@ -287,7 +283,7 @@ const Header = () => {
           <div className="header-items">
             <div className="header-icons">
               <Link onClick={() => setNewModal(!newmodal)}>
-                <img height={16} width={16} src={Mapicon} />
+                {/* <img height={16} width={16} src={Mapicon} />s */}
               </Link>
             </div>
             <div className="header-icons">

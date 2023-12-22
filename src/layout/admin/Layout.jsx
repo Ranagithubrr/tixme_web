@@ -4,7 +4,7 @@ import Sidebar from './partial/Sidebar';
 import Footer from './partial/Footer';
 import Logo from '../../common/logo.svg';
 import { Link } from "react-router-dom";
-const Layout = ({ children }) => {
+const Layout = ({ children, title }) => {
     function d() {
         const mainWrapperView = document.getElementById('main-wrapper view');
         const xyx = document.getElementsByClassName('hamburger');
@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
                         </div>
                     </div>
                 </div>
-                <Header />
+                <Header  title={title}/>
                 <Sidebar />
                 {children}
                 <Footer />

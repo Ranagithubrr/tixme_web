@@ -953,10 +953,10 @@ span.rewrd-user-name1 {
   margin-left: 20px;
 }
 .ticket-form .css-13cymwt-control, .ticket-form .css-t3ipsp-control {
-  min-height: 45px !important;
+  min-height: 40px !important;
 }
 .react-select-h .css-13cymwt-control, .react-select-h .css-t3ipsp-control {
-  min-height: 45px !important;
+  min-height: 40px !important;
 }
 
 .react-select-h  .css-1u9des2-indicatorSeparator {
@@ -1027,4 +1027,24 @@ a.Open-Ticket-link {
   box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
 -webkit-box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
 -moz-box-shadow: -1px 2px 5px 0px rgba(219,219,219,0.71);
+}
+span.bage-danger-css {
+  background: #FEF1F3;
+  color: #FF0000;
+  padding: 6px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+span.bage-light-css {
+  background: #f5f5f5;
+  color: #999999;
+  padding: 6px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+.reply-message-cs {
+  border: 1px solid #eee;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
