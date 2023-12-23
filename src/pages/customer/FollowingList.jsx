@@ -3,6 +3,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import { apiurl, admin_url, isEmail, app_url } from '../../common/Helpers';
 import Searchicon from '../../common/icon/searchicon.png';
+import Norecord from '../../component/Norecordui';
 import Eventlogo from "../../common/icon/eventlogo.svg";
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
@@ -146,9 +147,7 @@ const Dashboard = ({ title }) => {
                                                                 }
                                                             </>
                                                         ) : (
-                                                            <div class="no-data-box">
-                                                                <p>No Data Found !</p>
-                                                            </div>
+                                                            <Norecord/>
                                                         )}
                                                     </Row>
                                                 </>

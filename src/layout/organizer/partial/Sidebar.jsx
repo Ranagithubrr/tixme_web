@@ -11,12 +11,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { organizer_url, app_url } from '../../../common/Helpers';
 const Sidebar = () => {
     const navigate = useNavigate();
-    function Logout() {
-        localStorage.removeItem('organizerauth');
-        localStorage.removeItem('organizerid');
-        localStorage.removeItem('organizer_role');
-        navigate(app_url);
-    }
     function d() {
         const mainWrapperView = document.getElementById('main-wrapper view');
         const xyx = document.getElementsByClassName('hamburger');
@@ -43,7 +37,7 @@ const Sidebar = () => {
                                 <span className="nav-text">Event Management</span>
                             </Link>
                         </li>
-                        <li onClick={() => d()}>
+                        {/* <li onClick={() => d()}>
                             <Link to={organizer_url + 'tickets-list'} className="ai-icon" aria-expanded="false">
                                 <img src={ticketIcon} alt="Your Logo" />
                                 <span className="nav-text">Tickets list</span>
@@ -54,7 +48,7 @@ const Sidebar = () => {
                                 <img src={ticketIcon} alt="Your Logo" />
                                 <span className="nav-text">Attendees list</span>
                             </Link>
-                        </li>
+                        </li> */}
                         {/* <li><Link href="reports.html" className="ai-icon" aria-expanded="false">
                             <img src={ticketIcon} alt="Your Logo" />
                             <span className="nav-text">Event Bookings</span>
@@ -90,17 +84,11 @@ const Sidebar = () => {
                             <span className="nav-text">Payout Request</span>
                         </Link>
                         </li>
-                        <li onClick={() => d()}><Link to={organizer_url+ 'my-profile'} className="ai-icon" aria-expanded="false">
+                        {/* <li onClick={() => d()}><Link to={organizer_url+ 'my-profile'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
                             <span className="nav-text">Profile Managment</span>
                         </Link>
-                        </li>
-                        <li onClick={() => d()}>
-                            <div onClick={Logout} className="ai-icon cursor-pointer" aria-expanded="false">
-                                <img src={DashboardIcon} alt="Your Logo" />
-                                <span className="nav-text">Logout</span>
-                            </div>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
             </div>

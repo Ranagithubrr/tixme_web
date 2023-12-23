@@ -8946,7 +8946,7 @@ a {
   transition: all .2s ease; }
   .header .header-content {
     height: 100%;
-    padding-left: 6rem;
+    padding-left: 2rem;
     padding-right: 1.875rem;
     align-items: center;
     display: flex; }
@@ -9116,7 +9116,7 @@ svg.pulse-svg {
   .header-left .dashboard_bar {
     font-size: 30px;
     font-weight: 600;
-    color: #000; }
+    color: #0047ab; }
     @media only screen and (max-width: 1600px) {
       .header-left .dashboard_bar {
         font-size: 24px; } }
@@ -12358,7 +12358,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   padding: 0 20px; }
   @media only screen and (max-width: 1600px) {
     [data-sidebar-style="full"][data-layout="vertical"] .deznav .metismenu > li {
-      padding: 0 15px; } }
+      padding: 0 5px; } }
   [data-sidebar-style="full"][data-layout="vertical"] .deznav .metismenu > li > a {
     font-size: 14px;
     padding: 11px 12px 10px 55px;

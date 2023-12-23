@@ -52,17 +52,17 @@ const Sidebar = () => {
                             <span className="nav-text">saved Events</span>
                         </Link>
                         </li>
-                        <li onClick={() => d()}><Link to={customer_url+ 'support-tickets'} className="ai-icon" aria-expanded="false">
+                        {/* <li onClick={() => d()}><Link to={customer_url+ 'support-tickets'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
                             <span className="nav-text">Support</span>
                         </Link>
-                        </li>
+                        </li> */}
                         <li onClick={() => d()}><Link to={customer_url+ 'my-rewards'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
-                            <span className="nav-text">My following</span>
+                            <span className="nav-text">My Rewards</span>
                         </Link>
                         </li>
-                        <li onClick={() => d()}><Link to={customer_url+ 'my-profile'} className="ai-icon" aria-expanded="false">
+                        {/* <li onClick={() => d()}><Link to={customer_url+ 'my-profile'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
                             <span className="nav-text">Profile Managment</span>
                         </Link>
@@ -72,7 +72,7 @@ const Sidebar = () => {
                                 <img src={DashboardIcon} alt="Your Logo" />
                                 <span className="nav-text">Logout</span>
                             </div>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
             </div>

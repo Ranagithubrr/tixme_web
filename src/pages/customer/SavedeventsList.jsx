@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
+import Norecord from '../../component/Norecordui';
 import Searchicon from '../../common/icon/searchicon.png';
 import LocationIcon from "../../common/icon/location.svg";
 import Eimg from '../../common/icon/Edit.svg';
@@ -24,7 +25,7 @@ const Dashboard = ({ title }) => {
     const [CategoryList, setCategoryList] = useState([]);
     const [Listitems, setListitems] = useState([]);
     const MySwal = withReactContent(Swal);
-    function CheckDelete(id) {
+    function CheckDelete(eventid) {
         MySwal.fire({
             title: 'Are you sure you want to remove?',
             showDenyButton: true,
@@ -33,17 +34,17 @@ const Dashboard = ({ title }) => {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                deleteData(id)
+                deleteData(eventid)
             } else if (result.isDenied) {
 
             }
         })
     }
-    const deleteData = async (id) => {
+    const deleteData = async (eventid) => {
         try {
             setLoader(true)
             const requestData = {
-                id: id
+                eventid: eventid
             }
             fetch(apiurl + "website/delete-saved-event", {
                 method: "POST",
@@ -245,7 +246,7 @@ const Dashboard = ({ title }) => {
                                                                                         <Col md={3} className="py-3">
                                                                                             <div>
                                                                                             <div className="text-end mr-5 mb-5 cursor-pointer">
-                                                                                                    <img src={Savesvg} className="" height={'50px'} width={'50px'} alt="" />
+                                                                                                    <img onClick={() => CheckDelete(item._id)} src={Savesvg} className="" height={'30px'} width={'30px'} alt="" />
                                                                                                 </div>
                                                                                                 <div className="text-end mr-5 mt-5">
                                                                                                     <span className="list-event-category-img">{item.category_name}</span>
@@ -268,9 +269,7 @@ const Dashboard = ({ title }) => {
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
+                                                        <Norecord/>
                                                     )}
                                                 </>
                                             )}

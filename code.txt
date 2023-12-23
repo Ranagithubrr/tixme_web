@@ -17,11 +17,8 @@
 <div className="linear-background w-100"> </div>
 
 
+amitmajumder559@gmail.com
 
+12345678
 
-
-
-
-pending work
-
-category edit
+1234567891

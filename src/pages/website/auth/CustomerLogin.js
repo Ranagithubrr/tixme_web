@@ -75,9 +75,6 @@ const Home = ({ title }) => {
                 .then(data => {
                     setLoader(false);
                     if (data.success == true) {
-                        localStorage.removeItem('organizerauth');
-                        localStorage.removeItem('organizerid');
-                        localStorage.removeItem('organizer_role');
                         localStorage.setItem('userauth', data.token);
                         localStorage.setItem('username', data.username);
                         localStorage.setItem('user_role', 1);

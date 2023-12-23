@@ -5,11 +5,6 @@ const Type = ({ title }) => {
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <EventForm/>
                 </div>
             </div>

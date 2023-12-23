@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../../common/elements/JoinStartButton";
 import Searchicon from '../../../common/icon/searchicon.png';
+import Norecord from '../../../component/Norecordui';
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
@@ -268,9 +269,7 @@ const Dashboard = ({ title }) => {
                                                         ))}
                                                     </>
                                                 ) : (
-                                                    <div class="no-data-box">
-                                                        <p>No Data Found !</p>
-                                                    </div>
+                                                   <Norecord/>
                                                 )}
                                             </>
                                         )}

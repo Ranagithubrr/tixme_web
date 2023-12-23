@@ -206,8 +206,8 @@ const Page = ({ title }) => {
                     } else {
                         toast.error(data.data);
                         console.warn(data);
+                        setApiLoader(false);
                     }
-                    setApiLoader(false);
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
