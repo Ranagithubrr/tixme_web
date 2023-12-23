@@ -696,7 +696,14 @@ span.user_drop_icon {
   border: none;
   font-size: 15px;
 }
-
+.theme-btn-light{
+  background: #fff;
+  color: #4B5563;
+  padding: 3px 0px 7px 0px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+}
 .theme-btn-icon {
   font-size: 20px;
 }
@@ -1047,4 +1054,45 @@ span.bage-light-css {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+}
+.white-table .table thead tr {
+  background: #ffffff !important;
+  color: #898989 !important;
+  border-bottom: 2px solid #e9e9e9 !important;
+  
+}
+.white-table  .table > :not(caption) > * > * {
+  background-color: white !important;
+  text-align: center;
+}
+
+.badge-theme {
+    padding: 3px 7px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.badge-theme-warning{
+  background: #FFF6E9;
+  color: #B5850B;
+}
+.badge-theme-success{
+  background: #EDFFEA;
+  color: #165E3D;
+}
+.badge-theme-danger{
+  background: #FFEAEA;
+  color: #B83131;
+}
+span.order-view-btn {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.tickets-data-text h5 {
+  font-weight: 600;
+  font-size: 16px;
+}
+.tickets-data-text p {
+  font-weight: 400;
+  color: #000;
+  font-size: 13px;
 }

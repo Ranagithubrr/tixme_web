@@ -36,6 +36,7 @@ import EditEvent from './pages/organizer/Event/EditEvent';
 import EventView from './pages/organizer/Event/EventView';
 import EventList from './pages/organizer/Event/List';
 import Ticketlist from './pages/organizer/Event/ticketlist';
+import Ticketattendee from './pages/organizer/Event/ticketattendee';
 import TicketView from './pages/organizer/support/SupportReply';
 import ManageTicket from './pages/organizer/Event/Manageticket';
 import TicketSoldlist from './pages/organizer/ticketsold/List';
@@ -120,6 +121,7 @@ function App() {
           <Route path={`${organizer_url}event/edit-event/:id/:name`} element={<OrganizerLayout> <EditEvent title={'Edit event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/view-event/:id/:name`} element={<OrganizerLayout> <EventView title={'Event details'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/manage-ticket/:id/:name`} element={<OrganizerLayout title={'Mange Tickets'}> <ManageTicket title={'Mange Tickets'} /> </OrganizerLayout>} />
+          <Route path={`${organizer_url}event/mange-attendee/:id/:name`} element={<OrganizerLayout title={'Mange Attendee'}> <Ticketattendee title={'Mange Attendee'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout title={'Event Management'}> <EventList title={'All event list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout title={'Mange Tickets'}> <OrganizerSupportlist title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}view-support-ticket/:id`} element={<OrganizerLayout title={'Mange Tickets'}> <TicketView title={'Mange Tickets'} /> </OrganizerLayout>} />

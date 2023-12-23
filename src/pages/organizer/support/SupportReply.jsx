@@ -3,6 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import { apiurl, getSupportbagecolor } from '../../../common/Helpers';
 import { Link, useParams } from "react-router-dom";
+import Alert from 'react-bootstrap/Alert';
 import Select from 'react-select'
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
@@ -134,7 +135,8 @@ const Dashboard = ({ title }) => {
                                                                 </div>
                                                             </Col>
                                                         ))}
-                                                        <Col md={12}>
+                                                        {SupportData.isclose != 2 ? (
+                                                            <Col md={12}>
                                                             <div className="reply-area-1 border-light p-3" style={{ background: '#FCFCFC', border: '1px solid #FCFCFC', borderRadius: '10px' }}>
                                                                 <p className="mb-3" style={{ fontWeight: '600' }}>Reply to Ticket</p>
                                                                 <div className="form-group">
@@ -150,6 +152,12 @@ const Dashboard = ({ title }) => {
                                                                 </div>
                                                             </div>
                                                         </Col>
+                                                        ) : (
+                                                            <Alert variant={'success'}>
+                                                                This ticket has been successfully resolved.
+                                                            </Alert>
+                                                        )}
+                                                        
                                                     </Row>
                                                 </div>
                                             </Col>

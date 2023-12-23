@@ -322,7 +322,7 @@ const Dashboard = ({ title }) => {
                                                     </div>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <button className="w-100 theme-btn-warning" onClick={() => navigate(organizer_url + 'event/add-event')}>
+                                                    <button className="w-100 theme-btn-warning" onClick={() => navigate(`${organizer_url}event/mange-attendee/${Eventdata._id}/${Eventdata.name}`)}>
                                                         <span>Mange All Attendee</span>
                                                     </button>
                                                 </Col>
