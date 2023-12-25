@@ -76,7 +76,7 @@ const Dashboard = ({ title }) => {
                     setApiLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiLoader(false)
         }
     }

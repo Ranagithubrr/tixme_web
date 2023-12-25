@@ -92,7 +92,7 @@ const Dashboard = ({ title }) => {
                     setApiLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiLoader(false)
         }
     }
@@ -150,7 +150,7 @@ const Dashboard = ({ title }) => {
         } catch (error) {
             setLoader(false)
             toast.error(error.message);
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const Handelchangepassword = async () => {
@@ -197,7 +197,7 @@ const Dashboard = ({ title }) => {
                 });
         } catch (error) {
             setLoader(false)
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     useEffect(() => {

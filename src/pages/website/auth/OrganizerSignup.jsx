@@ -90,7 +90,7 @@ const Home = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
 
     }
@@ -118,7 +118,7 @@ const Home = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const CountryOption = [

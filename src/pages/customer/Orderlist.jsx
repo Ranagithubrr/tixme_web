@@ -48,7 +48,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false)
         }
 
@@ -59,7 +59,7 @@ const Dashboard = ({ title }) => {
             setTransferModal(true)
             setTransferId(id)
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setModal(false)
         }
     }
@@ -103,7 +103,7 @@ const Dashboard = ({ title }) => {
                 });
         } catch (error) {
             toast.error(error.message);
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setTransferModal(false)
         }
     }
@@ -137,7 +137,7 @@ const Dashboard = ({ title }) => {
                     setapiLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setModal(false)
         }
     }

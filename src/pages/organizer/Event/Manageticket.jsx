@@ -29,6 +29,7 @@ const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const [Ticketshow, setTicketshow] = useState(false);
     const [Listitems, setListitems] = useState([]);
+    const [Ticketsoldlist, setTicketsoldlist] = useState([]);
     const [Eventdata, setEventdata] = useState([]);
     const [Tickettype, setTickettype] = useState(1);
     const [Ticketname, setTicketname] = useState();
@@ -62,6 +63,7 @@ const Dashboard = ({ title }) => {
 
                     if (data.success == true) {
                         const fetchdata = data.data.allprice;
+                        setTicketsoldlist(data.ticketdata);
                         setListitems(fetchdata);
                     }
                     setLoader(false);
@@ -72,9 +74,14 @@ const Dashboard = ({ title }) => {
                 });
 
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
+    }
+    
+    const CountTicketSold = (name) => {
+        const filteredList = Ticketsoldlist.filter(item => item.ticket_name === name);
+        return filteredList.length;
     }
     const fetchEvent = async () => {
         try {
@@ -103,7 +110,7 @@ const Dashboard = ({ title }) => {
                 });
 
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     }
@@ -180,7 +187,7 @@ const Dashboard = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiLoader(false);
         }
     }
@@ -244,7 +251,7 @@ const Dashboard = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiLoader(false);
         }
     }
@@ -290,7 +297,7 @@ const Dashboard = ({ title }) => {
                 });
 
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     function emptyPriceForm() {
@@ -361,7 +368,7 @@ const Dashboard = ({ title }) => {
                                                                                     </Col>
                                                                                     <Col md={4} className="ticket-sts-box  text-center  border-right">
                                                                                         <p>Ticket Sold</p>
-                                                                                        <h2>00</h2>
+                                                                                        <h2>{CountTicketSold(item.name)}</h2>
                                                                                     </Col>
                                                                                     <Col md={4} className="ticket-sts-box  text-center">
                                                                                         <p>Ticket Available</p>

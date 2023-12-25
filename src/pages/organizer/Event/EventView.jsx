@@ -47,7 +47,7 @@ const Type = ({ title }) => {
                     setApiLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiLoader(false)
         }
     }
@@ -88,7 +88,7 @@ const Type = ({ title }) => {
                     setOrderapiLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setOrderapiLoader(false)
         }
     }

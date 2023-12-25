@@ -16,6 +16,7 @@ import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
 import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
+import Select from 'react-select'
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
@@ -38,6 +39,51 @@ const Dashboard = ({ title }) => {
 
             }
         })
+    }
+    function HandelChangeStatus(id) {
+        MySwal.fire({
+            title: 'Are You Ready to Update the Event Visibility?',
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Active',  // Change this text for the confirm button
+            denyButtonText: 'Deactive',
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                HandelStatusChange(id,1);
+            } else if (result.isDenied) {
+                HandelStatusChange(id,2);
+            }
+        })
+    }
+    
+    const HandelStatusChange = async (id, type) => {
+        try {
+            const requestData = {
+                id: id,
+                isstatus: type,
+                organizerid: organizerid
+            };
+            fetch(apiurl + 'event/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        toast.success('Status updated')
+                        fetchmyEvent();
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+        }
     }
     const Delete = async (id) => {
         try {
@@ -66,7 +112,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false)
         }
     }
@@ -95,7 +141,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false)
         }
     }
@@ -110,7 +156,11 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setCategoryList(data.data);
+                        const transformedCategories = data.data.map(category => ({
+                            value: category._id,
+                            label: category.name
+                        }));
+                        setCategoryList(transformedCategories);
                     } else {
 
                     }
@@ -119,7 +169,7 @@ const Dashboard = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const EditEvent = async (id, name) => {
@@ -129,6 +179,18 @@ const Dashboard = ({ title }) => {
         fetchmyEvent();
         fetchCategory();
     }, []);
+
+    const [SelectCategoryValue, setSelectCategoryValue] = useState();
+    const HandelselectCategory = (selectedValue) => {
+        setSelectCategoryValue(selectedValue);
+    };
+    const CategoryOption = [
+        {
+            options: CategoryList
+        }
+    ]
+
+    console.log(CategoryOption);
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -138,7 +200,7 @@ const Dashboard = ({ title }) => {
                             <Card className="py-4 grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
-                                        <Col md={12}>
+                                        <Col md={12} style={{ position: 'relative', zIndex: '2' }}>
                                             <Row>
                                                 <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
@@ -146,13 +208,22 @@ const Dashboard = ({ title }) => {
                                                         <input type="text" class="form-control" placeholder="Search events" />
                                                     </div>
                                                 </Col>
-                                                <Col md={3}>
-                                                    <select name="" id="" className="theme-dropdown dropdown-custome category-select">
+                                                <Col md={3} className="react-select-h mb-3">
+                                                    <Select
+                                                        isClearable={false}
+                                                        options={CategoryOption}
+                                                        className='react-select'
+                                                        classNamePrefix='select'
+                                                        placeholder='Select Category'
+                                                        onChange={HandelselectCategory}
+                                                        value={SelectCategoryValue}
+                                                    />
+                                                    {/* <select name="" id="" className="theme-dropdown dropdown-custome category-select">
                                                         <option value=''>Category</option>
                                                         {CategoryList.map((item, index) => (
                                                             <option value={item._id}>{item.name}</option>
                                                         ))}
-                                                    </select>
+                                                    </select> */}
                                                 </Col>
                                                 <Col md={2}>
                                                     <div class="input-group mb-3 input-warning-o">
@@ -184,7 +255,7 @@ const Dashboard = ({ title }) => {
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
                                                                 <button className="list-rais-ticket-btn" type="button">Raise Ticket</button>
-                                                                <button className="list-active-ticket-btn" type="button">Active <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <button onClick={() => HandelChangeStatus(item._id)} className="list-active-ticket-btn" type="button">{item.visibility == 1 ? 'Active' : 'Deactive'}<img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -219,7 +290,7 @@ const Dashboard = ({ title }) => {
                                                                                             <span className="event-time d-block">{item.start_time}</span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="d-inline-flex align-items-center">
+                                                                                    <div className="d-inline-flex align-items-center time-ticket-sold-box">
                                                                                         <div className="d-inline-block mr-1">
                                                                                             <img
                                                                                                 height={30}
@@ -232,13 +303,13 @@ const Dashboard = ({ title }) => {
                                                                                             <span className="event-duration d-block">
                                                                                                 Event Duration
                                                                                             </span>
-                                                                                            <span className="event-time d-block">2Hr 11Min</span>
+                                                                                            <span className="event-time d-block">{item.event_duration}</span>
                                                                                         </div>
                                                                                         {item.allprice ? (
                                                                                             <>
                                                                                                 <div className="list-ticket-count">
                                                                                                     <p className="mb-0 list-Total-Ticket">Total Ticket</p>
-                                                                                                    <span className="list-Ticket-amount">{item.orderCount} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}</span> <span className="list-Ticket-sold">SOLD</span>
+                                                                                                    <span className="list-Ticket-amount">{item.OrderItem ? item.OrderItem.length : 0} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}</span> <span className="list-Ticket-sold">SOLD</span>
                                                                                                 </div>
                                                                                             </>
                                                                                         ) : ''}
@@ -247,7 +318,7 @@ const Dashboard = ({ title }) => {
                                                                             </div>
                                                                         </Col>
                                                                         <Col md={3} className="py-3">
-                                                                            <div>
+                                                                            <div className="mob-style">
                                                                                 <div className="text-end mr-5">
                                                                                     <span className="list-event-category-img">{item.category_name}</span>
                                                                                 </div>
@@ -269,7 +340,7 @@ const Dashboard = ({ title }) => {
                                                         ))}
                                                     </>
                                                 ) : (
-                                                   <Norecord/>
+                                                    <Norecord />
                                                 )}
                                             </>
                                         )}

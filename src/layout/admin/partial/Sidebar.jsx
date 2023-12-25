@@ -36,7 +36,7 @@ const Sidebar = () => {
 
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
 
         }
 
@@ -62,7 +62,7 @@ const Sidebar = () => {
 
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
 
         }
 

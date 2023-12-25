@@ -57,7 +57,7 @@ const Home = ({ title }) => {
                     });
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     };
@@ -103,7 +103,7 @@ const Home = ({ title }) => {
                     });
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     };
@@ -158,7 +158,7 @@ const Home = ({ title }) => {
                     });
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     };

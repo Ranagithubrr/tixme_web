@@ -261,7 +261,7 @@ const Page = ({ title }) => {
           setApiloader(false)
         });
     } catch (error) {
-      console.error('Login api error:', error);
+      console.error('Api error:', error);
     }
     if (!cartItems || cartItems.length === 0) {
       setAllItemsTotalPrice(0);
@@ -348,7 +348,7 @@ const Page = ({ title }) => {
           setApiloader(false)
         });
     } catch (error) {
-      console.error('Login api error:', error);
+      console.error('Api error:', error);
     }
   }
   const fetchOrganizerEvent = async () => {
@@ -568,7 +568,7 @@ const Page = ({ title }) => {
                       </div>
                       <div className="d-inline-block">
                         <span className="event-duration d-block">Event Duration</span>
-                        <span className="event-time d-block">2Hr 11Min</span>
+                        <span className="event-time d-block">{Eventdata.event_duration}</span>
                       </div>
                     </div>
                     <div className="d-inline-flex align-items-center">
@@ -736,7 +736,7 @@ const Page = ({ title }) => {
                                                         Event Duration
                                                       </span>
                                                       <span className="event-time d-block">
-                                                        2Hr 11Min
+                                                      {item.event_duration}
                                                       </span>
                                                     </div>
                                                   </div>
@@ -934,7 +934,7 @@ const Page = ({ title }) => {
                                       <span className="event-duration d-block font-13">
                                         Event Duration
                                       </span>
-                                      <span className="event-time d-block">2Hr 11Min</span>
+                                      <span className="event-time d-block">{Eventdata.event_duration}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -1013,7 +1013,7 @@ const Page = ({ title }) => {
                                 <span className="event-duration d-block">
                                   Event Duration
                                 </span>
-                                <span className="event-time d-block">2Hr 11Min</span>
+                                <span className="event-time d-block">{item.event_duration}</span>
                               </div>
                             </div>
                             <div className="event-name">

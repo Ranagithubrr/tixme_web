@@ -58,7 +58,7 @@ const Page = ({ title }) => {
                     console.error('error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         } 
     }
     const checkPayment = async () => {
@@ -101,7 +101,7 @@ const Page = ({ title }) => {
 
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     useEffect(() => {

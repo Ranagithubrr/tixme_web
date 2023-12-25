@@ -37,7 +37,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const ActiveOrganizer = async (id) => {
@@ -68,7 +68,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     function updateIsactive(id) {

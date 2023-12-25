@@ -215,7 +215,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     var check_eventcreateid = localStorage.getItem('eventcreateid');
@@ -353,7 +353,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     }
@@ -392,7 +392,7 @@ const Type = ({ title, editid }) => {
             }
             setLoader(false);
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     }
@@ -472,7 +472,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     }
@@ -541,7 +541,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const fetchCountry = async () => {
@@ -572,7 +572,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const fetchAllTicket = async () => {
@@ -610,7 +610,7 @@ const Type = ({ title, editid }) => {
                 });
 
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setApiloader(false);
         }
     }
@@ -676,7 +676,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false);
         }
     }
@@ -703,7 +703,7 @@ const Type = ({ title, editid }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const CategoryOption = [
@@ -784,7 +784,7 @@ const Type = ({ title, editid }) => {
                 });
 
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     useEffect(() => {

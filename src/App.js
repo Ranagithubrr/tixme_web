@@ -1,5 +1,6 @@
 import './App.css';
 import './common/css/Common.css';
+import './AppResponsive.css';
 // Admin
 import AdminDashboard from './pages/admin/Dashboard';
 import AddCategory from './pages/admin/category/AddCategory';

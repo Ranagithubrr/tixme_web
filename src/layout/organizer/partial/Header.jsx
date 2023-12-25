@@ -57,7 +57,7 @@ const Header = ({ title }) => {
                                 </div>
                             </div>
                             <ul className="navbar-nav header-right" style={{ marginTop: '50px' }}>
-                                <li className="nav-item dropdown notification_dropdown">
+                                <li className="nav-item dropdown notification_dropdown dash-header-btns">
                                     <Link className="button-join" to={'/'}>
                                         <Btn title={'Home'} />
                                     </Link>

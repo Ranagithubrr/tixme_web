@@ -57,7 +57,7 @@ const Dashboard = ({ title }) => {
 
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     useEffect(() => {

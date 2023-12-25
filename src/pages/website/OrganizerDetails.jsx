@@ -126,7 +126,7 @@ const Page = ({ title }) => {
                           <span className="event-duration d-block">
                             Event Duration
                           </span>
-                          <span className="event-time d-block">2Hr 11Min</span>
+                          <span className="event-time d-block">{item.event_duration}</span>
                         </div>
                       </div>
                       <div className="event-name">

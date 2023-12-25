@@ -67,7 +67,7 @@ const Dashboard = ({ title }) => {
                     console.error("Insert error:", error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false)
         }
     }
@@ -91,7 +91,7 @@ const Dashboard = ({ title }) => {
                     console.error('Insert error:', error);
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
         }
     }
     const fetchList = async () => {
@@ -117,7 +117,7 @@ const Dashboard = ({ title }) => {
                     setLoader(false)
                 });
         } catch (error) {
-            console.error('Login api error:', error);
+            console.error('Api error:', error);
             setLoader(false)
         }
 
@@ -237,7 +237,7 @@ const Dashboard = ({ title }) => {
                                                                                                             <span className="event-duration d-block">
                                                                                                                 Event Duration
                                                                                                             </span>
-                                                                                                            <span className="event-time d-block">2Hr 11Min</span>
+                                                                                                            <span className="event-time d-block">{item.event_duration}</span>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
