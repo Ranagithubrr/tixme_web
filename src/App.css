@@ -1096,3 +1096,28 @@ span.order-view-btn {
   color: #000;
   font-size: 13px;
 }
+.navigation-box {
+  position: relative;
+}
+.navigation-box::before {
+  content: ' ';
+  background: #cdcdcd;
+  height: 1px;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+.under_line_css:hover {
+  color: #0047ab;
+  border-bottom: 2px solid #0047ab;
+}
+.under_line_css {
+  padding-bottom: 10px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.under_line_css_active {
+  color: #0047ab;
+  font-weight: 600;
+  border-bottom: 2px solid #0047ab;
+}

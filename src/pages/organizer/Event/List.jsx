@@ -190,7 +190,6 @@ const Dashboard = ({ title }) => {
         }
     ]
 
-    console.log(CategoryOption);
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>

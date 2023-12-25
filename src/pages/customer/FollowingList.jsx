@@ -109,7 +109,7 @@ const Dashboard = ({ title }) => {
                             <Card className="py-4  grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
-                                    <Col md={12}>
+                                        <Col md={12}>
                                             <Row>
                                                 <Col md={6}>
                                                     <div class="input-group mb-3 input-warning-o">
@@ -139,7 +139,7 @@ const Dashboard = ({ title }) => {
                                                                                     className="organiger-logo mb-2"
                                                                                 />
                                                                                 <p className="org-name">{item.organizername}</p>
-                                                                                <p className="org-event-count">10 Events</p>
+                                                                                <p className="org-event-count">{item.eventDataCount} Events</p>
                                                                                 <button onClick={() => CheckDelete(item.organizerid)} type="button" class="Unfollow-btn-1">Unfollow</button>
                                                                             </div>
                                                                         </Col>
@@ -147,7 +147,7 @@ const Dashboard = ({ title }) => {
                                                                 }
                                                             </>
                                                         ) : (
-                                                            <Norecord/>
+                                                            <Norecord />
                                                         )}
                                                     </Row>
                                                 </>
@@ -166,34 +166,3 @@ const Dashboard = ({ title }) => {
     )
 }
 export default Dashboard;
-
-{/* <div class="table-responsive">
-                                                                {Loader ? (
-                                                                    <div className="linear-background w-100"> </div>
-                                                                ) : (
-                                                                    <table class="table table-responsive-md">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                                <th><strong>Organizer name</strong></th>
-                                                                                <th><strong>Organizer email</strong></th>
-                                                                                <th><strong>Action</strong></th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {Listitems.map((item, index) => (
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>{index + 1}</strong>
-                                                                                    </td>
-                                                                                    <td>{item.organizername}</td>
-                                                                                    <td>{item.organizeremail}</td>
-                                                                                    <td>
-                                                                                        <button onClick={() => CheckDelete(item.organizerid)} type="button" class="btn btn-danger">Unfollow</button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
-                                                                )}
-                                                            </div> */}

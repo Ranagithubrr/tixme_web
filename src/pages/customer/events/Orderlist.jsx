@@ -1,95 +1,110 @@
 import React, { useEffect, useState } from "react";
+import JoinStartButton from "../../../common/elements/JoinStartButton";
+import Searchicon from '../../../common/icon/searchicon.png';
+import Norecord from '../../../component/Norecordui';
 import {
     Modal,
     Input,
     ModalBody,
     ModalHeader
 } from 'reactstrap';
-import Norecord from '../../../component/Norecordui';
-import QRsuccess from '../../../common/icon/qr-code-pay.png';
-import toast from 'react-hot-toast';
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { useParams } from 'react-router-dom';
-import { FiDownloadCloud } from "react-icons/fi";
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
+import Timelogo from "../../../common/icon/time 1.svg";
+import withReactContent from 'sweetalert2-react-content';
+import LocationIcon from "../../../common/icon/location.svg";
+import Eimg from '../../../common/icon/Edit.svg';
+import Hourglasslogo from "../../../common/icon/hourglass.svg";
+import EditPng from '../../../common/icon/Edit.png';
+import DateIcon from "../../../common/icon/date 2.svg";
+import ArrowPng from "../../../common/icon/Arrow.svg";
+import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
+
 import QRCode from 'react-qr-code';
-import { FaRegCreditCard } from "react-icons/fa";
-import Searchicon from '../../../common/icon/searchicon.png';
-import { apiurl, shortPer } from '../../../common/Helpers';
-import Table from 'react-bootstrap/Table';
+import QRsuccess from '../../../common/icon/qr-code-pay.png';
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaClock } from "react-icons/fa6";
 import { FaCircleMinus } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa6";
-
+import Select from 'react-select';
+import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
     const [ModalLoader, setModalLoader] = useState(true);
+    const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
-    const [dataList, setDataList] = useState([]);
-    const [activeItem, setActiveItem] = useState('all');
+    const [CategoryList, setCategoryList] = useState([]);
+    const Beartoken = localStorage.getItem('userauth');
 
     const [Ordersavedata, setOrdersavedata] = useState();
     const [Orderitemlist, setOrderitemlist] = useState();
     const [OrderData, setOrderData] = useState();
     const [CustomerData, setCustomerData] = useState();
     const [Isscan, setIsscan] = useState(false);
-    const { id, name } = useParams();
     const [modal, setModal] = useState(false);
     const [ShowQr, setShowQr] = useState(false);
+
+    const MySwal = withReactContent(Swal);
+
     const generateRandomNumber = () => {
         return Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
     };
-    const fetchOrders = async () => {
+
+    const fetchmyEvent = async () => {
         try {
-            setLoader(true);
-            const requestData = {
-                eventid: id
-            };
-            fetch(apiurl + 'order/event/orders-list', {
+            setLoader(true)
+            fetch(apiurl + 'order/customer/list', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Beartoken}`,
                 },
-                body: JSON.stringify(requestData),
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
-                        setDataList(data.data);
                     }
-                    setLoader(false);
+                    setLoader(false)
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
-                    setLoader(false);
+                    setLoader(false)
                 });
         } catch (error) {
-            toast.error(error);
-            setLoader(false);
+            console.error('Api error:', error);
+            setLoader(false)
         }
     }
-    const filterData = (status) => {
-        setActiveItem(status);
-        if (status === 'all') {
-            setLoader(true);
-            setListitems(dataList);
-            setLoader(false);
-        } else {
-            setLoader(true);
-            const filteredData = dataList.filter(item => {
-                if (status === 'pending') return item.status == 0;
-                if (status === 'succeeded') return item.status == 1;
-                if (status === 'declined') return item.status == 2;
-            });
-            setListitems(filteredData);
-            setLoader(false);
+    const fetchCategory = async () => {
+        try {
+            fetch(apiurl + 'category/get-category-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        const transformedCategories = data.data.map(category => ({
+                            value: category._id,
+                            label: category.name
+                        }));
+                        setCategoryList(transformedCategories);
+                    } else {
+
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
         }
-    };
-    const getItemClass = (itemName) => {
-        return `px-3 flex-item under_line_css ${activeItem === itemName ? 'under_line_css_active' : ''}`;
     }
     const fetchOrderData = async (id) => {
         try {
@@ -131,8 +146,20 @@ const Dashboard = ({ title }) => {
         }
     }
     useEffect(() => {
-        fetchOrders();
+        fetchmyEvent();
+        fetchCategory();
     }, []);
+
+    const [SelectCategoryValue, setSelectCategoryValue] = useState();
+    const HandelselectCategory = (selectedValue) => {
+        setSelectCategoryValue(selectedValue);
+    };
+    const CategoryOption = [
+        {
+            options: CategoryList
+        }
+    ]
+
     return (
         <>
             <Modal isOpen={modal} toggle={() => setModal(!modal)} centered size={'xl'}>
@@ -255,32 +282,34 @@ const Dashboard = ({ title }) => {
                 <div className="container-fluid">
                     <Row className="justify-content-center">
                         <Col md={12}>
-                            <Card className="py-1 grey-bg">
+                            <Card className="py-4 grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
-                                        <Col md={6}>
-                                            <h3>{name}</h3>
-                                        </Col>
-                                        <Col md={6} className="text-end">
-                                            <button className="theme-btn-light px-2 mr-3">
-                                                <span className="theme-btn-icon"><FiDownloadCloud /></span> <span>Export</span>
-                                            </button>
-                                            <button className="theme-btn px-2">
-                                                <span className="theme-btn-icon"><FiPlus /></span> <span>Add Attendee</span>
-                                            </button>
-                                        </Col>
-                                        <Col md={12}>
-                                            <div className="navigation-box">
-                                                <ul className="d-flex flex-row">
-                                                    <li className={getItemClass('all')} onClick={() => filterData('all')}>All payments</li>
-                                                    <li className={getItemClass('succeeded')} onClick={() => filterData('succeeded')}>Succeeded</li>
-                                                    <li className={getItemClass('pending')} onClick={() => filterData('pending')}>Pending</li>
-                                                    <li className={getItemClass('declined')} onClick={() => filterData('declined')}>Declined</li>
-                                                </ul>
-                                            </div>
-                                        </Col>
-                                        <Col md={12} className="py-3">
+                                        <Col md={12} style={{ position: 'relative', zIndex: '2' }}>
                                             <Row>
+                                                <Col md={3}>
+                                                    <div class="input-group mb-3 input-warning-o">
+                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                    </div>
+                                                </Col>
+                                                <Col md={3} className="react-select-h mb-3">
+                                                    <Select
+                                                        isClearable={false}
+                                                        options={CategoryOption}
+                                                        className='react-select'
+                                                        classNamePrefix='select'
+                                                        placeholder='Select Category'
+                                                        onChange={HandelselectCategory}
+                                                        value={SelectCategoryValue}
+                                                    />
+                                                    {/* <select name="" id="" className="theme-dropdown dropdown-custome category-select">
+                                                        <option value=''>Category</option>
+                                                        {CategoryList.map((item, index) => (
+                                                            <option value={item._id}>{item.name}</option>
+                                                        ))}
+                                                    </select> */}
+                                                </Col>
                                                 <Col md={2}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text search-box-icon-1"><FiClock /></span>
@@ -295,77 +324,96 @@ const Dashboard = ({ title }) => {
                                                         <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
-                                                <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FaRegCreditCard /></span>
-                                                        <input type="text" class="form-control" placeholder="Ticket Type" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={5}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search by amount , payment method..." />
-                                                    </div>
+                                                <Col md={2}>
+                                                    <button className="w-100 theme-btn" onClick={() => navigate(app_url + 'events')}>
+                                                        <span className="theme-btn-icon"><FiPlus /></span> <span>Buy Tickets</span>
+                                                    </button>
                                                 </Col>
                                             </Row>
                                         </Col>
                                         {Loader ? (
-                                            <div className="linear-background w-100"></div>
+                                            <div className="linear-background w-100"> </div>
                                         ) : (
                                             <>
                                                 {Listitems.length > 0 ? (
-                                                    <Col md={12} className="white-table">
-                                                        <Table responsive>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th className="text-center" key={1}>Name</th>
-                                                                    <th className="text-center" key={1}>Booking ID</th>
-                                                                    <th className="text-center" key={1}>Status</th>
-                                                                    <th className="text-center" key={1}>Amount</th>
-                                                                    <th className="text-center" key={1}>TYPE</th>
-                                                                    <th className="text-center" key={1}>Creation date</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {Listitems.map((item, index) => (
-                                                                    <tr>
-                                                                        <td>{item.customer_name}</td>
-                                                                        <td>{shortPer(item.bookingid, 20)}</td>
-                                                                        <td>
-                                                                            {item.status == 0 ? (
-                                                                                <><span class="badge-theme-warning badge-theme"><FaClock /> Pending</span></>
-                                                                            ) : ''}
-
-                                                                            {item.status == 1 ? (
-                                                                                <><span class="badge-theme-success badge-theme"><FaCircleCheck /> Success</span></>
-                                                                            ) : ''}
-
-                                                                            {item.status == 2 ? (
-                                                                                <><span class="badge-theme-danger badge-theme"><FaCircleMinus /> Declined</span></>
-                                                                            ) : ''}
-
-                                                                        </td>
-                                                                        <td>
-                                                                            {item.order_amount && item.order_amount > 0 ? (
-                                                                                <>{item.currency} {item.order_amount}</>
-                                                                            ) : (
-                                                                                'Free'
-                                                                            )}
-                                                                        </td>
-                                                                        <td>
-                                                                            {item.order_amount && item.order_amount > 0 ? (
-                                                                                'Paid'
-                                                                            ) : (
-                                                                                'Free'
-                                                                            )}
-                                                                        </td>
-                                                                        <td>{item.date} {item.time} <span onClick={() => { setModal(!modal); fetchOrderData(item._id) }} className="order-view-btn"><FaChevronDown /></span></td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </Table>
-                                                    </Col>
+                                                    <>
+                                                        {Listitems.map((item, index) => (
+                                                            <Col md={12} className="event_list_box_main">
+                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <div className="event_list_box">
+                                                                    <Row>
+                                                                        <Col md={4}>
+                                                                            <img src={item.eventData[0].thum_image ? imgurl + item.eventData[0].thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                        </Col>
+                                                                        <Col md={5} className="list-data">
+                                                                            <div>
+                                                                                <span className="list-event-name">{item.eventData[0].name}</span>
+                                                                                <p className="list-event-desc mb-0">{shortPer(item.eventData[0].event_desc, 100)}</p>
+                                                                            </div>
+                                                                            <div className="list-event-location mb-3">
+                                                                                <div className="d-flex align-items-center text-center location-name">
+                                                                                    <img
+                                                                                        height={30}
+                                                                                        width={30}
+                                                                                        src={LocationIcon}
+                                                                                        alt=""
+                                                                                    />{" "}
+                                                                                    <span>{item.eventData[0].location}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="desc_data">
+                                                                                <div className="organizer-name-sec px-2 py-2">
+                                                                                    <div className="d-inline-flex align-items-center border-right event-time-area">
+                                                                                        <div className="d-inline-block mr-1">
+                                                                                            <img height={30} width={30} src={Timelogo} alt="" />
+                                                                                        </div>
+                                                                                        <div className="d-inline-block">
+                                                                                            <span className="event-duration d-block">
+                                                                                                Event Time
+                                                                                            </span>
+                                                                                            <span className="event-time d-block">{item.eventData[0].start_time}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="d-inline-flex align-items-center time-ticket-sold-box">
+                                                                                        <div className="d-inline-block mr-1">
+                                                                                            <img
+                                                                                                height={30}
+                                                                                                width={30}
+                                                                                                src={Hourglasslogo}
+                                                                                                alt=""
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className="d-inline-block">
+                                                                                            <span className="event-duration d-block">
+                                                                                                Event Duration
+                                                                                            </span>
+                                                                                            <span className="event-time d-block">{item.eventData[0].event_duration}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </Col>
+                                                                        <Col md={3} className="py-3">
+                                                                            <div className="mob-style">
+                                                                                <div className="text-end mr-5">
+                                                                                    <span className="list-event-category-img">{item.eventData[0].category_name}</span>
+                                                                                </div>
+                                                                                <div className="text-end mr-5 mt-3 mb-3">
+                                                                                    <span className="mb-5">
+                                                                                        <img src={DateIcon} alt="" />
+                                                                                        <span className="on-img-date-val">{item.eventData[0].start_date}</span>
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className="text-end mr-5 pt-4">
+                                                                                    <button className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </Col>
+                                                                    </Row>
+                                                                </div>
+                                                            </Col>
+                                                        ))}
+                                                    </>
                                                 ) : (
                                                     <Norecord />
                                                 )}
@@ -377,7 +425,8 @@ const Dashboard = ({ title }) => {
                         </Col>
                     </Row>
                 </div>
-            </div>
+            </div >
+
         </>
     )
 }
