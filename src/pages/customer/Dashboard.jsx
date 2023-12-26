@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../common/elements/JoinStartButton";
 import Searchicon from '../../common/icon/searchicon.png';
 import Norecord from '../../component/Norecordui';
+import Eimage from "../../common/image/eimage.png";
 import {
     Modal,
     Input,
@@ -39,7 +40,7 @@ const Dashboard = ({ title }) => {
     const [Listitems, setListitems] = useState([]);
     const [CategoryList, setCategoryList] = useState([]);
     const Beartoken = localStorage.getItem('userauth');
-
+    console.log(Listitems);
     const [Ordersavedata, setOrdersavedata] = useState();
     const [Orderitemlist, setOrderitemlist] = useState();
     const [OrderData, setOrderData] = useState();
@@ -70,7 +71,32 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setListitems(data.data);
+                        if (data.data) {
+                            const listdata = data.data;
+                        
+                            // Function to format a date to YYYYMMDD
+                            const formatDate = (date) => {
+                                const d = new Date(date),
+                                    day = ('0' + d.getDate()).slice(-2),
+                                    month = ('0' + (d.getMonth() + 1)).slice(-2),
+                                    year = d.getFullYear();
+                                return `${year}${month}${day}`;
+                            };
+                        
+                            // Get today's date in YYYYMMDD format
+                            const todate = formatDate(new Date());
+                            
+                            // Function to compare dates in YYYYMMDD format
+                            const compareDates = (date1, date2) => {
+                                return parseInt(date1, 10) >= parseInt(date2, 10);
+                            };
+                            // Filter listdata based on the date condition
+                            const filteredData = listdata.filter(item => {
+                                return compareDates(item.eventData[0].start_mindate, todate); // Using the new date format and column
+                            });
+                            setListitems(filteredData);
+                        }
+                        
                     }
                     setLoader(false)
                 })
@@ -334,46 +360,7 @@ const Dashboard = ({ title }) => {
                                         <Col md={12} style={{ position: 'relative', zIndex: '2' }}>
                                             <Row>
                                                 <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
-                                                    </div>
-                                                </Col>
-                                                <Col md={3} className="react-select-h mb-3">
-                                                    <Select
-                                                        isClearable={false}
-                                                        options={CategoryOption}
-                                                        className='react-select'
-                                                        classNamePrefix='select'
-                                                        placeholder='Select Category'
-                                                        onChange={HandelselectCategory}
-                                                        value={SelectCategoryValue}
-                                                    />
-                                                    {/* <select name="" id="" className="theme-dropdown dropdown-custome category-select">
-                                                        <option value=''>Category</option>
-                                                        {CategoryList.map((item, index) => (
-                                                            <option value={item._id}>{item.name}</option>
-                                                        ))}
-                                                    </select> */}
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <button className="w-100 theme-btn" onClick={() => navigate(app_url + 'events')}>
-                                                        <span className="theme-btn-icon"><FiPlus /></span> <span>Buy Tickets</span>
-                                                    </button>
+                                                    <h3 style={{ color: '#0047ab' }}>Upcoming events</h3>
                                                 </Col>
                                             </Row>
                                         </Col>
@@ -389,7 +376,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.eventData[0].thum_image ? imgurl + item.eventData[0].thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                            <img src={Eimage} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>
@@ -451,7 +438,7 @@ const Dashboard = ({ title }) => {
                                                                                     </span>
                                                                                 </div>
                                                                                 <div className="text-end mr-5 pt-4">
-                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item.id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item._id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>

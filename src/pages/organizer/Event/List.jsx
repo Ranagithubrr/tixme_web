@@ -10,6 +10,7 @@ import Timelogo from "../../../common/icon/time 1.svg";
 import withReactContent from 'sweetalert2-react-content';
 import LocationIcon from "../../../common/icon/location.svg";
 import Eimg from '../../../common/icon/Edit.svg';
+import Eimage from "../../../common/image/eimage.png";
 import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
@@ -22,6 +23,11 @@ const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
     const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [visibilityFilter, setVisibilityFilter] = useState('');
+
     const [CategoryList, setCategoryList] = useState([]);
     const organizerid = localStorage.getItem('organizerid')
     const MySwal = withReactContent(Swal);
@@ -50,13 +56,13 @@ const Dashboard = ({ title }) => {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                HandelStatusChange(id,1);
+                HandelStatusChange(id, 1);
             } else if (result.isDenied) {
-                HandelStatusChange(id,2);
+                HandelStatusChange(id, 2);
             }
         })
     }
-    
+
     const HandelStatusChange = async (id, type) => {
         try {
             const requestData = {
@@ -133,6 +139,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
+                        setAllEvents(data.data);
                     }
                     setLoader(false)
                 })
@@ -160,6 +167,10 @@ const Dashboard = ({ title }) => {
                             value: category._id,
                             label: category.name
                         }));
+                        const allOption = { value: 'all', label: 'All' };
+                        transformedCategories.unshift(allOption);
+
+                        // Update CategoryList state
                         setCategoryList(transformedCategories);
                     } else {
 
@@ -180,10 +191,51 @@ const Dashboard = ({ title }) => {
         fetchCategory();
     }, []);
 
+
+    const handleVisibilityChange = (selectedVisibility) => {
+        // Assuming allEvents is the original list of events
+        if (selectedVisibility !== '') {
+            const filteredEvents = allEvents.filter(event => 
+                event.visibility.toString() === selectedVisibility);
+            setListitems(filteredEvents);
+        } else {
+            // If no option is selected, show all events
+            setListitems(allEvents);
+        }
+    };
+    
+
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = allEvents.filter(event =>
+                event.display_name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allEvents);
+        }
+    };
+
     const [SelectCategoryValue, setSelectCategoryValue] = useState();
+
     const HandelselectCategory = (selectedValue) => {
         setSelectCategoryValue(selectedValue);
+        if (selectedValue && selectedValue.value !== 'all') {
+            // Filter events based on the selected category
+            const filteredEvents = allEvents.filter(event =>
+                event.category && event.category === selectedValue.value);
+            setListitems(filteredEvents);
+        } else {
+            // If 'All' is selected or no category is selected, show all events
+            setListitems(allEvents);
+        }
     };
+
+
     const CategoryOption = [
         {
             options: CategoryList
@@ -204,7 +256,13 @@ const Dashboard = ({ title }) => {
                                                 <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search events"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                                 <Col md={3} className="react-select-h mb-3">
@@ -232,12 +290,21 @@ const Dashboard = ({ title }) => {
                                                     </div>
                                                 </Col>
                                                 <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
+                                                    <div className="input-group mb-3 input-warning-o">
+                                                        <span className="input-group-text search-box-icon-1"><FiFlag /></span>
+                                                        <select
+                                                            className="form-control"
+                                                            onChange={e => handleVisibilityChange(e.target.value)}
+                                                            defaultValue=""
+                                                        >
+                                                            <option value="" disabled>Select Status</option>
+                                                            <option value="1">Active</option>
+                                                            <option value="2">Deactive</option>
+                                                        </select>
+                                                        <span className="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
+
                                                 <Col md={2}>
                                                     <button className="w-100 theme-btn" onClick={() => navigate(organizer_url + 'event/add-event')}>
                                                         <span className="theme-btn-icon"><FiPlus /></span> <span>Add event</span>
@@ -258,7 +325,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.thum_image ? imgurl + item.thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                            <img src={Eimage} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

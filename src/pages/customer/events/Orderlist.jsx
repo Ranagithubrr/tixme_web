@@ -8,6 +8,7 @@ import {
     ModalBody,
     ModalHeader
 } from 'reactstrap';
+import Eimage from "../../../common/image/eimage.png";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
@@ -389,7 +390,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.eventData[0].thum_image ? imgurl + item.eventData[0].thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                            <img src={Eimage} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

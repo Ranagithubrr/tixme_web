@@ -13,6 +13,7 @@
     "countries-cities": "^0.0.11",
     "firebase": "^10.6.0",
     "lottie-react": "^2.4.0",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-burger-menu": "^3.0.9",

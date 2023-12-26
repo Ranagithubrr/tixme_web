@@ -5,6 +5,7 @@ import Norecord from '../../../component/Norecordui';
 import { Button, Col, Row } from "react-bootstrap";
 import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
+import Eimage from "../../../common/image/eimage.png";
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import Timelogo from "../../../common/icon/time 1.svg";
@@ -90,7 +91,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.thum_image ? imgurl + item.thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                            <img src={Eimage} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

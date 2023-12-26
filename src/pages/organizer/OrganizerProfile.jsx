@@ -51,6 +51,7 @@ const Dashboard = ({ title }) => {
 
     const [password, setpassword] = useState();
     const [confirmpassword, setconfirmpassword] = useState();
+    const [oldpassword, setoldpassword] = useState();
 
     const [Hobby, setHobby] = useState([]);
     const [selectedHobbies, setSelectedHobbies] = useState([]);
@@ -155,7 +156,7 @@ const Dashboard = ({ title }) => {
     }
     const Handelchangepassword = async () => {
         try {
-            if (!password || !confirmpassword) {
+            if (!password || !confirmpassword || !oldpassword) {
                 return toast.error('Required field must not be empty');
             }
             if (password.length > 7) {
@@ -172,6 +173,7 @@ const Dashboard = ({ title }) => {
             const requestData = {
                 password: password,
                 id: organizerid,
+                oldpassword: oldpassword
             }
             fetch(apiurl + 'website/update-organizer-password', {
                 method: 'POST',
@@ -187,7 +189,10 @@ const Dashboard = ({ title }) => {
                         toast.success(data.data);
                         setpassword('');
                         setconfirmpassword('');
+                        setoldpassword('');
                         setLoader(false)
+                    }else{
+                        toast.error(data.message)    
                     }
                 })
                 .catch(error => {
@@ -406,6 +411,13 @@ const Dashboard = ({ title }) => {
                                                                         <h4 className="text-primary">Change Password</h4>
                                                                         <form>
                                                                             <div className="row">
+                                                                            <div className="col-md-6">
+                                                                                    <div className="form-group">
+                                                                                        <p>Old Password<span className="text-danger">*</span></p>
+                                                                                        <input className="form-control" type="password" placeholder="Enter old password" value={oldpassword} onChange={(e) => setoldpassword(e.target.value)}></input>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6"></div>
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">
 

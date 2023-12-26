@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import Timelogo from "../../../common/icon/time 1.svg";
 import withReactContent from 'sweetalert2-react-content';
 import LocationIcon from "../../../common/icon/location.svg";
+import Eimage from "../../../common/image/eimage.png";
 import Eimg from '../../../common/icon/Edit.svg';
 import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
@@ -201,7 +202,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={item.thum_image ? imgurl + item.thum_image : Eimg} className="list-thum-img" alt="" />
+                                                                            <img src={Eimage} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

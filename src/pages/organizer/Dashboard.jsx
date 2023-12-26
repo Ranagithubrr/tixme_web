@@ -97,46 +97,6 @@ const Dashboard = ({ title }) => {
                         </ol>
                         <span>Welcome Back, TIXME</span>
                     </div>
-                    <div className="row">
-                        <div className="row">
-                            <div className="col-md-12">
-                                <h3 className="theme-color mb-3">Your Next Event is in 20 day</h3>
-                            </div>
-                            {Apiloader ? (
-                                <div className="linear-background w-100"> </div>
-                            ) : (
-                                <>
-                                    {Eventlist.map((item, index) => (
-                                        <div className="col-md-12 event-list-details mb-5">
-                                            <div className="event-list-box">
-                                                <div className="row">
-                                                    <div className="col-md-6">
-                                                        <h5 className="theme-color text-bold-600 font-capitalize">{item.name}</h5>
-                                                        <p><span className="theme-color text-bold-600">LIVE</span> · Starts {item.start_date} at {item.start_time}</p>
-                                                    </div>
-                                                    <div className="col-md-6">
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="event-ticket-box">
-                                                {item.allprice ? (
-                                                    <p className="text-white">
-                                                        <span className="mr-5">
-                                                            {item.orderCount} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}
-                                                        </span>
-                                                        <span>Tickets Sold</span>
-                                                    </p>
-                                                ) : (
-                                                    <p className="text-white">No tickets found</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </div>
                     <Row>
                         <div class="col-xl-4">
                             <div class="card">

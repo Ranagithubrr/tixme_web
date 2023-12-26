@@ -57,6 +57,7 @@ const Dashboard = ({ title }) => {
 
     const [password, setpassword] = useState();
     const [confirmpassword, setconfirmpassword] = useState();
+    const [oldpassword, setoldpassword] = useState();
 
     const [Hobby, setHobby] = useState([]);
     const [selectedHobbies, setSelectedHobbies] = useState([]);
@@ -118,9 +119,10 @@ const Dashboard = ({ title }) => {
     }
     const Handelchangepassword = async () => {
         try {
-            if (!password || !confirmpassword) {
+            if (!password || !confirmpassword || !oldpassword) {
                 return toast.error('Required field must not be empty');
             }
+            
             if (password.length > 7) {
 
             } else {
@@ -133,7 +135,8 @@ const Dashboard = ({ title }) => {
             }
             setLoader(true);
             const requestData = {
-                password: password
+                password: password,
+                oldpassword: oldpassword
             }
             fetch(apiurl + 'website/update-user-password', {
                 method: 'POST',
@@ -150,7 +153,10 @@ const Dashboard = ({ title }) => {
                         toast.success(data.data);
                         setpassword('');
                         setconfirmpassword('');
+                        setoldpassword('');
                         setLoader(false)
+                    }else{
+                        toast.error(data.message);
                     }
                 })
                 .catch(error => {
@@ -234,7 +240,7 @@ const Dashboard = ({ title }) => {
     }
     const toggleHobby = (id) => {
         const updatedHobbies = [...selectedHobbies];
-    
+
         if (updatedHobbies.includes(id)) {
             // Hobby is already selected, remove it
             const index = updatedHobbies.indexOf(id);
@@ -324,7 +330,7 @@ const Dashboard = ({ title }) => {
 
                                                         <div className="tab-content">
                                                             <div id="about-me" className="tab-pane fade active show">
-                                                                
+
                                                                 <div className="profile-personal-info">
                                                                     <h4 className="text-primary mb-4">Personal Information</h4>
                                                                     <div className="row mb-2">
@@ -450,17 +456,24 @@ const Dashboard = ({ title }) => {
                                                                             <div className="row">
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">
+                                                                                        <p>Old Password<span className="text-danger">*</span></p>
+                                                                                        <input className="form-control" type="password" placeholder="Enter old password" value={oldpassword} onChange={(e) => setoldpassword(e.target.value)}></input>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6"></div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="form-group">
 
-                                                                                        <p>Password <span className="text-danger">*</span></p>
-                                                                                        <input className="form-control" type="password" placeholder="Enter password" value={password} onChange={(e) => setpassword(e.target.value)}></input>
+                                                                                        <p>New Password <span className="text-danger">*</span></p>
+                                                                                        <input className="form-control" type="password" placeholder="Enter new password" value={password} onChange={(e) => setpassword(e.target.value)}></input>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-6"></div>
                                                                                 <div className="col-md-6">
 
                                                                                     <div className="form-group">
-                                                                                        <p>Confirm Password <span className="text-danger">*</span></p>
-                                                                                        <input className="form-control" type="text" placeholder="Enter confirm password" value={confirmpassword} onChange={(e) => setconfirmpassword(e.target.value)}></input>
+                                                                                        <p>Confirm New Password <span className="text-danger">*</span></p>
+                                                                                        <input className="form-control" type="text" placeholder="Enter confirm new password" value={confirmpassword} onChange={(e) => setconfirmpassword(e.target.value)}></input>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
