@@ -8,6 +8,8 @@ import AllCategory from './pages/admin/category/AllCategory';
 import AllCustomers from './pages/admin/customers/AllCustomers';
 import AddEventtype from './pages/admin/eventtype/Add';
 import AllEventtype from './pages/admin/eventtype/List';
+import AdminManageTicket from './pages/admin/event/Manageticket';
+import AdminTicketattendee from './pages/admin/event/ticketattendee';
 import ActiveOrganizer from './pages/admin/organizer/ActiveOrganizer';
 import PendingOrganizer from './pages/admin/organizer/PendingOrganizer';
 import Supportlist from './pages/admin/support/Supportlist';
@@ -24,6 +26,7 @@ import CustomerDashboard from './pages/customer/Dashboard';
 import CustomerSupportlist from './pages/customer/support/Supportlist';
 import CustomerOrderlist from './pages/customer/events/Orderlist';
 import FollowingList from './pages/customer/FollowingList';
+import OrganizerEvents from './pages/customer/events/Organizerevents';
 import SavedeventsList from './pages/customer/SavedeventsList';
 import CustomerProfile from './pages/customer/CustomerProfile';
 import Myrewards from './pages/customer/Myrewards';
@@ -109,11 +112,12 @@ function App() {
           <Route path={app_url + 'order-failed-page'} element={<WebsiteLayout> <OrderFailed title={'Payment status'} /> </WebsiteLayout>} />
           <Route path={app_url + 'scanner'} element={<Scaner title={'Payment status'} />} />
           {/* Customer */}
-          <Route path={customer_url + 'dashboard'} element={<CustomerLayout> <CustomerDashboard title={'Customer Dashboard'} /> </CustomerLayout>} />
+          <Route path={customer_url + 'dashboard'} element={<CustomerLayout title={'Dashboard'}> <CustomerDashboard title={'Dashboard'} /> </CustomerLayout>} />
           <Route path={customer_url + 'support-tickets'} element={<CustomerLayout> <CustomerSupportlist title={'Support Tickets'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-order-list'} element={<CustomerLayout title={'Events'}> <CustomerOrderlist title={'All Order List'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-profile'} element={<CustomerLayout> <CustomerProfile title={'My profile'} /> </CustomerLayout>} />
           <Route path={customer_url + 'following'} element={<CustomerLayout title={'My following'}> <FollowingList title={'My following'} /> </CustomerLayout>} />
+          <Route path={`${customer_url}organizer-events/:id`} element={<CustomerLayout title={'Organizer Events'}> <OrganizerEvents /> </CustomerLayout>} />
           <Route path={customer_url + 'savedevents'} element={<CustomerLayout title={'My saved event'}> <SavedeventsList title={'My saved event'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-rewards'} element={<CustomerLayout title={'My Rewards'}> <Myrewards title={'My Rewards'} /> </CustomerLayout>} />
           {/* Organizer */}
@@ -140,7 +144,9 @@ function App() {
           <Route path={admin_url + 'all-category'} element={<AdminLayout> <AllCategory title={'All Category'} /> </AdminLayout>} />
           <Route path={admin_url + 'add-event-type'} element={<AdminLayout> <AddEventtype title={'Add Event Type'} /> </AdminLayout>} />
           <Route path={admin_url + 'all-event-type'} element={<AdminLayout> <AllEventtype title={'All Event Type'} /> </AdminLayout>} />
-          <Route path={admin_url + 'all-events-list'} element={<AdminLayout> <AllEventlist title={'All Events'} /> </AdminLayout>} />
+          <Route path={admin_url + 'all-events-list'} element={<AdminLayout title={'All Events'}> <AllEventlist/> </AdminLayout>} />
+          <Route path={`${admin_url}event/manage-ticket/:id/:name`} element={<AdminLayout title={'Mange Tickets'}> <AdminManageTicket title={'Mange Tickets'} /> </AdminLayout>} />
+          <Route path={`${admin_url}event/mange-attendee/:id/:name`} element={<AdminLayout title={'Mange Attendee'}> <AdminTicketattendee title={'Mange Attendee'} /> </AdminLayout>} />
           <Route path={`${admin_url}event/edit-event/:id/:name`} element={<AdminLayout> <EditEvent title={'Edit event'} /> </AdminLayout>} />
           <Route path={admin_url + 'all-customers'} element={<AdminLayout> <AllCustomers title={'All Customers'} /> </AdminLayout>} />
           <Route path={`${admin_url}customers/:id/:name`} element={<AdminLayout> <AllCustomers title={'Customers'} /> </AdminLayout>} />

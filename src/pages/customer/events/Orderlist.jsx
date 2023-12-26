@@ -20,6 +20,7 @@ import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
+import TranferImg from "../../../common/image/Tranfer.svg";
 import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 
@@ -46,6 +47,9 @@ const Dashboard = ({ title }) => {
     const [Isscan, setIsscan] = useState(false);
     const [modal, setModal] = useState(false);
     const [ShowQr, setShowQr] = useState(false);
+
+    const [modalTT, setModalTT] = useState(false);
+    const [Transferid, setTransferid] = useState();
 
     const MySwal = withReactContent(Swal);
 
@@ -278,6 +282,48 @@ const Dashboard = ({ title }) => {
                     </Row>
                 </ModalBody>
             </Modal>
+            <Modal isOpen={modalTT} toggle={() => setModalTT(!modalTT)} centered size={'lg'}>
+                <ModalHeader toggle={!modalTT}>Order Details</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        {ModalLoader ? (
+                            <>
+                                <Col md={6}><div className="linear-background w-100"> </div></Col>
+                                <Col md={6}><div className="linear-background w-100"> </div></Col>
+                            </>
+                        ) : (
+                            <>
+                                <Col md={6}>
+                                    <h3 style={{ fontWeight: '600', color: '#0047AB' }} className="mb-4">Transfer Ticket</h3>
+                                    <div class="input-group input-warning-o">
+                                        <input type="text" class="form-control px-2 py-3 mb-3"  placeholder="Email Id" />
+                                    </div>
+                                    <div>
+                                        <label>Total Ticket Quantity</label>
+                                        <input type="text" max={Orderitemlist.length} class="form-control px-2 py-3 mb-5" placeholder="Enter Ticket Quantity" />
+                                    </div>
+                                    <div>
+                                        <h5 className="text-bold">total Ticket :</h5>
+                                        <p>{Orderitemlist.length}</p>
+                                    </div>
+                                    {Orderitemlist.length > 0 ? (
+                                        <div className="mr-5 pt-5">
+                                            <button className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                        </div>
+                                    ) : (
+                                        <div className="mr-5 pt-5">
+                                            <button disabled className="mb-0 mr-5 btn btn-dark list-Ticket-mng-1" type="button">No Ticket Found</button>
+                                        </div>
+                                    )}
+                                </Col>
+                                <Col md={6}>
+                                    <img className="TranferImg-css" src={TranferImg}></img>
+                                </Col>
+                            </>
+                        )}
+                    </Row>
+                </ModalBody>
+            </Modal>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
                     <Row className="justify-content-center">
@@ -347,7 +393,7 @@ const Dashboard = ({ title }) => {
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>
-                                                                                <span className="list-event-name">{item.eventData[0].name}</span>
+                                                                                <Link to={`${app_url}event/${item.eventData[0]._id}/${item.eventData[0].name}`}><span className="list-event-name">{item.eventData[0].name}</span></Link>
                                                                                 <p className="list-event-desc mb-0">{shortPer(item.eventData[0].event_desc, 100)}</p>
                                                                             </div>
                                                                             <div className="list-event-location mb-3">
@@ -405,7 +451,7 @@ const Dashboard = ({ title }) => {
                                                                                     </span>
                                                                                 </div>
                                                                                 <div className="text-end mr-5 pt-4">
-                                                                                    <button className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item.id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>

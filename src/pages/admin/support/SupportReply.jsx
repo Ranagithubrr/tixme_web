@@ -9,7 +9,6 @@ import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import { FaCircle } from "react-icons/fa6";
 const Dashboard = ({ title }) => {
-    const OrganizerId = localStorage.getItem('organizerid');
     const [Loader, setLoader] = useState(true);
     const [BtnLoader, setBtnLoader] = useState(false);
     const [SupportData, setSupportData] = useState();
@@ -34,8 +33,7 @@ const Dashboard = ({ title }) => {
     const GetSupportDetails = async () => {
         try {
             const requestData = {
-                id: id,
-                organizerid: OrganizerId
+                id: id
             };
             setLoader(true)
             fetch(apiurl + 'admin/support/view', {
@@ -49,10 +47,13 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setSupportData(data.data)
-                        if (data.data.isclose && data.data.isclose == 0 || data.data.isclose == 1) {
+                        if (data.data.isclose == 0) {
                             setIsclosetype([{ value: "1", label: "Pending" }])
                         }
-                        if (data.data.isclose && data.data.isclose == 2) {
+                        if (data.data.isclose == 1) {
+                            setIsclosetype([{ value: "1", label: "Pending" }])
+                        }
+                        if (data.data.isclose == 2) {
                             setIsclosetype([{ value: "2", label: "Resolved" }])
                         }
                     } else {

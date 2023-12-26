@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, admin_url, isEmail, app_url } from '../../common/Helpers';
+import { apiurl, customer_url, isEmail, app_url } from '../../common/Helpers';
 import Searchicon from '../../common/icon/searchicon.png';
 import Norecord from '../../component/Norecordui';
 import Eventlogo from "../../common/icon/eventlogo.svg";
@@ -9,8 +9,8 @@ import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Link, useNavigate } from "react-router-dom";
 import QRCode from 'react-qr-code';
-import { useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const Beartoken = localStorage.getItem('userauth');
@@ -138,7 +138,8 @@ const Dashboard = ({ title }) => {
                                                                                     alt=""
                                                                                     className="organiger-logo mb-2"
                                                                                 />
-                                                                                <p className="org-name">{item.organizername}</p>
+                                                                                {/* <p className="org-name">{item.organizername}</p> */}
+                                                                                <Link to={`${customer_url}organizer-events/${item.organizerid}`}><p className="org-name">{item.organizername}</p></Link>
                                                                                 <p className="org-event-count">{item.eventDataCount} Events</p>
                                                                                 <button onClick={() => CheckDelete(item.organizerid)} type="button" class="Unfollow-btn-1">Unfollow</button>
                                                                             </div>

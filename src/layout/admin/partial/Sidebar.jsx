@@ -98,7 +98,7 @@ const Sidebar = () => {
                         </li>
                         <li onClick={() => d()}>
                             <a href="javascript:void(0);" class="has-arrow ai-icon" aria-expanded="false">
-                                <img src={EventIcon} alt="Your Logo" />
+                            <img src={DashboardIcon} alt="Your Logo" />
                                 <span class="nav-text">Customers</span>
                             </a>
                             <ul aria-expanded="false">

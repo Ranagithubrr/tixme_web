@@ -197,7 +197,7 @@ const Dashboard = ({ title }) => {
                                                                                         </Col>
                                                                                         <Col md={4} className="list-data pt-3">
                                                                                             <div className="mb-4">
-                                                                                                <span className="list-event-name">{item.name}</span> <span className="cursor-pointre list-event-edit-btn"></span>
+                                                                                                <Link to={`${app_url}event/${item._id}/${item.name}`}><span className="list-event-name">{item.name}</span> </Link>
                                                                                                 <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
                                                                                             </div>
                                                                                             <div className="list-event-location mb-4">

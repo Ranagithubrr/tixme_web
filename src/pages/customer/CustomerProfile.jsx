@@ -288,14 +288,14 @@ const Dashboard = ({ title }) => {
                                                         <h4 className="text-muted mb-0">{email}</h4>
                                                         <p>Email</p>
                                                     </div>
-                                                    {badge ? (
+                                                    {/* {badge ? (
                                                         <>
                                                             <div className="profile-email px-2 pt-2">
                                                                 <span class="badge badge-pill badge-warning">{badge}</span>
                                                                 <p>My badge</p>
                                                             </div>
                                                         </>
-                                                    ) : ''}
+                                                    ) : ''} */}
                                                 </>
                                             )}
                                         </div>
@@ -324,16 +324,7 @@ const Dashboard = ({ title }) => {
 
                                                         <div className="tab-content">
                                                             <div id="about-me" className="tab-pane fade active show">
-                                                                <div className="profile-skills mb-5 mt-3">
-                                                                    <h4 className="text-primary mb-2">Interested</h4>
-                                                                    <p className="btn btn-primary light btn-xs mb-1">No data found</p>
-                                                                    {/* <a href="#" className="btn btn-primary light btn-xs mb-1">Admin</a>
-                                                                <a href="#" className="btn btn-primary light btn-xs mb-1">Dashboard</a>
-                                                                <a href="#" className="btn btn-primary light btn-xs mb-1">Photoshop</a>
-                                                                <a href="#" className="btn btn-primary light btn-xs mb-1">Bootstrap</a>
-                                                                <a href="#" className="btn btn-primary light btn-xs mb-1">Responsive</a>
-                                                                <a href="#" className="btn btn-primary light btn-xs mb-1">Crypto</a> */}
-                                                                </div>
+                                                                
                                                                 <div className="profile-personal-info">
                                                                     <h4 className="text-primary mb-4">Personal Information</h4>
                                                                     <div className="row mb-2">

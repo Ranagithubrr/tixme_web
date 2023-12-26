@@ -3,6 +3,7 @@ import JoinStartButton from "../../../common/elements/JoinStartButton";
 import Searchicon from '../../../common/icon/searchicon.png';
 import Norecord from '../../../component/Norecordui';
 import { Button, Col, Row } from "react-bootstrap";
+import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
@@ -19,35 +20,20 @@ import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import Select from 'react-select'
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
+    const { id } = useParams();
     const [Loader, setLoader] = useState(false);
     const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
     const [CategoryList, setCategoryList] = useState([]);
     const MySwal = withReactContent(Swal);
-    function CheckDelete(id) {
-        MySwal.fire({
-            title: 'Are you sure you want to delete?',
-            showDenyButton: true,
-            showCancelButton: false,
-            confirmButtonText: 'Yes',
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-                Delete(id)
-            } else if (result.isDenied) {
-
-            }
-        })
-    }
-    
-    const Delete = async (id) => {
+ 
+    const fetchmyEvent = async () => {
         try {
             setLoader(true)
             const requestData = {
                 id: id,
-                isdelete: 1
             };
-            fetch(apiurl + 'category/delete-category', {
+            fetch(apiurl + 'event/list', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Set the Content-Type header to JSON
@@ -57,8 +43,7 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        toast.success('Deleted successfully');
-                        fetchmyEvent();
+                        setListitems(data.data);
                     }
                     setLoader(false)
                 })
@@ -71,62 +56,8 @@ const Dashboard = ({ title }) => {
             setLoader(false)
         }
     }
-    const fetchmyEvent = async () => {
-        try {
-            fetch(apiurl + 'admin/event-list', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        setListitems(data.data);
-                    } else {
-
-                    }
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                });
-        } catch (error) {
-            console.error('Api error:', error);
-        }
-    }
-    const fetchCategory = async () => {
-        try {
-            fetch(apiurl + 'category/get-category-list', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        const transformedCategories = data.data.map(category => ({
-                            value: category._id,
-                            label: category.name
-                        }));
-                        setCategoryList(transformedCategories);
-                    } else {
-
-                    }
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                });
-        } catch (error) {
-            console.error('Api error:', error);
-        }
-    }
-    const EditEvent = async (id, name) => {
-        navigate(`${admin_url}event/edit-event/${id}/${name}`);
-    }
     useEffect(() => {
         fetchmyEvent();
-        fetchCategory();
     }, []);
 
     const [SelectCategoryValue, setSelectCategoryValue] = useState();
@@ -148,48 +79,6 @@ const Dashboard = ({ title }) => {
                             <Card className="py-4 grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
-                                        <Col md={12} style={{ position: 'relative', zIndex: '2' }}>
-                                            <Row>
-                                                <Col md={5}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
-                                                    </div>
-                                                </Col>
-                                                <Col md={3} className="react-select-h mb-3">
-                                                    <Select
-                                                        isClearable={false}
-                                                        options={CategoryOption}
-                                                        className='react-select'
-                                                        classNamePrefix='select'
-                                                        placeholder='Select Category'
-                                                        onChange={HandelselectCategory}
-                                                        value={SelectCategoryValue}
-                                                    />
-                                                    {/* <select name="" id="" className="theme-dropdown dropdown-custome category-select">
-                                                        <option value=''>Category</option>
-                                                        {CategoryList.map((item, index) => (
-                                                            <option value={item._id}>{item.name}</option>
-                                                        ))}
-                                                    </select> */}
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                
-                                            </Row>
-                                        </Col>
                                         {Loader ? (
                                             <div className="linear-background w-100"> </div>
                                         ) : (
@@ -205,7 +94,7 @@ const Dashboard = ({ title }) => {
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>
-                                                                                <span className="list-event-name">{item.name}</span> <span className="cursor-pointre list-event-edit-btn"><img onClick={() => EditEvent(item._id, item.name)} src={EditPng} alt="" /></span>
+                                                                                <span className="list-event-name">{item.name}</span>
                                                                                 <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
                                                                             </div>
                                                                             <div className="list-event-location">
@@ -247,14 +136,7 @@ const Dashboard = ({ title }) => {
                                                                                             </span>
                                                                                             <span className="event-time d-block">{item.event_duration}</span>
                                                                                         </div>
-                                                                                        {item.allprice ? (
-                                                                                            <>
-                                                                                                <div className="list-ticket-count">
-                                                                                                    <p className="mb-0 list-Total-Ticket">Total Ticket</p>
-                                                                                                    <span className="list-Ticket-amount">{item.OrderItem ? item.OrderItem.length : 0} / {item.allprice.reduce((total, price) => total + parseInt(price.quantity, 10), 0)}</span> <span className="list-Ticket-sold">SOLD</span>
-                                                                                                </div>
-                                                                                            </>
-                                                                                        ) : ''}
+                                                                                        
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -269,10 +151,6 @@ const Dashboard = ({ title }) => {
                                                                                         <img src={DateIcon} alt="" />
                                                                                         <span className="on-img-date-val">{onlyDayMonth(item.start_date)}</span>
                                                                                     </span>
-                                                                                </div>
-                                                                                <div className="text-end mr-5">
-                                                                                    <p className="mb-0 mr-5 list-Ticket-1">Ticket</p>
-                                                                                    <button className="btn btn-success list-Ticket-mng-1" type="button" onClick={() => navigate(`${admin_url}event/manage-ticket/${item._id}/${item.name}`)}>Manage</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>
