@@ -16,6 +16,7 @@ import Hourglasslogo from "../../common/icon/hourglass.svg";
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import Select from 'react-select';
 import QRCode from 'react-qr-code';
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
@@ -24,6 +25,7 @@ const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
     const [CategoryList, setCategoryList] = useState([]);
     const [Listitems, setListitems] = useState([]);
+    const [allEvents, setallEvents] = useState([]);
     const MySwal = withReactContent(Swal);
     function CheckDelete(eventid) {
         MySwal.fire({
@@ -82,7 +84,15 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setCategoryList(data.data);
+                        const transformedCategories = data.data.map(category => ({
+                            value: category._id,
+                            label: category.name
+                        }));
+                        const allOption = { value: 'all', label: 'All' };
+                        transformedCategories.unshift(allOption);
+
+                        // Update CategoryList state
+                        setCategoryList(transformedCategories);
                     } else {
 
                     }
@@ -108,6 +118,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data)
+                        setallEvents(data.data)
                     } else {
                     }
                     setLoader(false)
@@ -135,6 +146,43 @@ const Dashboard = ({ title }) => {
         fetchList();
         fetchCategory();
     }, []);
+
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = allEvents.filter(event =>
+                event.display_name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allEvents);
+        }
+    };
+
+    const [SelectCategoryValue, setSelectCategoryValue] = useState();
+    const HandelselectCategory = (selectedValue) => {
+        setSelectCategoryValue(selectedValue);
+        if (selectedValue && selectedValue.value !== 'all') {
+            // Filter events based on the selected category
+            const filteredEvents = allEvents.filter(event =>
+                event.category && event.category === selectedValue.value);
+            setListitems(filteredEvents);
+        } else {
+            // If 'All' is selected or no category is selected, show all events
+            setListitems(allEvents);
+        }
+    };
+    const CategoryOption = [
+        {
+            options: CategoryList
+        }
+    ]
+
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -144,35 +192,30 @@ const Dashboard = ({ title }) => {
                             <Card className="py-4  grey-bg">
                                 <Card.Body>
                                     <Row className="justify-content-center">
-                                        <Col md={12}>
+                                        <Col md={12}  style={{ position: 'relative', zIndex: '2' }}>
                                             <Row>
-                                                <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
+                                                <Col md={4}>
+                                                <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search events"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
-                                                <Col md={3}>
-                                                    <select name="" id="" className="theme-dropdown dropdown-custome category-select">
-                                                        <option value=''>Category</option>
-                                                        {CategoryList.map((item, index) => (
-                                                            <option value={item._id}>{item.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </Col>
-                                                <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
+                                                <Col md={4} className='react-select-h mb-3'>
+                                                <Select
+                                                        isClearable={false}
+                                                        options={CategoryOption}
+                                                        className='react-select'
+                                                        classNamePrefix='select'
+                                                        placeholder='Select Category'
+                                                        onChange={HandelselectCategory}
+                                                        value={SelectCategoryValue}
+                                                    />
                                                 </Col>
                                             </Row>
                                         </Col>
@@ -197,7 +240,7 @@ const Dashboard = ({ title }) => {
                                                                                         </Col>
                                                                                         <Col md={4} className="list-data pt-3">
                                                                                             <div className="mb-4">
-                                                                                                <Link to={`${app_url}event/${item._id}/${item.name}`}><span className="list-event-name">{item.name}</span> </Link>
+                                                                                                <Link to={`${app_url}event/${item._id}/${item.name}`}><span className="list-event-name">{item.display_name}</span> </Link>
                                                                                                 <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
                                                                                             </div>
                                                                                             <div className="list-event-location mb-4">

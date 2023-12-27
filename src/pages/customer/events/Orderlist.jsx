@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../../common/elements/JoinStartButton";
 import Searchicon from '../../../common/icon/searchicon.png';
 import Norecord from '../../../component/Norecordui';
+import { DateRangePicker } from 'react-dates';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 import {
     Modal,
     Input,
@@ -22,7 +25,7 @@ import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
 import TranferImg from "../../../common/image/Tranfer.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, app_url } from '../../../common/Helpers';
+import { apiurl, isEmail, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, get_date_time, get_min_date, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 
 import QRCode from 'react-qr-code';
@@ -33,13 +36,40 @@ import { FaCircleMinus } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa6";
 import Select from 'react-select';
 import { Link, useNavigate } from "react-router-dom";
+
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
 const Dashboard = ({ title }) => {
+
     const [Loader, setLoader] = useState(false);
     const [ModalLoader, setModalLoader] = useState(true);
     const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
     const [CategoryList, setCategoryList] = useState([]);
     const Beartoken = localStorage.getItem('userauth');
+
+    const [Startdate, setStartdate] = useState(new Date());
+    const [Endtdate, setEndtdate] = useState(new Date());
+    const [viewStartdate, setviewStartdate] = useState();
+    const [viewEndtdate, setviewEndtdate] = useState();
+    const [valueStartdate, setvalueStartdate] = useState();
+    const [valueEndtdate, setvalueEndtdate] = useState();
+
+    const handelStartdatechange = (date) => {
+        setStartdate(date);
+        const get_start_date = get_date_time(date);
+        setviewStartdate(get_start_date[0].Dateview);
+        setvalueStartdate(get_min_date(date));
+    }
+    const handelEnddatechange = (date) => {
+        setEndtdate(date);
+        const get_end_date = get_date_time(date);
+        setviewEndtdate(get_end_date[0].Dateview);
+        setvalueEndtdate(get_min_date(date));
+    }
+
+    const [Daterange, setDaterange] = useState(false);
 
     const [Ordersavedata, setOrdersavedata] = useState();
     const [Orderitemlist, setOrderitemlist] = useState();
@@ -50,7 +80,20 @@ const Dashboard = ({ title }) => {
     const [ShowQr, setShowQr] = useState(false);
 
     const [modalTT, setModalTT] = useState(false);
+
+    const [quantity, setQuantity] = useState();
     const [Transferid, setTransferid] = useState();
+    const [Emailid, setEmailid] = useState(1);
+    const [TTloader, setTTloader] = useState(false);
+
+    const handleQuantityChange = (event) => {
+        const inputValue = parseInt(event.target.value, 10); // Parse the input value as an integer
+
+        // Check if the input value is a number and within the range
+        if (!isNaN(inputValue) && inputValue >= 1 && inputValue <= Orderitemlist.length) {
+            setQuantity(inputValue); // Update the quantity state
+        }
+    };
 
     const MySwal = withReactContent(Swal);
 
@@ -58,6 +101,100 @@ const Dashboard = ({ title }) => {
         return Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
     };
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = allEvents.filter(event =>
+                event.eventData[0].display_name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allEvents);
+        }
+    };
+
+    const HandelDatefilterreset = () => {
+        setviewStartdate('');
+        setviewEndtdate('');
+        setvalueStartdate('');
+        setvalueEndtdate('');
+        setListitems(allEvents);
+        setDaterange(!Daterange);
+    }
+    const HandelDatefilter = () => {
+        if (!valueStartdate) {
+            return toast.error('Start date is requied')
+        }
+        if (!valueEndtdate) {
+            return toast.error('End date is requied')
+        }
+        handleDateRangeChange(valueStartdate, valueEndtdate);
+    }
+    const handleDateRangeChange = (startDate, endDate) => {
+        if (startDate && endDate) {
+            const filteredEvents = allEvents.filter(event => {
+                const eventStart = event.eventData[0].start_mindate;
+                const eventEnd = event.eventData[0].end_mindate;
+
+                // Check if the event's date range is within the given date range
+                return eventStart >= startDate && eventEnd <= endDate;
+            });
+            setListitems(filteredEvents);
+        } else {
+            // If either startDate or endDate is missing, reset to show all events
+            setListitems(allEvents);
+        }
+        setDaterange(!Daterange);
+    };
+
+    const HandelTransferTicket = async () => {
+        try {
+            setTTloader(true)
+            if(!Emailid && !isEmail(Emailid)){
+                return toast.error('Enter valid email id');
+            }
+            if(quantity < 1){
+                return toast.error('Enter valid quantity');
+            }
+            if(!Transferid){
+                return toast.error('Server issue try again');
+            }
+            const requestData = {
+                id: Transferid,
+                email: Emailid,
+                ticketquantity: quantity,
+            };
+            fetch(apiurl + 'order/tickets-transfer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Beartoken}`,
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        toast.success('Transfer successfully');
+                        setModalTT(!modalTT);
+                    }else{
+                        toast.success(data.message);
+                    }
+                    setTTloader(false)
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setTTloader(false)
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            setTTloader(false)
+        }
+    }
     const fetchmyEvent = async () => {
         try {
             setLoader(true)
@@ -72,6 +209,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
+                        setAllEvents(data.data);
                     }
                     setLoader(false)
                 })
@@ -99,6 +237,10 @@ const Dashboard = ({ title }) => {
                             value: category._id,
                             label: category.name
                         }));
+                        const allOption = { value: 'all', label: 'All' };
+                        transformedCategories.unshift(allOption);
+
+                        // Update CategoryList state
                         setCategoryList(transformedCategories);
                     } else {
 
@@ -111,7 +253,7 @@ const Dashboard = ({ title }) => {
             console.error('Api error:', error);
         }
     }
-    const fetchOrderData = async (id) => {
+    const fetchOrderData = async (id, type) => {
         try {
             setModalLoader(true);
             setShowQr(false);
@@ -128,8 +270,13 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
+                        if (type == 2) {
+                            const filteredItems = data.data.orderitemlist.filter(item => item.owner_id === data.data.ordersavedata.customer_id);
+                            setOrderitemlist(filteredItems);
+                        } else {
+                            setOrderitemlist(data.data.orderitemlist);
+                        }
                         setOrdersavedata(data.data.ordersavedata);
-                        setOrderitemlist(data.data.orderitemlist);
                         if (data.data.orderitemlist.length > 0) {
                             const check = data.data.orderitemlist.every(item => item.scan_status === 1);
                             setIsscan(check);
@@ -158,6 +305,15 @@ const Dashboard = ({ title }) => {
     const [SelectCategoryValue, setSelectCategoryValue] = useState();
     const HandelselectCategory = (selectedValue) => {
         setSelectCategoryValue(selectedValue);
+        if (selectedValue && selectedValue.value !== 'all') {
+            // Filter events based on the selected category
+            const filteredEvents = allEvents.filter(event =>
+                event.eventData[0].category && event.eventData[0].category === selectedValue.value);
+            setListitems(filteredEvents);
+        } else {
+            // If 'All' is selected or no category is selected, show all events
+            setListitems(allEvents);
+        }
     };
     const CategoryOption = [
         {
@@ -284,7 +440,7 @@ const Dashboard = ({ title }) => {
                 </ModalBody>
             </Modal>
             <Modal isOpen={modalTT} toggle={() => setModalTT(!modalTT)} centered size={'lg'}>
-                <ModalHeader toggle={!modalTT}>Order Details</ModalHeader>
+                <ModalHeader toggle={!modalTT}>Transfer Ticket</ModalHeader>
                 <ModalBody>
                     <Row>
                         {ModalLoader ? (
@@ -297,19 +453,27 @@ const Dashboard = ({ title }) => {
                                 <Col md={6}>
                                     <h3 style={{ fontWeight: '600', color: '#0047AB' }} className="mb-4">Transfer Ticket</h3>
                                     <div class="input-group input-warning-o">
-                                        <input type="text" class="form-control px-2 py-3 mb-3"  placeholder="Email Id" />
+                                        <input type="text" class="form-control px-2 py-3 mb-3" value={Emailid} placeholder="Email Id" onChange={(e) => setEmailid(e.target.value)} />
                                     </div>
                                     <div>
                                         <label>Total Ticket Quantity</label>
-                                        <input type="text" max={Orderitemlist.length} class="form-control px-2 py-3 mb-5" placeholder="Enter Ticket Quantity" />
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max={Orderitemlist.length}
+                                            value={quantity} // Set the input value to the quantity state
+                                            className="form-control px-2 py-3 mb-5"
+                                            placeholder="Enter Ticket Quantity"
+                                            onChange={handleQuantityChange}
+                                        />
                                     </div>
                                     <div>
                                         <h5 className="text-bold">total Ticket :</h5>
-                                        <p>{Orderitemlist.length}</p>
+                                        <p>{Orderitemlist.length ? Orderitemlist.length : '0'}</p>
                                     </div>
                                     {Orderitemlist.length > 0 ? (
                                         <div className="mr-5 pt-5">
-                                            <button className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                            <button onClick={() => HandelTransferTicket()} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                         </div>
                                     ) : (
                                         <div className="mr-5 pt-5">
@@ -325,6 +489,49 @@ const Dashboard = ({ title }) => {
                     </Row>
                 </ModalBody>
             </Modal>
+            <Modal isOpen={Daterange} toggle={() => setDaterange(!Daterange)} centered>
+                <ModalHeader toggle={!Daterange}>Select date</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">Start Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewStartdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Startdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelStartdatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">End Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewEndtdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Endtdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelEnddatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilter} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1 w-100" type="button">Filter</button>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilterreset} className="mb-0 mr-5  btn btn-dark list-Ticket-mng-1 w-100" type="button">Reset</button>
+                        </Col>
+                    </Row>
+                </ModalBody>
+            </Modal>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
                     <Row className="justify-content-center">
@@ -337,7 +544,13 @@ const Dashboard = ({ title }) => {
                                                 <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search events"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                                 <Col md={3} className="react-select-h mb-3">
@@ -357,21 +570,14 @@ const Dashboard = ({ title }) => {
                                                         ))}
                                                     </select> */}
                                                 </Col>
-                                                <Col md={2}>
+                                                <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
+                                                        <input readOnly type="text" class="form-control" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
                                                         <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
+                                                <Col md={3}>
                                                     <button className="w-100 theme-btn" onClick={() => navigate(app_url + 'events')}>
                                                         <span className="theme-btn-icon"><FiPlus /></span> <span>Buy Tickets</span>
                                                     </button>
@@ -386,7 +592,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
-                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -452,7 +658,7 @@ const Dashboard = ({ title }) => {
                                                                                     </span>
                                                                                 </div>
                                                                                 <div className="text-end mr-5 pt-4">
-                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item.id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item._id, 2); setTransferid(item._id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>

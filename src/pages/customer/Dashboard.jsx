@@ -22,9 +22,9 @@ import EditPng from '../../common/icon/Edit.png';
 import DateIcon from "../../common/icon/date 2.svg";
 import ArrowPng from "../../common/icon/Arrow.svg";
 import TranferImg from "../../common/image/Tranfer.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, app_url } from '../../common/Helpers';
+import { apiurl, imgurl, admin_url, organizer_url, shortPer, isEmail, onlyDayMonth, app_url } from '../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
-
+import { FaTimes } from 'react-icons/fa';
 import QRCode from 'react-qr-code';
 import QRsuccess from '../../common/icon/qr-code-pay.png';
 import { FaCircleCheck } from "react-icons/fa6";
@@ -40,7 +40,6 @@ const Dashboard = ({ title }) => {
     const [Listitems, setListitems] = useState([]);
     const [CategoryList, setCategoryList] = useState([]);
     const Beartoken = localStorage.getItem('userauth');
-    console.log(Listitems);
     const [Ordersavedata, setOrdersavedata] = useState();
     const [Orderitemlist, setOrderitemlist] = useState();
     const [OrderData, setOrderData] = useState();
@@ -50,7 +49,10 @@ const Dashboard = ({ title }) => {
     const [ShowQr, setShowQr] = useState(false);
 
     const [modalTT, setModalTT] = useState(false);
-    const [Transferid, setTransferid] = useState();
+    const [TransferLoader, setTransferLoader] = useState(false);
+    const [ticketQuantity, setTicketQuantity] = useState('');
+    const [Emailid, setEmailid] = useState('');
+    const [Orderid, setOrderid] = useState('');
 
     const MySwal = withReactContent(Swal);
 
@@ -73,7 +75,7 @@ const Dashboard = ({ title }) => {
                     if (data.success == true) {
                         if (data.data) {
                             const listdata = data.data;
-                        
+
                             // Function to format a date to YYYYMMDD
                             const formatDate = (date) => {
                                 const d = new Date(date),
@@ -82,10 +84,10 @@ const Dashboard = ({ title }) => {
                                     year = d.getFullYear();
                                 return `${year}${month}${day}`;
                             };
-                        
+
                             // Get today's date in YYYYMMDD format
                             const todate = formatDate(new Date());
-                            
+
                             // Function to compare dates in YYYYMMDD format
                             const compareDates = (date1, date2) => {
                                 return parseInt(date1, 10) >= parseInt(date2, 10);
@@ -96,7 +98,7 @@ const Dashboard = ({ title }) => {
                             });
                             setListitems(filteredData);
                         }
-                        
+
                     }
                     setLoader(false)
                 })
@@ -136,7 +138,7 @@ const Dashboard = ({ title }) => {
             console.error('Api error:', error);
         }
     }
-    const fetchOrderData = async (id) => {
+    const fetchOrderData = async (id, type) => {
         try {
             setModalLoader(true);
             setShowQr(false);
@@ -153,8 +155,14 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
+                        if(type == 2){
+                            const filteredOrderItems = data.data.orderitemlist.filter(item => item.owner_id === data.data.ordersavedata.customer_id);
+                            setOrderitemlist(filteredOrderItems);
+                        }else{
+                            setOrderitemlist(data.data.orderitemlist);
+                        }
                         setOrdersavedata(data.data.ordersavedata);
-                        setOrderitemlist(data.data.orderitemlist);
+                        setOrderid(id);
                         if (data.data.orderitemlist.length > 0) {
                             const check = data.data.orderitemlist.every(item => item.scan_status === 1);
                             setIsscan(check);
@@ -175,6 +183,52 @@ const Dashboard = ({ title }) => {
             setModalLoader(false);
         }
     }
+    const HandelTransferTicket = async () => {
+        try {
+            if (!Orderid) {
+                return toast.error('Server error try again !');
+            }
+            if (!Emailid || !isEmail(Emailid)) {
+                return toast.error('Enter valid email id');
+            }
+            if (!ticketQuantity || ticketQuantity < 1) {
+                return toast.error('Enter ticket quantity');
+            }
+            setTransferLoader(true);
+            const requestData = {
+                id: Orderid,
+                email: Emailid,
+                ticketquantity: ticketQuantity
+            };
+            fetch(apiurl + 'order/tickets-transfer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Beartoken}`,
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        toast.success('Transfer successfully');
+                        setModalTT(!modalTT);
+                        setEmailid('');
+                        setTicketQuantity('');
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setTransferLoader(false);
+                })
+                .catch(error => {
+                    console.error(error.message);
+                    setTransferLoader(false);
+                });
+        } catch (error) {
+            toast.error(error);
+            setTransferLoader(false);
+        }
+    }
     useEffect(() => {
         fetchmyEvent();
         fetchCategory();
@@ -190,10 +244,25 @@ const Dashboard = ({ title }) => {
         }
     ]
 
+    const handleInputChange = (event) => {
+        let value = parseInt(event.target.value, 10);
+        if (!isNaN(value)) {
+            if (value < 1) value = 1;
+            else if (value > Orderitemlist.length) value = Orderitemlist.length;
+        } else {
+            value = ''; // Reset to empty if not a number
+        }
+        setTicketQuantity(value.toString());
+    };
+
     return (
         <>
             <Modal isOpen={modal} toggle={() => setModal(!modal)} centered size={'xl'}>
-                <ModalHeader toggle={!modal}>Order Details</ModalHeader>
+                <ModalHeader toggle={!modal}>Order Details
+                    <button className="close p-0" onClick={() => setModal(!modal)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody>
                     <Row>
                         {ModalLoader ? (
@@ -309,7 +378,12 @@ const Dashboard = ({ title }) => {
                 </ModalBody>
             </Modal>
             <Modal isOpen={modalTT} toggle={() => setModalTT(!modalTT)} centered size={'lg'}>
-                <ModalHeader toggle={!modalTT}>Order Details</ModalHeader>
+                <ModalHeader toggle={!modalTT}>
+                    Transfer Ticket
+                    <button className="close p-0" onClick={() => setModalTT(!modalTT)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody>
                     <Row>
                         {ModalLoader ? (
@@ -322,24 +396,30 @@ const Dashboard = ({ title }) => {
                                 <Col md={6}>
                                     <h3 style={{ fontWeight: '600', color: '#0047AB' }} className="mb-4">Transfer Ticket</h3>
                                     <div class="input-group input-warning-o">
-                                        <input type="text" class="form-control px-2 py-3 mb-3" placeholder="Email Id" />
+                                        <input type="text" class="form-control px-2 py-3 mb-3" onChange={(e) => setEmailid(e.target.value)} value={Emailid} placeholder="Email Id" />
                                     </div>
                                     <div>
                                         <label>Total Ticket Quantity</label>
-                                        <input type="text" max={Orderitemlist.length} class="form-control px-2 py-3 mb-5" placeholder="Enter Ticket Quantity" />
+                                        <input type="number" min="1" max={Orderitemlist.length} value={ticketQuantity} className="form-control px-2 py-3 mb-5" placeholder="Enter Ticket Quantity" onChange={handleInputChange} />
                                     </div>
                                     <div>
                                         <h5 className="text-bold">total Ticket :</h5>
                                         <p>{Orderitemlist.length}</p>
                                     </div>
-                                    {Orderitemlist.length > 0 ? (
-                                        <div className="mr-5 pt-5">
-                                            <button className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
-                                        </div>
+                                    {TransferLoader ? (
+                                        <button disabled className="mb-0 mr-5 btn btn-dark list-Ticket-mng-1" type="button">Please wait...</button>
                                     ) : (
-                                        <div className="mr-5 pt-5">
-                                            <button disabled className="mb-0 mr-5 btn btn-dark list-Ticket-mng-1" type="button">No Ticket Found</button>
-                                        </div>
+                                        <>
+                                            {Orderitemlist.length > 0 ? (
+                                                <div className="mr-5 pt-5">
+                                                    <button onClick={() => HandelTransferTicket()} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                </div>
+                                            ) : (
+                                                <div className="mr-5 pt-5">
+                                                    <button disabled className="mb-0 mr-5 btn btn-dark list-Ticket-mng-1" type="button">No Ticket Found</button>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </Col>
                                 <Col md={6}>
@@ -359,7 +439,7 @@ const Dashboard = ({ title }) => {
                                     <Row className="justify-content-center">
                                         <Col md={12} style={{ position: 'relative', zIndex: '2' }}>
                                             <Row>
-                                                <Col md={3}>
+                                                <Col md={12}>
                                                     <h3 style={{ color: '#0047ab' }}>Upcoming events</h3>
                                                 </Col>
                                             </Row>
@@ -372,7 +452,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
-                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -438,7 +518,7 @@ const Dashboard = ({ title }) => {
                                                                                     </span>
                                                                                 </div>
                                                                                 <div className="text-end mr-5 pt-4">
-                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item._id) }} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
+                                                                                    <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item._id, 2) }} className="mb-0  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                                                                 </div>
                                                                             </div>
                                                                         </Col>

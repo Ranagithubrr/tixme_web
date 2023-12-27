@@ -14,8 +14,26 @@ import QRCode from 'react-qr-code';
 const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const Beartoken = localStorage.getItem('userauth');
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = Alllist.filter(event =>
+                event.organizername.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(Alllist);
+        }
+    };
+
     const [Loader, setLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
+    const [Alllist, setAlllist] = useState([]);
     const MySwal = withReactContent(Swal);
     function CheckDelete(id) {
         MySwal.fire({
@@ -75,7 +93,8 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setListitems(data.data)
+                        setListitems(data.data);
+                        setAlllist(data.data);
                     } else {
                     }
                     setLoader(false)
@@ -114,7 +133,13 @@ const Dashboard = ({ title }) => {
                                                 <Col md={6}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search Organizer" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search Organizer"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                             </Row>

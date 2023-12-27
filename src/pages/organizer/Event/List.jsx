@@ -193,7 +193,6 @@ const Dashboard = ({ title }) => {
 
 
     const handleVisibilityChange = (selectedVisibility) => {
-        // Assuming allEvents is the original list of events
         if (selectedVisibility !== '') {
             const filteredEvents = allEvents.filter(event => 
                 event.visibility.toString() === selectedVisibility);
@@ -275,12 +274,7 @@ const Dashboard = ({ title }) => {
                                                         onChange={HandelselectCategory}
                                                         value={SelectCategoryValue}
                                                     />
-                                                    {/* <select name="" id="" className="theme-dropdown dropdown-custome category-select">
-                                                        <option value=''>Category</option>
-                                                        {CategoryList.map((item, index) => (
-                                                            <option value={item._id}>{item.name}</option>
-                                                        ))}
-                                                    </select> */}
+                                                    
                                                 </Col>
                                                 <Col md={2}>
                                                     <div class="input-group mb-3 input-warning-o">

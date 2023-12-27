@@ -64,9 +64,6 @@ const Dashboard = ({ title }) => {
 
     const Handelprofileupdate = async () => {
         try {
-            if (!isEmail(uemail)) {
-                return toast.error('Enter valid email address');
-            }
             if (!ufname || !ulname || !uemail || !uaddress || !upincode) {
                 return toast.error('Required field must not be empty');
             }
@@ -74,7 +71,6 @@ const Dashboard = ({ title }) => {
             const requestData = {
                 first_name: ufname,
                 last_name: ulname,
-                email: uemail,
                 whatsapp_no: uwhatsapp_number,
                 address: uaddress,
                 pincode: upincode,
@@ -117,12 +113,62 @@ const Dashboard = ({ title }) => {
             console.error('Api error:', error);
         }
     }
+    const Handelchangeemail = async () => {
+        try {
+            if (!isEmail(uemail)) {
+                return toast.error('Enter valid email address');
+            }
+            if(!oldpassword){
+                return toast.error('Enter valid password');
+            }
+            setLoader(true);
+            const requestData = {
+                email: uemail,
+                password: oldpassword,
+            }
+            fetch(apiurl + 'website/update-user-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                    'Authorization': `Bearer ${Beartoken}`, // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    setLoader(false);
+                    if (data.success == true) {
+                        toast.success(data.data);
+                        setufname('');
+                        setulname('');
+                        setuemail('');
+                        setuwhatsapp_number('');
+                        setuaddress('');
+                        setupincode('');
+                        setLoader(false)
+                        fetchData();
+                    } else {
+                        toast.error(data.message);
+                    }
+
+                })
+                .catch(error => {
+                    setLoader(false)
+                    toast.error(error.message);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            setLoader(false)
+            toast.error(error.message);
+            console.error('Api error:', error);
+        }
+    }
     const Handelchangepassword = async () => {
         try {
             if (!password || !confirmpassword || !oldpassword) {
                 return toast.error('Required field must not be empty');
             }
-            
+
             if (password.length > 7) {
 
             } else {
@@ -155,7 +201,7 @@ const Dashboard = ({ title }) => {
                         setconfirmpassword('');
                         setoldpassword('');
                         setLoader(false)
-                    }else{
+                    } else {
                         toast.error(data.message);
                     }
                 })
@@ -266,11 +312,6 @@ const Dashboard = ({ title }) => {
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="profile card card-body px-3 pt-3 pb-0">
@@ -324,10 +365,11 @@ const Dashboard = ({ title }) => {
                                                             </li>
                                                             <li className="nav-item"><a href="#profile-settings" data-bs-toggle="tab" className="nav-link">Setting</a>
                                                             </li>
+                                                            <li className="nav-item"><a href="#email-settings" data-bs-toggle="tab" className="nav-link">Change Email</a>
+                                                            </li>
                                                             <li className="nav-item"><a href="#password-settings" data-bs-toggle="tab" className="nav-link">Change Password</a>
                                                             </li>
                                                         </ul>
-
                                                         <div className="tab-content">
                                                             <div id="about-me" className="tab-pane fade active show">
 
@@ -391,13 +433,6 @@ const Dashboard = ({ title }) => {
                                                                                     <div className="form-group">
                                                                                         <p>Last Name <span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="text" placeholder="Last Name" value={ulname} onChange={(e) => setulname(e.target.value)}></input>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="col-md-6">
-
-                                                                                    <div className="form-group">
-                                                                                        <p>Email address <span className="text-danger">*</span></p>
-                                                                                        <input className="form-control" type="text" placeholder="Email Address" value={uemail} onChange={(e) => setuemail(e.target.value)}></input>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-6">
@@ -484,6 +519,42 @@ const Dashboard = ({ title }) => {
                                                                             ) : (
                                                                                 <span onClick={Handelchangepassword}>
                                                                                     <Whitebtn title={'Update password'} />
+                                                                                </span>
+                                                                            )}
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div id="email-settings" className="tab-pane fade">
+                                                                <div className="pt-3">
+                                                                    <div className="settings-form">
+                                                                        <h4 className="text-primary">Edit Email Id</h4>
+                                                                        <form>
+                                                                            <div className="row">
+                                                                                <div className="col-md-6">
+                                                                                    <Row>
+                                                                                        <Col md={12}>
+                                                                                            <div className="form-group">
+                                                                                                <p className="mb-0">Email address <span className="text-danger">*</span></p>
+                                                                                                <input className="form-control" type="text" placeholder="Email Address" value={uemail} onChange={(e) => setuemail(e.target.value)}></input>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                        <Col md={12}>
+                                                                                            <div className="form-group">
+                                                                                                <p className="mb-0">Password<span className="text-danger">*</span></p>
+                                                                                                <input className="form-control" type="password" placeholder="Enter password" value={oldpassword} onChange={(e) => setoldpassword(e.target.value)}></input>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                    </Row>
+                                                                                </div>
+                                                                            </div>
+                                                                            {Loader ? (
+                                                                                <span>
+                                                                                    <Whitebtn title={'Please wait...'} />
+                                                                                </span>
+                                                                            ) : (
+                                                                                <span onClick={Handelchangeemail}>
+                                                                                    <Whitebtn title={'Update email'} />
                                                                                 </span>
                                                                             )}
                                                                         </form>
