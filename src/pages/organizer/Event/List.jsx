@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../../common/elements/JoinStartButton";
 import Searchicon from '../../../common/icon/searchicon.png';
+import {
+    Modal,
+    Input,
+    ModalBody,
+    ModalHeader
+} from 'reactstrap';
 import Norecord from '../../../component/Norecordui';
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
@@ -15,8 +21,10 @@ import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth } from '../../../common/Helpers';
+import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, get_date_time, get_min_date } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
 import Select from 'react-select'
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
@@ -31,6 +39,62 @@ const Dashboard = ({ title }) => {
     const [CategoryList, setCategoryList] = useState([]);
     const organizerid = localStorage.getItem('organizerid')
     const MySwal = withReactContent(Swal);
+
+    const [Startdate, setStartdate] = useState(new Date());
+    const [Endtdate, setEndtdate] = useState(new Date());
+    const [viewStartdate, setviewStartdate] = useState();
+    const [viewEndtdate, setviewEndtdate] = useState();
+    const [valueStartdate, setvalueStartdate] = useState();
+    const [valueEndtdate, setvalueEndtdate] = useState();
+
+    const handelStartdatechange = (date) => {
+        setStartdate(date);
+        const get_start_date = get_date_time(date);
+        setviewStartdate(get_start_date[0].Dateview);
+        setvalueStartdate(get_min_date(date));
+    }
+    const handelEnddatechange = (date) => {
+        setEndtdate(date);
+        const get_end_date = get_date_time(date);
+        setviewEndtdate(get_end_date[0].Dateview);
+        setvalueEndtdate(get_min_date(date));
+    }
+
+    const [Daterange, setDaterange] = useState(false);
+    const HandelDatefilterreset = () => {
+        setviewStartdate('');
+        setviewEndtdate('');
+        setvalueStartdate('');
+        setvalueEndtdate('');
+        setListitems(allEvents);
+        setDaterange(!Daterange);
+    }
+    const HandelDatefilter = () => {
+        if (!valueStartdate) {
+            return toast.error('Start date is requied')
+        }
+        if (!valueEndtdate) {
+            return toast.error('End date is requied')
+        }
+        handleDateRangeChange(valueStartdate, valueEndtdate);
+    }
+    const handleDateRangeChange = (startDate, endDate) => {
+        if (startDate && endDate) {
+            const filteredEvents = allEvents.filter(event => {
+                const eventStart = event.start_mindate;
+                const eventEnd = event.end_mindate;
+
+                // Check if the event's date range is within the given date range
+                return eventStart >= startDate && eventEnd <= endDate;
+            });
+            setListitems(filteredEvents);
+        } else {
+            // If either startDate or endDate is missing, reset to show all events
+            setListitems(allEvents);
+        }
+        setDaterange(!Daterange);
+    };
+
     function CheckDelete(id) {
         MySwal.fire({
             title: 'Are you sure you want to delete?',
@@ -194,7 +258,7 @@ const Dashboard = ({ title }) => {
 
     const handleVisibilityChange = (selectedVisibility) => {
         if (selectedVisibility !== '') {
-            const filteredEvents = allEvents.filter(event => 
+            const filteredEvents = allEvents.filter(event =>
                 event.visibility.toString() === selectedVisibility);
             setListitems(filteredEvents);
         } else {
@@ -202,7 +266,7 @@ const Dashboard = ({ title }) => {
             setListitems(allEvents);
         }
     };
-    
+
 
     const handleSearchChange = (event) => {
         const value = event.target.value;
@@ -243,6 +307,49 @@ const Dashboard = ({ title }) => {
 
     return (
         <>
+         <Modal isOpen={Daterange} toggle={() => setDaterange(!Daterange)} centered>
+                <ModalHeader toggle={!Daterange}>Select date</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">Start Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewStartdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Startdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelStartdatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">End Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewEndtdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Endtdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelEnddatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilter} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1 w-100" type="button">Filter</button>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilterreset} className="mb-0 mr-5  btn btn-dark list-Ticket-mng-1 w-100" type="button">Reset</button>
+                        </Col>
+                    </Row>
+                </ModalBody>
+            </Modal>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
                     <Row className="justify-content-center">
@@ -274,12 +381,12 @@ const Dashboard = ({ title }) => {
                                                         onChange={HandelselectCategory}
                                                         value={SelectCategoryValue}
                                                     />
-                                                    
+
                                                 </Col>
                                                 <Col md={2}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
+                                                        <input readOnly type="text" class="form-control" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
                                                         <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
@@ -291,7 +398,7 @@ const Dashboard = ({ title }) => {
                                                             onChange={e => handleVisibilityChange(e.target.value)}
                                                             defaultValue=""
                                                         >
-                                                            <option value="" disabled>Select Status</option>
+                                                            <option value="">Select Status</option>
                                                             <option value="1">Active</option>
                                                             <option value="2">Deactive</option>
                                                         </select>
@@ -314,7 +421,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
-                                                                <button className="list-rais-ticket-btn" type="button">Raise Ticket</button>
+                                                                <Link to={organizer_url + 'support-tickets'}><button className="list-rais-ticket-btn" type="button">Raise Ticket</button></Link>
                                                                 <button onClick={() => HandelChangeStatus(item._id)} className="list-active-ticket-btn" type="button">{item.visibility == 1 ? 'Active' : 'Deactive'}<img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>

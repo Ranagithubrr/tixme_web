@@ -1125,3 +1125,13 @@ img.TranferImg-css {
   height: auto;
   width: 500px;
 }
+.br-n{
+  border-right: none !important;
+}
+.blr-n{
+  border-left: none !important;
+  border-right: none !important;
+}
+.bl-n{
+  border-left-color: transparent !important;
+}

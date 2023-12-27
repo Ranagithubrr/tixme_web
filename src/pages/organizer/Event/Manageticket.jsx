@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
 import EditPng from '../../../common/icon/Edit.png';
 import ArrowPng from "../../../common/icon/Arrow.svg";
+import Norecord from '../../../component/Norecordui';
 import DateIcon from "../../../common/icon/date 1.svg";
 import TimeIcon from "../../../common/icon/time 1.svg";
 import WhitestarBtn from '../../../component/Whitestarbtn';
@@ -29,6 +30,7 @@ const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const [Ticketshow, setTicketshow] = useState(false);
     const [Listitems, setListitems] = useState([]);
+    const [allEvents, setallEvents] = useState([]);
     const [Ticketsoldlist, setTicketsoldlist] = useState([]);
     const [Eventdata, setEventdata] = useState([]);
     const [Tickettype, setTickettype] = useState(1);
@@ -65,6 +67,7 @@ const Dashboard = ({ title }) => {
                         const fetchdata = data.data.allprice;
                         setTicketsoldlist(data.ticketdata);
                         setListitems(fetchdata);
+                        setallEvents(fetchdata);
                     }
                     setLoader(false);
                 })
@@ -311,6 +314,21 @@ const Dashboard = ({ title }) => {
         fetchAllTicket();
         fetchEvent();
     }, []);
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+        // Now filter the events based on the search term
+        if (value) {
+            
+            const filteredEvents = allEvents.filter(event =>
+                event.name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allEvents);
+        }
+    };
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -325,7 +343,13 @@ const Dashboard = ({ title }) => {
                                                 <Col md={5}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search ticket name"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                                 <Col md={3}>
@@ -349,7 +373,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main in-ticket-list-1">
-                                                                <button className="list-active-ticket-btn" type="button">Attendee  <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <button onClick={() => navigate(`${organizer_url}event/mange-attendee/${Eventdata._id}/${Eventdata.name}`)} className="list-active-ticket-btn" type="button">Attendee  <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -383,9 +407,7 @@ const Dashboard = ({ title }) => {
                                                         ))}
                                                     </>
                                                 ) : (
-                                                    <div class="no-data-box">
-                                                        <p>No Data Found !</p>
-                                                    </div>
+                                                    <Norecord />
                                                 )}
                                             </>
                                         )}

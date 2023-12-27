@@ -369,6 +369,7 @@ const Home = ({ title }) => {
                                     <input className="form-control" type="password" placeholder="Password" onChange={(e) => setLoginPassword(e.target.value)}></input>
                                 </div>
                                 <p className="forgot-password-text">Forgot your password? <Link to={app_url + 'auth/customer/forgot-password'} className='reset-password-link'>Reset your password</Link></p>
+                                <p className="forgot-password-text">Want to login as organizer? <Link to={app_url + 'auth/organizer/login'} className='reset-password-link'>Login</Link></p>
 
                                 <p className="forgot-password-text">Don't have an account? <Link to={app_url + 'auth/customer/signup'} className='reset-password-link'>Signup</Link></p>
 
