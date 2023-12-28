@@ -96,6 +96,11 @@ const Type = ({ title, editid }) => {
     const [BannerImage, setBannerImage] = useState(null);
 
 
+    const [ThumbnailLoader, setThumbnailLoader] = useState(false);
+    const [ThumbnailSuccess, setThumbnailSuccess] = useState(false);
+
+    const [BannerLoader, setBannerLoader] = useState(false);
+    const [BannerSuccess, setBannerSuccess] = useState(false);
 
     const [selectedTimezone, setSelectedTimezone] = useState(
         Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -105,13 +110,87 @@ const Type = ({ title, editid }) => {
             let img = e.target.files[0];
             setSelectedImage(URL.createObjectURL(img));
             setImage(e.target.files[0]);
+            uploadImageToServer(e.target.files[0]);
         }
     };
+    const uploadImageToServer = async (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile); // 'image' is the parameter name expected by your API
+
+        try {
+            setThumbnailLoader(true);
+            const response = await fetch('https://tixme.co/tixme_storage/api/upload-image', {
+                method: 'POST',
+                body: formData, // No headers needed, as FormData sets the Content-Type to multipart/form-data
+            });
+
+            if (!response.ok) {
+                setSelectedImage(null);
+                setThumbnailLoader(false);
+                toast.error('Image not uploaded try again');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Image uploaded successfully:', result);
+            if (result) {
+                HandelUpdateNewThumbnail(result.image_name, 'thumbnail');
+            } else {
+                setThumbnailLoader(false);
+                setSelectedImage(null);
+                return toast.error('Image not uploaded try again');
+            }
+            // Handle the response here (e.g., showing a success message, updating UI)
+        } catch (error) {
+            setSelectedImage(null);
+            setThumbnailLoader(false);
+            toast.error('Image not uploaded try again');
+            console.error('Error uploading the image:', error);
+            // Handle the error here (e.g., showing an error message)
+        }
+    };
+
     const handleBannerImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             let img = e.target.files[0];
             setBannerimg(URL.createObjectURL(img));
-            setBannerImage(e.target.files[0]);
+            uploadBannerToServer(e.target.files[0]);
+        }
+    };
+    const uploadBannerToServer = async (imageFile) => {
+        const formData = new FormData();
+        formData.append('image', imageFile); // 'image' is the parameter name expected by your API
+
+        try {
+            setBannerLoader(true);
+            const response = await fetch('https://tixme.co/tixme_storage/api/upload-image', {
+                method: 'POST',
+                body: formData, // No headers needed, as FormData sets the Content-Type to multipart/form-data
+            });
+
+            if (!response.ok) {
+                setBannerimg(null);
+                setBannerLoader(false);
+                toast.error('Image not uploaded try again');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Image uploaded successfully:', result);
+            if (result) {
+                HandelUpdateNewBanner(result.image_name, 'banner');
+            } else {
+                setBannerLoader(false);
+                setBannerimg(null);
+                return toast.error('Image not uploaded try again');
+            }
+            // Handle the response here (e.g., showing a success message, updating UI)
+        } catch (error) {
+            setBannerimg(null);
+            setBannerLoader(false);
+            toast.error('Image not uploaded try again');
+            console.error('Error uploading the image:', error);
+            // Handle the error here (e.g., showing an error message)
         }
     };
     // JSON.stringify(selectedTimezone, null, 2)
@@ -188,6 +267,79 @@ const Type = ({ title, editid }) => {
 
             }
         })
+    }
+
+    const HandelUpdateNewThumbnail = async (name, type) => {
+        try {
+            const requestData = {
+                updateid: editid,
+                name: name,
+                type: type
+            };
+            fetch(apiurl + 'event/upload-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setThumbnailLoader(false);
+                        setThumbnailSuccess(true);
+                        return toast.success('Thumbnail uploaded');
+                    } else {
+                        toast.error('Image not uploaded try again');
+                        setThumbnailLoader(false);
+                    }
+                })
+                .catch(error => {
+                    setThumbnailLoader(false);
+                    console.error('Insert error:', error);
+                    toast.error('Image not uploaded try again');
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            toast.error('Image not uploaded try again');
+            setThumbnailLoader(false);
+        }
+    }
+    const HandelUpdateNewBanner = async (name, type) => {
+        try {
+            const requestData = {
+                updateid: editid,
+                name: name,
+                type: type
+            };
+            fetch(apiurl + 'event/upload-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setBannerLoader(false);
+                        setBannerSuccess(true);
+                        return toast.success('Banner uploaded');
+                    } else {
+                        toast.error('Image not uploaded try again');
+                        setBannerLoader(false);
+                    }
+                })
+                .catch(error => {
+                    setBannerLoader(false);
+                    console.error('Insert error:', error);
+                    toast.error('Image not uploaded try again');
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            toast.error('Image not uploaded try again');
+            setBannerLoader(false);
+        }
     }
     const TicketDelete = async (editid, pricename) => {
         try {
@@ -362,35 +514,35 @@ const Type = ({ title, editid }) => {
             if (!Eventdesc) {
                 return toast.error("Event description require");
             }
-            if (!image && !selectedImage) {
-                return toast.error("Please upload Event Thumbnail");
-            }
-            if (!BannerImage && !Bannerimg) {
-                return toast.error("Please upload Event banner");
-            }
             setLoader(true);
-            const formData = new FormData();
-            formData.append("image", image);
-            formData.append("bannerimage", BannerImage);
-            formData.append("event_desc", Eventdesc);
-            formData.append("updateid", updateid);
-            const result = await axios.post(
-                apiurl + 'event/update/eventdesc',
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-            if (result.data.success === true) {
-                toast.success('Updated', {
-                    duration: 3000,
+            const requestData = {
+                event_desc: Eventdesc,
+                updateid: updateid
+            };
+            fetch(apiurl + 'event/update/eventdesc', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === true) {
+                        toast.success('Updated', {
+                            duration: 3000,
+                        });
+                        fetchAllTicket();
+                        setFormSection(4);
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setLoader(false);
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setLoader(false)
                 });
-                fetchAllTicket();
-                setFormSection(4);
-            } else {
-                toast.error(result.data.message);
-            }
-            setLoader(false);
         } catch (error) {
             console.error('Api error:', error);
             setLoader(false);
@@ -763,8 +915,14 @@ const Type = ({ title, editid }) => {
                         setDisplaystarttime(data.data.display_start_time)
                         setDisplayendtime(data.data.display_end_time)
                         setEventdesc(data.data.event_desc)
-                        setSelectedImage(data.data.thum_image ? imgurl + data.data.thum_image : null)
-                        setBannerimg(data.data.banner_image ? imgurl + data.data.banner_image : null)
+                        setSelectedImage(data.data.thum_image ? data.data.thum_image : null)
+                        if (data.data.thum_image) {
+                            setThumbnailSuccess(true);
+                        }
+                        if (data.data.banner_image) {
+                            setBannerSuccess(true);
+                        }
+                        setBannerimg(data.data.banner_image ? data.data.banner_image : null)
                         setDisplayprice(data.data.displayprice)
                         setDisplaycutprice(data.data.displaycutprice)
                         setSelectedTimezone(data.data.timezone)
@@ -1150,65 +1308,73 @@ const Type = ({ title, editid }) => {
                                         <Col md={12}>
                                             <div className="">
                                                 <p>Upload Event Thumbnail <span className="text-danger">*</span></p>
-                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
-                                                    <div
-                                                        style={{
-                                                            width: '500px',
-                                                            height: '300px',
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center',
-                                                            flexDirection: 'column',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                        onClick={() => document.getElementById('imageInput').click()}
-                                                    >
-                                                        {selectedImage ? (
-                                                            <img src={selectedImage} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                                        ) : (
-                                                            <p>Upload Event Thumbnail</p>
-                                                        )}
-                                                        <input
-                                                            type="file"
-                                                            id="imageInput"
-                                                            accept="image/*"
-                                                            onChange={handleImageChange}
-                                                            style={{ display: 'none' }}
-                                                        />
+                                                {ThumbnailLoader ? (
+                                                    <div className="linear-background w-100"> </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
+                                                        <div
+                                                            style={{
+                                                                width: '500px',
+                                                                height: '300px',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                flexDirection: 'column',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                            onClick={() => document.getElementById('imageInput').click()}
+                                                        >
+                                                            {selectedImage && ThumbnailSuccess ? (
+                                                                <img src={selectedImage} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                            ) : (
+                                                                <p>Upload Event Thumbnail</p>
+                                                            )}
+                                                            <input
+                                                                type="file"
+                                                                id="imageInput"
+                                                                accept="image/*"
+                                                                onChange={handleImageChange}
+                                                                style={{ display: 'none' }}
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
                                         </Col>
                                         <Col md={12}>
                                             <div className="mt-4">
                                                 <p>Upload Event Banner <span className="text-danger">*</span></p>
-                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
-                                                    <div
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '300px',
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center',
-                                                            flexDirection: 'column',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                        onClick={() => document.getElementById('imageInputbanner').click()}
-                                                    >
-                                                        {Bannerimg ? (
-                                                            <img src={Bannerimg} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                                        ) : (
-                                                            <p>Upload Event Banner</p>
-                                                        )}
-                                                        <input
-                                                            type="file"
-                                                            id="imageInputbanner"
-                                                            accept="image/*"
-                                                            onChange={handleBannerImageChange}
-                                                            style={{ display: 'none' }}
-                                                        />
+                                                {BannerLoader ? (
+                                                    <div className="linear-background w-100"> </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #d5d5d5', padding: '15px 0px', borderRadius: '15px' }}>
+                                                        <div
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '300px',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                flexDirection: 'column',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                            onClick={() => document.getElementById('imageInputbanner').click()}
+                                                        >
+                                                            {Bannerimg && BannerSuccess ? (
+                                                                <img src={Bannerimg} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                            ) : (
+                                                                <p>Upload Event Banner</p>
+                                                            )}
+                                                            <input
+                                                                type="file"
+                                                                id="imageInputbanner"
+                                                                accept="image/*"
+                                                                onChange={handleBannerImageChange}
+                                                                style={{ display: 'none' }}
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
                                         </Col>
                                         <Col md={12} className="text-center mb-3 mt-4">
@@ -1217,15 +1383,7 @@ const Type = ({ title, editid }) => {
                                         <div className="col-md-12">
                                             <h4 className="mb-2">About this event</h4>
                                             <textarea className="custome-text-area" placeholder="Description" value={Eventdesc} onChange={(e) => setEventdesc(e.target.value)}></textarea>
-
                                         </div>
-                                        {/* <div className="col-md-12 mt-2">
-                                        <h3 className="text-grey">Add more sections to your event page</h3>
-                                        <p className="text-light-grey">Help people in the area discover your event and let attendees know where to <br /> show up.</p>
-                                    </div> */}
-                                        {/* <div className="col-md-12 mt-2 d-flex align-items-center">
-                                        <span className="theme-color text-bold-600 font-30 mr-3">FAQ</span> <button className="btn-2" type="button">Add <img src={Locationstart} /></button>
-                                    </div> */}
                                         <div className="col-md-12 mt-2">
                                             <div className="col-md-12 mt-2">
                                                 <div className="button-group mt-10">
@@ -1441,7 +1599,7 @@ const Type = ({ title, editid }) => {
                         </Col>
                     </Row>
                 </ModalBody>
-            </Modal >
+            </Modal>
         </>
     )
 }

@@ -139,12 +139,8 @@ const Dashboard = ({ title }) => {
                     setLoader(false);
                     if (data.success == true) {
                         toast.success(data.data);
-                        setufname('');
-                        setulname('');
                         setuemail('');
-                        setuwhatsapp_number('');
-                        setuaddress('');
-                        setupincode('');
+                        setoldpassword('')
                         setLoader(false)
                         fetchData();
                     } else {

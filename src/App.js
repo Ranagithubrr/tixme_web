@@ -59,16 +59,23 @@ import OrganizerLogin from './pages/website/auth/OrganizerLogin';
 import OrganizerSignup from './pages/website/auth/OrganizerSignup';
 import AdminLogin from './pages/website/auth/AdminLogin';
 // website
+
+// import Home from './pages/website/Home';
+import Home from "./components/home";
+import Faqs from "./components/faqs";
+import Contact from "./components/contact";
+import About from "./components/about";
+import Policy from "./components/policy";
+
 import WebsiteLayout from './layout/website/Layout'
-import Home from './pages/website/Home';
 import XYZ from './pages/website/XYZ';
 import Scaner from './pages/website/Scaner';
 import Event from './pages/website/Event';
-import Aboutus from './pages/website/aboutus';
+// import Aboutus from './pages/website/aboutus';
 import Terms from './pages/website/Terms';
-import Privacy from './pages/website/Privacy';
-import Faq from './pages/website/Faq';
-import Contact from './pages/website/Contact';
+// import Privacy from './pages/website/Privacy';
+// import Faq from './pages/website/Faq';
+// import Contact from './pages/website/Contact';
 import Organizers from './pages/website/Organizers';
 import OrganizerDetails from './pages/website/OrganizerDetails';
 import Raiseticket from './pages/website/Raiseticket';
@@ -95,14 +102,19 @@ function App() {
           <Route path={app_url + 'auth/organizer/forgot-password'} element={<WebsiteLayout> <OrganizerFpassword title={'Tixme'} /> </WebsiteLayout>} />
           <Route path={app_url + 'auth/admin/login'} element={<WebsiteLayout> <AdminLogin title={'Tixme'} /> </WebsiteLayout>} />
           {/* website */}
-          <Route path={app_url} element={<WebsiteLayout> <Home title={'Tixme'} /> </WebsiteLayout>} />
+          {/* <Route path={app_url} element={<WebsiteLayout> <Home title={'Tixme'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url} element={<Home />} />
           <Route path={app_url + 'test'} element={<XYZ title={'Tixme'} />} />
           <Route path={`${app_url}event/:id/:name`} element={<Event title={'Tixme'} />} />
-          <Route path={app_url + 'aboutus'} element={<WebsiteLayout> <Aboutus title={'About Us'} /> </WebsiteLayout>} />
+          {/* <Route path={app_url + 'aboutus'} element={<WebsiteLayout> <Aboutus title={'About Us'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url + 'aboutus'} element={<About />} />
           <Route path={app_url + 'terms-and-conditions'} element={<WebsiteLayout> <Terms title={'Terms & conditions'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'privacy-policy'} element={<WebsiteLayout> <Privacy title={'Privacy policy'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'faq'} element={<WebsiteLayout> <Faq title={'FAQ'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'contact'} element={<WebsiteLayout> <Contact title={'Contact Us'} /> </WebsiteLayout>} />
+          {/* <Route path={app_url + 'privacy-policy'} element={<WebsiteLayout> <Privacy title={'Privacy policy'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url + 'privacy-policy'} element={<Policy />} />
+          {/* <Route path={app_url + 'faq'} element={<WebsiteLayout> <Faq title={'FAQ'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url + 'faq'} element={<Faqs />} />
+          {/* <Route path={app_url + 'contact'} element={<WebsiteLayout> <Contact title={'Contact Us'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url + 'contact'} element={<Contact />} />
           <Route path={app_url + 'organizers'} element={<WebsiteLayout> <Organizers title={'Organizers'} /> </WebsiteLayout>} />
           <Route path={app_url + 'raise-ticket'} element={<WebsiteLayout> <Raiseticket title={'Raise Ticket'} /> </WebsiteLayout>} />
           <Route path={app_url + 'events'} element={<WebsiteLayout> <Events title={'Events'} /> </WebsiteLayout>} />

@@ -97,24 +97,66 @@ const Dashboard = ({ title }) => {
             setApiLoader(false)
         }
     }
-    const Handelprofileupdate = async () => {
+    const Handelchangeemail = async () => {
         try {
             if (!isEmail(uemail)) {
                 return toast.error('Enter valid email address');
             }
+            if (!oldpassword) {
+                return toast.error('Enter valid password');
+            }
+            setLoader(true);
+            const requestData = {
+                email: uemail,
+                password: oldpassword,
+                id: organizerid,
+            }
+            fetch(apiurl + 'website/update-organizer-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    setLoader(false);
+                    if (data.success == true) {
+                        toast.success(data.data);
+                        setuemail('');
+                        setoldpassword('')
+                        setLoader(false)
+                        fetchData();
+                    } else {
+                        toast.error(data.message);
+                    }
+
+                })
+                .catch(error => {
+                    setLoader(false)
+                    toast.error(error.message);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            setLoader(false)
+            toast.error(error.message);
+            console.error('Api error:', error);
+        }
+    }
+    const Handelprofileupdate = async () => {
+        try {
             if (!ufname || !ulname || !uemail || !uBankaccount || !uBankname || !uConfirmBankaccount || !uHoldername || !uSwift) {
                 return toast.error('Required field must not be empty');
             }
-            if(uBankaccount == uConfirmBankaccount){
+            if (uBankaccount == uConfirmBankaccount) {
 
-            }else{
+            } else {
                 return toast.error('Account no and confirm account no not match');
             }
             setLoader(true);
             const requestData = {
                 first_name: ufname,
                 last_name: ulname,
-                email: uemail,
                 id: organizerid,
                 bankaccount: uBankaccount,
                 bankname: uBankname,
@@ -191,8 +233,8 @@ const Dashboard = ({ title }) => {
                         setconfirmpassword('');
                         setoldpassword('');
                         setLoader(false)
-                    }else{
-                        toast.error(data.message)    
+                    } else {
+                        toast.error(data.message)
                     }
                 })
                 .catch(error => {
@@ -265,13 +307,50 @@ const Dashboard = ({ title }) => {
                                                             </li>
                                                             <li className="nav-item"><a href="#profile-settings" data-bs-toggle="tab" className="nav-link">Setting</a>
                                                             </li>
+                                                            <li className="nav-item"><a href="#email-settings" data-bs-toggle="tab" className="nav-link">Change Email</a>
+                                                            </li>
                                                             <li className="nav-item"><a href="#password-settings" data-bs-toggle="tab" className="nav-link">Change Password</a>
                                                             </li>
                                                         </ul>
 
                                                         <div className="tab-content pt-5">
+                                                            <div id="email-settings" className="tab-pane fade">
+                                                                <div className="pt-3">
+                                                                    <div className="settings-form">
+                                                                        <h4 className="text-primary">Edit Email Id</h4>
+                                                                        <form>
+                                                                            <div className="row">
+                                                                                <div className="col-md-6">
+                                                                                    <Row>
+                                                                                        <Col md={12}>
+                                                                                            <div className="form-group">
+                                                                                                <p className="mb-0">Email address <span className="text-danger">*</span></p>
+                                                                                                <input className="form-control" type="text" placeholder="Email Address" value={uemail} onChange={(e) => setuemail(e.target.value)}></input>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                        <Col md={12}>
+                                                                                            <div className="form-group">
+                                                                                                <p className="mb-0">Password<span className="text-danger">*</span></p>
+                                                                                                <input className="form-control" type="password" placeholder="Enter password" value={oldpassword} onChange={(e) => setoldpassword(e.target.value)}></input>
+                                                                                            </div>
+                                                                                        </Col>
+                                                                                    </Row>
+                                                                                </div>
+                                                                            </div>
+                                                                            {Loader ? (
+                                                                                <span>
+                                                                                    <Whitebtn title={'Please wait...'} />
+                                                                                </span>
+                                                                            ) : (
+                                                                                <span onClick={Handelchangeemail}>
+                                                                                    <Whitebtn title={'Update email'} />
+                                                                                </span>
+                                                                            )}
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             <div id="about-me" className="tab-pane fade active show">
-
                                                                 <div className="profile-personal-info">
 
                                                                     <div className="row mb-2">
@@ -341,6 +420,12 @@ const Dashboard = ({ title }) => {
                                                                             <div className="row">
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">
+                                                                                        <p>Upload your Icon<span className="text-danger">*</span></p>
+                                                                                        
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="form-group">
                                                                                         <p>First Name <span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="text" placeholder="First Name" value={ufname} onChange={(e) => setufname(e.target.value)}></input>
                                                                                     </div>
@@ -349,13 +434,6 @@ const Dashboard = ({ title }) => {
                                                                                     <div className="form-group">
                                                                                         <p>Last Name <span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="text" placeholder="Last Name" value={ulname} onChange={(e) => setulname(e.target.value)}></input>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="col-md-6">
-
-                                                                                    <div className="form-group">
-                                                                                        <p>Email address <span className="text-danger">*</span></p>
-                                                                                        <input className="form-control" type="text" placeholder="Email Address" value={uemail} onChange={(e) => setuemail(e.target.value)}></input>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-12">
@@ -411,7 +489,7 @@ const Dashboard = ({ title }) => {
                                                                         <h4 className="text-primary">Change Password</h4>
                                                                         <form>
                                                                             <div className="row">
-                                                                            <div className="col-md-6">
+                                                                                <div className="col-md-6">
                                                                                     <div className="form-group">
                                                                                         <p>Old Password<span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="password" placeholder="Enter old password" value={oldpassword} onChange={(e) => setoldpassword(e.target.value)}></input>
