@@ -94,13 +94,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* auth */}
-          <Route path={app_url + 'auth/customer/signup'} element={<WebsiteLayout> <CustomerSignup title={'Tixme'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'auth/customer/login'} element={<WebsiteLayout> <CustomerLogin title={'Tixme'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'auth/customer/signup'} element={<CustomerSignup title={'Tixme'} />} />
+          <Route path={app_url + 'auth/customer/login'} element={<CustomerLogin title={'Tixme'} />} />
           <Route path={app_url + 'auth/customer/forgot-password'} element={<WebsiteLayout> <CustomerFpassword title={'Tixme'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'auth/organizer/login'} element={<WebsiteLayout> <OrganizerLogin title={'Tixme'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'auth/organizer/signup'} element={<WebsiteLayout> <OrganizerSignup title={'Tixme'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'auth/organizer/login'} element={<OrganizerLogin title={'Tixme'} />} />
+          <Route path={app_url + 'auth/organizer/signup'} element={<OrganizerSignup title={'Tixme'} />} />
           <Route path={app_url + 'auth/organizer/forgot-password'} element={<WebsiteLayout> <OrganizerFpassword title={'Tixme'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'auth/admin/login'} element={<WebsiteLayout> <AdminLogin title={'Tixme'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'auth/admin/login'} element={<AdminLogin title={'Tixme'} />} />
           {/* website */}
           {/* <Route path={app_url} element={<WebsiteLayout> <Home title={'Tixme'} /> </WebsiteLayout>} /> */}
           <Route path={app_url} element={<Home />} />

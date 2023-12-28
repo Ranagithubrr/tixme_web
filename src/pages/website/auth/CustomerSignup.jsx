@@ -1,33 +1,46 @@
 import React, { useEffect, useState } from "react";
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Select from 'react-select'
-import Button from 'react-bootstrap/Button';
-import { Link, useNavigate } from "react-router-dom";
+import aboutUs from "../../../assets/about-us-pic.svg";
+import Silver from "../../../assets/Sliver.svg";
+import Gold from "../../../assets/Gold.svg";
+import Platinum from "../../../assets/Platinum.svg";
+import google from "../../../assets/google.svg";
+import airBNB from "../../../assets/airBNB.svg";
+import booking from "../../../assets/booking.com.svg";
+import expedia from "../../../assets/expedia.svg";
+import TUI from "../../../assets/TUI.svg";
+import arrow from "../../../assets/arrow.svg";
+import Logo from "../../../assets/Logo.svg";
+import Search from "../../../assets/search.png";
+import Account from "../../../assets/account.svg";
+import menu from "../../../assets/menu.svg";
+import plus from "../../../assets/plus.svg";
+import location from "../../../assets/location (5) 1.svg";
+import Footer from '../../../components/footer';
+import HeaderMenu from '../../../components/headermenu';
+import MobileMenu from '../../../components/mobilemenu';
+import { FaEnvelope } from "react-icons/fa6";
 import toast from 'react-hot-toast';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import WhitestarBtn from '../../../component/Whitestarbtn';
+import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers';
+import { Link, useNavigate } from "react-router-dom";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { auth, googleProvider, facebookProvider } from '../../../firebase';
-import { signInWithPopup } from 'firebase/auth';
-import PersonIcon from '../../../common/icon/person 1.svg';
-import GoogleLogo from '../../../common/icon/google.png';
-import FacebookLogo from '../../../common/icon/facebook.png';
-import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers';
-const Home = ({ title }) => {
+import NoResult from '../../../lotte/xxx.json';
+import Lottie from "lottie-react";
+
+const About = () => {
+    const lottewidth = {
+        width: 'auto',
+        height: '320px'
+    }
     const navigate = useNavigate();
-    const MySwal = withReactContent(Swal)
-    const [LoginEmail, setLoginEmail] = useState();
-    const [LoginPassword, setLoginPassword] = useState();
+    const [SignUpstep, SetSignUpstep] = useState(1);
+    const [Loader, setLoader] = useState(false);
+    const [Confirmemail, setConfirmemail] = useState();
+    const [Email, setEmail] = useState();
+    const [Phonenumber, setPhonenumber] = useState();
     const [Firstname, setFirstname] = useState();
     const [Lastname, setLastname] = useState();
-    const [Email, setEmail] = useState();
-    const [Confirmemail, setConfirmemail] = useState();
-    const [Phonenumber, setPhonenumber] = useState();
-    const [Message, setMessage] = useState();
+
     const [Password, setPassword] = useState();
     const [ConfirmPassword, setConfirmPassword] = useState();
     const [WhatsappNumber, setWhatsappNumber] = useState();
@@ -42,60 +55,17 @@ const Home = ({ title }) => {
     const [Hobby, setHobby] = useState([]);
     const [selectedHobbies, setSelectedHobbies] = useState([]);
 
-    const [Loader, setLoader] = useState(false);
-    const [SignupUseroption, setSignupUseroption] = useState({ value: '2', label: "Ticket buyer" });
-    const [SignupUseroptionid, setSignupUseroptionid] = useState(2);
-    const handlePhoneChange = (newPhone) => {
-        setPhonenumber(newPhone);
-    };
-    const HandelCustomerLogin = async () => {
-        try {
-            if (!LoginEmail) {
-                return toast.error('Email is required');
+    const HandelSignupstepback = async (no) => {
+        SetSignUpstep(Number(no) - 1);
+    }
+    const HandelSignupstep = async (no) => {
+        if (no == 1) {
+            if (!isEmail(Email)) {
+                return toast.error('Enter valid email');
             }
-            if (!isEmail(LoginEmail)) {
-                return toast.error('Enter valid email address');
-            }
-            if (!LoginPassword) {
-                return toast.error('Password is required');
-            }
-            setLoader(true);
-            const requestData = {
-                email: LoginEmail,
-                password: LoginPassword
-            };
-            fetch(apiurl + 'auth/customer/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setLoader(false);
-                    if (data.success == true) {
-                        localStorage.setItem('userauth', data.token);
-                        localStorage.setItem('user_role', 1);
-                        toast.success('Login successful', {
-                            duration: 3000,
-                        });
-                        navigate(app_url);
-                    } else {
-                        toast.error(data.message);
-                    }
-                })
-                .catch(error => {
-                    setLoader(false);
-                    toast.error('Insert error: ' + error.message);
-                    console.error('Insert error:', error);
-                });
-        } catch (error) {
-            console.error('Api error:', error);
+            HandelEmailCheck();
         }
-    };
-    const HandelOrganizersignup = async () => {
-        try {
+        if (no == 2) {
             if (!Firstname || !Lastname || !Email || !Confirmemail || !Phonenumber) {
                 return toast.error('Required field must not be empty');
             }
@@ -110,66 +80,12 @@ const Home = ({ title }) => {
             } else {
                 return toast.error('Email and confirm email must me same');
             }
-            setLoader(true);
-            const requestData = {
-                first_name: Firstname,
-                last_name: Lastname,
-                email: Email,
-                phone_number: Phonenumber,
-                area_code: "+91",
-                agree_to_terms: 1,
-                isactive: 0
-            };
-            fetch(apiurl + 'auth/organizer/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setLoader(false);
-                    if (data.success == true) {
-                        MySwal.fire({
-                            icon: 'success',
-                            title: '',
-                            text: 'Your information has been received, we shall get back shortly! We are working on curating your extraordinary event. Please contact us for any further details or concerns.',
-                        }).then((result) => {
-                            navigate(app_url);
-                        });
-                    } else {
-                        toast.error(data.message);
-                    }
-                })
-                .catch(error => {
-                    setLoader(false);
-                    toast.error('Insert error: ' + error.message);
-                    console.error('Insert error:', error);
-                });
-        } catch (error) {
-            console.error('Api error:', error);
+            SetSignUpstep(3);
         }
-
-    }
-    const HandelCustomersignup = async () => {
-        try {
-            
-            if (!Firstname || !Lastname || !Email || !Confirmemail || !Phonenumber || !Password || !ConfirmPassword) {
+        if (no == 3) {
+            if (!Password || !ConfirmPassword) {
                 return toast.error('Required field must not be empty');
             }
-            if (!isEmail(Email)) {
-                return toast.error('Enter valid email address');
-            }
-            if (!isEmail(Confirmemail)) {
-                return toast.error('Enter valid confirm email address');
-            }
-            if (Email === Confirmemail) {
-
-            } else {
-                return toast.error('Email and confirm email must me same');
-            }
-
             if (Password.length > 7) {
 
             } else {
@@ -180,6 +96,45 @@ const Home = ({ title }) => {
             } else {
                 return toast.error('Password and confirm password not match');
             }
+            SetSignUpstep(4);
+        }
+        if (no == 4) {
+            SetSignUpstep(5);
+        }
+
+    }
+    const HandelEmailCheck = async () => {
+        try {
+            const requestData = {
+                email: Email,
+            };
+            fetch(apiurl + 'auth/customer/email-check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    setLoader(false);
+                    if (data.success == true) {
+                        SetSignUpstep(2);
+                    } else {
+                        toast.error(data.message);
+                    }
+                })
+                .catch(error => {
+
+                    toast.error('Insert error: ' + error.message);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+        }
+    }
+    const HandelCustomersignup = async () => {
+        try {
             if (selectedHobbies.length > 0) {
 
             } else {
@@ -191,7 +146,7 @@ const Home = ({ title }) => {
                 last_name: Lastname,
                 email: Email,
                 phone_number: Phonenumber,
-                hobbies:selectedHobbies,
+                hobbies: selectedHobbies,
                 area_code: "+91",
                 whatsapp_no: WhatsappNumber ? WhatsappNumber : '',
                 address: Address1 ? Address1 : '',
@@ -232,77 +187,8 @@ const Home = ({ title }) => {
             console.error('Api error:', error);
         }
     }
-
-    const handleFacebookLogin = async () => {
-        toast.error("Contact your developer");
-    }
-    const handleGoogleLogin = async () => {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-
-            // Access user information
-            const email = user.email;
-            const displayName = user.displayName;
-            const uid = user.uid;
-            const photoURL = user.photoURL;
-
-            if (email) {
-                try {
-                    setLoader(true);
-                    const requestData = {
-                        email: email,
-                        name: displayName,
-                        profilepic: photoURL
-                    };
-                    fetch(apiurl + 'auth/customer/login-google', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                        },
-                        body: JSON.stringify(requestData),
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            setLoader(false);
-                            if (data.success == true) {
-                                localStorage.setItem('userauth', data.token);
-                                localStorage.setItem('user_role', 1);
-                                toast.success('Login successful', {
-                                    duration: 3000,
-                                });
-                                navigate(app_url);
-                            } else {
-                                toast.error(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            setLoader(false);
-                            // toast.error('Insert error: ' + error.message);
-                            console.error('Insert error:', error);
-                        });
-                } catch (error) {
-                    console.error('Api error:', error);
-                }
-            } else {
-                toast.error("Something wrong!");
-            }
-
-        } catch (error) {
-            console.error(error.message);
-        }
-    };
-    const userOption = [
-        {
-            options: [
-                { value: '2', label: "Ticket buyer" },
-                { value: '1', label: "Organizer" }
-            ]
-        }
-    ]
-    const signupUseroption = (selectedValue) => {
-        setSignupUseroption(selectedValue);
-        setSignupUseroptionid(selectedValue.value);
+    const handlePhoneChange = (newPhone) => {
+        setPhonenumber(newPhone);
     };
     const fetchHobby = async () => {
         try {
@@ -319,7 +205,6 @@ const Home = ({ title }) => {
                     }
                 })
                 .catch(error => {
-                    setLoader(false);
                     // toast.error('Insert error: ' + error.message);
                     console.error('Insert error:', error);
                 });
@@ -329,7 +214,7 @@ const Home = ({ title }) => {
     }
     const toggleHobby = (id) => {
         const updatedHobbies = [...selectedHobbies];
-        console.log("s",updatedHobbies);
+        console.log("s", updatedHobbies);
         if (updatedHobbies.includes(id)) {
             // Hobby is already selected, remove it
             const index = updatedHobbies.indexOf(id);
@@ -347,97 +232,76 @@ const Home = ({ title }) => {
         window.scrollTo(0, 0);
     }, []);
     return (
-        <div className="content-data">
-            <div className="signup-form-section mt-5 mb-5">
-                <Container>
-                    <Row className="signup-form-box signup-area signup-page-padding">
-                    <Col md={3}></Col>
-                        <Col md={6} className="">
-                            <div className="login-area-sec">
-                                <h3 className="signup-page-title">Create an account</h3>
-                                <p className="signup-page-desc">
-                                    Create an account for free
-                                </p>
-                            </div>
-                            <div className="login-area-form-sec">
-                                {SignupUseroptionid == 1 ? (
-                                    <div>
-                                        <div className="form-group">
-                                            <p>First Name <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="First Name" value={Firstname} onChange={(e) => setFirstname(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Last Name <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Last Name" value={Lastname} onChange={(e) => setLastname(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Email address <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Email Address" value={Email} onChange={(e) => setEmail(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Confirm Email address <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Phone number <span className="text-danger">*</span></p>
-                                            {/* <input pattern="[0-9]{10}" maxLength={10} className="form-control" type="number" placeholder="Phone number" value={Phonenumber} onChange={handlePhoneChange}></input> */}
-                                            <PhoneInput
-                                                country={'us'}
-                                                className="phone-number-with-code"
-                                                enableSearch={true}
-                                                placeholder={'Phone number'}
-                                                autoFormat={true}
-                                                value={Phonenumber}
-                                                onChange={handlePhoneChange}
+        <>
+            {/* <!-- mobile nav --> */}
+            <HeaderMenu />
+            <div class="mx-lg-4 my-lg-3 banner bg-primary-color rounded-8 position-relative">
+                <MobileMenu />
+                <h1 class="banner-h fw-bold text-white text-uppercase mb-0 pb-0 animate__animated animate__bounce">
+                    Sign Up
+                </h1>
+                <div class="banner-child bg-white px-0" style={{border: '1px solid #eee'}}>
+                    <div className='row form-area'>
+                        <div className="col-md-6">
+                            <div>
+                                <h3 className="mb-5" style={{ fontWeight: '600', color: '#000' }}>Create an customer account</h3>
+                                {SignUpstep == 2 || SignUpstep == 1 ? (
+                                    <>
+                                        <div class="input-group mb-3 input-warning-o">
+                                            <span class="input-group-text">
+                                                <FaEnvelope />
+                                            </span>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Yourname@gmail.com"
+                                                value={Email} onChange={(e) => setEmail(e.target.value)}
                                             />
                                         </div>
-                                        <div className="form-group">
-                                            <p>Message</p>
-                                            <textarea class="form-control" rows="3" value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
-                                        </div>
-                                        {Loader ? (
-                                            <WhitestarBtn title={'Please wait...'} />
-                                        ) : (
-                                            <div className="form-group">
+                                        {SignUpstep == 2 ? (
+                                            <>
                                                 <div className="form-group">
-                                                    <span onClick={HandelOrganizersignup}>
-                                                        <WhitestarBtn title={'Create Account'} />
-                                                    </span>
+                                                    <p>Confirm Email address <span className="text-danger">*</span></p>
+                                                    <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                                <div className="form-group">
+                                                    <p>First Name <span className="text-danger">*</span></p>
+                                                    <input className="form-control" type="text" placeholder="First Name" value={Firstname} onChange={(e) => setFirstname(e.target.value)}></input>
+                                                </div>
+                                                <div className="form-group">
+                                                    <p>Last Name <span className="text-danger">*</span></p>
+                                                    <input className="form-control" type="text" placeholder="Last Name" value={Lastname} onChange={(e) => setLastname(e.target.value)}></input>
+                                                </div>
+                                                <div className="form-group">
+                                                    <p>Phone number <span className="text-danger">*</span></p>
+                                                    {/* <input className="form-control" type="number" placeholder="Phone number" value={Phonenumber} onChange={handlePhoneChange}></input> */}
+                                                    <PhoneInput
+                                                        country={'us'}
+                                                        className="phone-number-with-code"
+                                                        enableSearch={true}
+                                                        placeholder={'Phone number'}
+                                                        autoFormat={true}
+                                                        value={Phonenumber}
+                                                        onChange={handlePhoneChange}
+                                                    />
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e) => setTerms(e.target.value)} />
+                                                    <label class="form-check-label" for="exampleCheck1">Agree to terms, privacy policy</label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck2" onChange={(e) => setMarketing(e.target.value)} />
+                                                    <label class="form-check-label" for="exampleCheck2">Agree to receive marketing</label>
+                                                </div>
+                                            </>
+                                        ) : ''}
+                                    </>
                                 ) : (
-                                    <div>
-                                        <div className="form-group">
-                                            <p>First Name <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="First Name" value={Firstname} onChange={(e) => setFirstname(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Last Name <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Last Name" value={Lastname} onChange={(e) => setLastname(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Email address <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Email Address" value={Email} onChange={(e) => setEmail(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Confirm Email address <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Phone number <span className="text-danger">*</span></p>
-                                            {/* <input className="form-control" type="number" placeholder="Phone number" value={Phonenumber} onChange={handlePhoneChange}></input> */}
-                                            <PhoneInput
-                                                country={'us'}
-                                                className="phone-number-with-code"
-                                                enableSearch={true}
-                                                placeholder={'Phone number'}
-                                                autoFormat={true}
-                                                value={Phonenumber}
-                                                onChange={handlePhoneChange}
-                                            />
-                                        </div>
+                                    ''
+                                )}
+                                {SignUpstep == 3 ? (
+                                    <>
                                         <div className="form-group">
                                             <p>Password <span className="text-danger">*</span></p>
                                             <input className="form-control" type="password" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)}></input>
@@ -446,6 +310,12 @@ const Home = ({ title }) => {
                                             <p>Confirm Password <span className="text-danger">*</span></p>
                                             <input className="form-control" type="password" placeholder="Confirm Password" value={ConfirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
                                         </div>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
+                                {SignUpstep == 4 ? (
+                                    <>
                                         <div className="form-group">
                                             <p>WhatsApp no</p>
                                             <input className="form-control" type="number" placeholder="WhatsApp no" value={WhatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)}></input>
@@ -458,45 +328,103 @@ const Home = ({ title }) => {
                                             <p>Pincode</p>
                                             <input className="form-control" type="text" placeholder="Pincode" value={Pincode} onChange={(e) => setPincode(e.target.value)}></input>
                                         </div>
-                                        <div className="form-group">
-                                            <p>Select hobby</p>
-                                            {Hobby.map((item, index) => (
-                                                <span
-                                                    key={item.name}
-                                                    className={`hobby-box ${selectedHobbies.includes(item.name) ? 'hobby-active' : ''}`}
-                                                    onClick={() => toggleHobby(item.name)}
-                                                >
-                                                    {item.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e) => setTerms(e.target.value)} />
-                                            <label class="form-check-label" for="exampleCheck1">Agree to terms, privacy policy</label>
-                                        </div>
+                                    </>
+                                ) : ''}
 
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="exampleCheck2" onChange={(e) => setMarketing(e.target.value)} />
-                                            <label class="form-check-label" for="exampleCheck2">Agree to receive marketing</label>
+                                {SignUpstep != 5 ? (
+                                    <>
+                                        <div className='button-area mt-4'>
+
+                                            {SignUpstep >= 2 ? (
+                                                <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
+                                            ) : ''}
+
+                                            {SignUpstep == 5 ? (
+                                                <>
+                                                    {Loader ? (
+                                                        <button type='button' className="signup-page-button">Please wait...</button>
+                                                    ) : (
+                                                        <button type='button' className="signup-page-button" onClick={() => HandelCustomersignup()}>Create account</button>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {SignUpstep <= 3 ? (
+                                                        <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Next</button>
+                                                    ) : (
+                                                        <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Skip / Next</button>
+                                                    )}
+                                                </>
+                                            )}
+                                            <p className="forgot-password-text">Already have an account? <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
                                         </div>
-                                        <p className="forgot-password-text">Already have an account? <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
-                                        {Loader ? (
-                                            <WhitestarBtn title={'Please wait...'} />
-                                        ) : (
-                                            <div className="form-group">
-                                                <span onClick={HandelCustomersignup}>
-                                                    <WhitestarBtn title={'Create Account'} />
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                    </>
+                                ) : (<>
+
+                                </>)}
+
                             </div>
-                        </Col>
-                    </Row>
-                </Container>
+                        </div>
+                        {SignUpstep != 5 ? (
+                            <div className="col-md-6">
+                                <div className="text-center">
+                                    <Lottie className="no-result-img" animationData={NoResult} style={lottewidth} />
+                                </div>
+                            </div>
+                        ) : (<>
+                            <div className="col-md-12 px-5-">
+                                <div className="form-group">
+                                    <p>Select hobby</p>
+                                    {Hobby.map((item, index) => (
+                                        <span
+                                            key={item.name}
+                                            className={`hobby-box ${selectedHobbies.includes(item.name) ? 'hobby-active' : ''}`}
+                                            onClick={() => toggleHobby(item.name)}
+                                        >
+                                            {item.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </>)}
+                        {SignUpstep == 5 ? (
+                            <div className="col-md-12">
+                            <div className='button-area mt-4'>
+
+                                {SignUpstep >= 3 ? (
+                                    <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
+                                ) : ''}
+
+                                {SignUpstep == 5 ? (
+                                    <>
+                                        {Loader ? (
+                                            <button type='button' className="signup-page-button">Please wait...</button>
+                                        ) : (
+                                            <button type='button' className="signup-page-button" onClick={() => HandelCustomersignup()}>Create account</button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        {SignUpstep <= 3 ? (
+                                            <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Next</button>
+                                        ) : (
+                                            <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Skip / Next</button>
+                                        )}
+                                    </>
+                                )}
+                                <p className="forgot-password-text">Already have an account? <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
+                            </div>
+                        </div>
+                        ) : ''}
+                        
+                    </div>
+                </div>
             </div>
-        </div >
-    )
-}
-export default Home;
+            {/* </div> */}
+            <div class="space-height" style={{height: '600px'}}></div>
+            
+        </>
+    );
+};
+
+export default About;
