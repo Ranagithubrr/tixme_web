@@ -27,7 +27,7 @@ const Dashboard = ({ title }) => {
             const requestData = {
                 name: planName,
                 purchase_amount: planpurchaseamount,
-                discount_amount: 10
+                discount_amount: Discountamount
             };
             fetch(apiurl + 'admin/create-package-plan', {
                 method: 'POST',
@@ -166,7 +166,7 @@ const Dashboard = ({ title }) => {
             const requestData = {
                 name: planName,
                 purchase_amount: planpurchaseamount,
-                discount_amount: 10,
+                discount_amount: Discountamount,
                 id: Editid
             };
             fetch(apiurl + 'admin/update-package-plan', {
@@ -216,7 +216,7 @@ const Dashboard = ({ title }) => {
                                 <p>Plan active point<span className="text-danger">*</span></p>
                                 <input placeholder="Plan purchase amount" class="form-control" value={planpurchaseamount} onChange={(e) => setplanpurchaseamount(e.target.value)} />
                             </div>
-                            <div className="form-group d-none">
+                            <div className="form-group">
                                 <p>Reward point<span className="text-danger">*</span></p>
                                 <input placeholder="Plan Reward point" class="form-control" value={Discountamount} onChange={(e) => setDiscountamount(e.target.value)} />
                             </div>
@@ -272,6 +272,7 @@ const Dashboard = ({ title }) => {
                                                                 <th style={{ width: '80px' }}><strong>#</strong></th>
                                                                 <th><strong>Plan name</strong></th>
                                                                 <th><strong>Plan active point</strong></th>
+                                                                <th><strong>Plan reward point</strong></th>
                                                                 <th><strong>Total User</strong></th>
                                                                 <th></th>
                                                             </tr>
@@ -282,6 +283,7 @@ const Dashboard = ({ title }) => {
                                                                     <td><strong>{index + 1}</strong></td>
                                                                     <td><strong className="text-capitalize">{item.name}</strong></td>
                                                                     <td>{item.purchase_amount}</td>
+                                                                    <td>{item.discount_amount}</td>
                                                                     <td>{item.userCount}</td>
                                                                     <td>
                                                                         <div class="dropdown">

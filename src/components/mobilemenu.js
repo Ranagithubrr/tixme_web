@@ -226,10 +226,10 @@ const Header = () => {
                                 </Link>
                             </li>
                             <li class="nav-item d-flex align-items-center justify-content-center me-xl-5 me-3">
-                                <a class="nav-link text-primary-theme pe-1 font-nav" href="#">
+                                <Link class="nav-link text-primary-theme pe-1 font-nav" to={app_url + 'events'}>
                                     Events{" "}
                                     <img class="nav-plus" src={plus} alt="" />
-                                </a>
+                                </Link>
                             </li>
                             <li class="nav-item d-flex align-items-center justify-content-center me-xl-5 me-3">
                                 <Link

@@ -120,8 +120,8 @@ function App() {
           <Route path={app_url + 'events'} element={<Events title={'Events'} />} />
           <Route path={`${app_url}organizer-profile/:id/:name`} element={<WebsiteLayout> <OrganizerDetails title={'Organizer Profile'} /> </WebsiteLayout>} />
           <Route path={app_url + 'cart-details'} element={<CartDetails title={'Your Cart'} />} />
-          <Route path={app_url + 'order-successful-page'} element={<WebsiteLayout> <OrderSuccessful title={'Payment status'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'order-failed-page'} element={<WebsiteLayout> <OrderFailed title={'Payment status'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'order-successful-page'} element={<OrderSuccessful title={'Payment status'} />} />
+          <Route path={app_url + 'order-failed-page'} element={<OrderFailed title={'Payment status'} />} />
           <Route path={app_url + 'scanner'} element={<Scaner title={'Payment status'} />} />
           {/* Customer */}
           <Route path={customer_url + 'dashboard'} element={<CustomerLayout title={'Dashboard'}> <CustomerDashboard title={'Dashboard'} /> </CustomerLayout>} />
