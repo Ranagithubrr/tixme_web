@@ -5,7 +5,9 @@ import UserImg from '../../common/image/Ellipse 73.png';
 import { apiurl } from '../../common/Helpers';
 import Nouserphoto from '../../common/image/nouser.png';
 import RewardBg from '../../common/image/reqard.svg';
-import Grewstar from '../../common/image/grewstar.svg';
+import Silver from '../../common/image/star/Group 1171274979.svg';
+import Gold from '../../common/image/star/Group 1171274980.svg';
+import Prem from '../../common/image/star/Group 1171274981.svg';
 import { FaStar } from "react-icons/fa6";
 const Dashboard = ({ title }) => {
     const Beartoken = localStorage.getItem('userauth');
@@ -103,13 +105,13 @@ const Dashboard = ({ title }) => {
                                                             <Col md={12} className="mt-4">
                                                                 <div className="reward-box" style={{position: 'relative'}}>
                                                                     <span className="reward_star reward_star_grew">
-                                                                        <img src={Grewstar} alt="" />
+                                                                        <img src={Silver} alt="" />
                                                                         <p className="reward_star_text">Silver TIER</p>
                                                                         </span>
-                                                                    <span className="reward_star reward_star_gold"><img src={Grewstar} alt="" />
+                                                                    <span className="reward_star reward_star_gold"><img src={Gold} alt="" />
                                                                     <p className="reward_star_text">gold TIER</p>
                                                                     </span>
-                                                                    <span className="reward_star reward_star_premeum"><img src={Grewstar} alt="" />
+                                                                    <span className="reward_star reward_star_premeum"><img src={Prem} alt="" />
                                                                     <p className="reward_star_text">Platinum TIER</p>
                                                                     </span>
                                                                     <img src={RewardBg} style={{ height: '100%', width: '100%', objectFit: 'contain' }} alt="" />
