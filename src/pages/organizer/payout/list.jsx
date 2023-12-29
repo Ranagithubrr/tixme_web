@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { FiPlus } from "react-icons/fi";
 import withReactContent from 'sweetalert2-react-content';
 import { apiurl, admin_url, organizer_url } from '../../../common/Helpers';
 import { Link } from "react-router-dom";
@@ -112,17 +113,16 @@ const Dashboard = ({ title }) => {
             </Modal >
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <Button variant="link" className="page-theme-btn position-right" onClick={() => Handelnewmodal()}>New request</Button>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
                     <Row className="justify-content-center">
                         <Col md={12}>
                             <Card className="py-4">
                                 <Card.Body>
                                     <Row className="justify-content-center">
+                                        <Col md={12} className="text-end mb-3">
+                                            <button className="theme-btn px-3" onClick={() => setNewModal(!newmodal)}>
+                                                <span className="theme-btn-icon"><FiPlus /></span> <span>New request</span>
+                                            </button>
+                                        </Col>
                                         <Col md={12}>
                                             {Loader ? (
                                                 <div className="linear-background w-100"> </div>

@@ -712,6 +712,7 @@ span.user_drop_icon {
   background: #fff;
   border-radius: 25px;
   overflow: hidden;
+  border: 1px solid #eee;
 }
 
 img.list-thum-img {
@@ -818,7 +819,7 @@ img.list-thum-img {
   position: relative;
   z-index: 1;
   margin-bottom: 60px;
-  margin-top: 60px;
+  margin-top: 60px !important;
 }
 
 .input-group-text {
@@ -1147,4 +1148,20 @@ button.signup-page-button {
 }
 .form-area {
   padding: 100px 100px;
+}
+.input-group {
+  border: 1px solid #eee;
+}
+.page-titles a {
+  color: #fff !important;
+}
+.bb2s{
+  border-bottom: 2px solid #eee;
+}
+.blr2s{
+  border-left: 2px solid #eee;
+  border-right: 2px solid #eee;
+}
+.text-primary-theme {
+  color: #003b8f !important;
 }

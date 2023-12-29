@@ -115,7 +115,7 @@ const Dashboard = ({ title }) => {
                                                             <div class="table-responsive">
                                                                 <table class="table table-responsive-md">
                                                                     <thead>
-                                                                        <tr>
+                                                                        <tr className="bb2s">
                                                                             <th style={{ width: '80px' }}><strong>#</strong></th>
                                                                             <th><strong>Name</strong></th>
                                                                             <th><strong>Status</strong></th>
@@ -124,7 +124,7 @@ const Dashboard = ({ title }) => {
                                                                     </thead>
                                                                     <tbody>
                                                                         {Listitems.map((item, index) => (
-                                                                            <tr>
+                                                                            <tr className="blr2s">
                                                                                 <td><strong>{index + 1}</strong></td>
                                                                                 <td>{item.name}</td>
                                                                                 <td><span class="badge light badge-success">Active</span></td>

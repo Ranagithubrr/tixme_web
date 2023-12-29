@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Timelogo from "../../common/icon/time 1.svg";
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Whitestarbtn from "../../component/Whitestarbtn";
+import { apiurl, app_url, isEmail, organizer_url } from '../../common/Helpers';
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Button from 'react-bootstrap/Button';
-import Footer from '../../components/footer';
-import HeaderMenu from '../../components/headermenu';
-import MobileMenu from '../../components/mobilemenu';
-import { apiurl, onlyDayMonth, shortPer, app_url } from "../../common/Helpers";
-import { Link, useNavigate } from "react-router-dom";
-const Home = () => {
+import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+const Page = ({ title }) => {
     const Beartoken = localStorage.getItem('userauth');
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
@@ -99,7 +98,7 @@ const Home = () => {
                 setamountLoader(false)
                 setmoneyLoader(true)
             }
-        } else {
+        }else{
             setmoneyLoader(true)
         }
     }
@@ -233,14 +232,9 @@ const Home = () => {
         }
     };
     return (
-        <>
-            {" "}
-            <HeaderMenu />
-            <div className="mx-lg-4 my-lg-3 bg-primary-color rounded-8 position-relative" style={{ height: '150px' }}>
-                <MobileMenu />
-            </div>
-            <div>
-            <Row className="mt-5 mx-lg-4 my-lg-3 ">
+        <div className="content-data">
+            <Container>
+                <Row className="mt-5">
                     <Col md={12}>
                         <h2 className="Your-cart-text font-weight-bold">Your cart</h2>
                     </Col>
@@ -386,10 +380,8 @@ const Home = () => {
                         )}
                     </Col>
                 </Row>
-            </div>
-            <Footer />
-        </>
-    );
-};
-
-export default Home;
+            </Container>
+        </div>
+    )
+}
+export default Page;

@@ -1,17 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import WhitestarBtn from '../../../component/Whitestarbtn';
 import Btn from '../../../component/BlueStarwhite';
 import UserImg from '../../../common/image/Ellipse 73.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiChevronDown } from "react-icons/fi";
-import {customer_url, app_url } from '../../../common/Helpers';
+import {apiurl, customer_url, app_url } from '../../../common/Helpers';
+import Nouserphoto from '../../../common/image/nouser.png';
 const Header = ({title}) => {
+    const Beartoken = localStorage.getItem('userauth');
+    const [picture, setpicture] = useState();
     const navigate = useNavigate();
     function Logout() {
         localStorage.removeItem('userauth');
         localStorage.removeItem('user_role');
         localStorage.removeItem('username');
     }
+    const fetchData = async () => {
+        try {
+            fetch(apiurl + 'website/get-user-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                    'Authorization': `Bearer ${Beartoken}`, // Set the Content-Type header to JSON
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setpicture(data.data.picture);
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+        }
+    }
+    useEffect(() => {
+        fetchData();
+    }, []);
     return (
         <>
             <div className="header">
@@ -32,7 +60,7 @@ const Header = ({title}) => {
                                 </li>
                                 <li class="nav-item dropdown header-profile">
                                 <a class="nav-link new_user_menu_header" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
-									<img src={UserImg} width="20" alt=""/>
+									<img src={picture ? picture : Nouserphoto} width="20" alt=""/>
                                     <span className="user_name">{localStorage.getItem('username') ? localStorage.getItem('username') : 'Your Name'}</span>
                                     <span className="user_drop_icon"><FiChevronDown /></span>
                                 </a>

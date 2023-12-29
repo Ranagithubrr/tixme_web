@@ -4,9 +4,11 @@ import UserImg from '../../../common/image/Ellipse 73.png';
 import { Link } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { organizer_url, app_url, apiurl } from '../../../common/Helpers';
+import Nouserphoto from '../../../common/image/nouser.png';
 import toast from "react-hot-toast";
 const Header = ({ title }) => {
     const [Username, setUsername] = useState();
+    const [picture, setpicture] = useState();
     function Logout() {
         localStorage.removeItem('organizerauth');
         localStorage.removeItem('organizerid');
@@ -30,6 +32,7 @@ const Header = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setUsername(data.data.name);
+                        setpicture(data.data.profile_picture);
                     }
                 })
                 .catch(error => {
@@ -64,7 +67,7 @@ const Header = ({ title }) => {
                                 </li>
                                 <li class="nav-item dropdown header-profile">
                                     <a class="nav-link new_user_menu_header" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
-                                        <img src={UserImg} width="20" alt="" />
+                                        <img src={picture ? picture : Nouserphoto} width="20" alt="" />
                                         <span className="user_name">{Username ? Username : 'Your Name'}</span>
                                         <span className="user_drop_icon"><FiChevronDown /></span>
                                     </a>

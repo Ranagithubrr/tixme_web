@@ -24,7 +24,7 @@ import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers
 import { Link, useNavigate } from "react-router-dom";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import NoResult from '../../../lotte/xxx.json';
+import SignupImg from '../../../common/image/signup.svg';
 import Lottie from "lottie-react";
 
 const About = () => {
@@ -240,7 +240,7 @@ const About = () => {
                 <h1 class="banner-h fw-bold text-white text-uppercase mb-0 pb-0 animate__animated animate__bounce">
                     Sign Up
                 </h1>
-                <div class="banner-child bg-white px-0" style={{border: '1px solid #eee'}}>
+                <div class="banner-child bg-white px-0" style={{ border: '1px solid #eee' }}>
                     <div className='row form-area'>
                         <div className="col-md-6">
                             <div>
@@ -368,7 +368,7 @@ const About = () => {
                         {SignUpstep != 5 ? (
                             <div className="col-md-6">
                                 <div className="text-center">
-                                    <Lottie className="no-result-img" animationData={NoResult} style={lottewidth} />
+                                    <img className="no-result-img" src={SignupImg} style={lottewidth} />
                                 </div>
                             </div>
                         ) : (<>
@@ -389,40 +389,40 @@ const About = () => {
                         </>)}
                         {SignUpstep == 5 ? (
                             <div className="col-md-12">
-                            <div className='button-area mt-4'>
+                                <div className='button-area mt-4'>
 
-                                {SignUpstep >= 3 ? (
-                                    <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
-                                ) : ''}
+                                    {SignUpstep >= 3 ? (
+                                        <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
+                                    ) : ''}
 
-                                {SignUpstep == 5 ? (
-                                    <>
-                                        {Loader ? (
-                                            <button type='button' className="signup-page-button">Please wait...</button>
-                                        ) : (
-                                            <button type='button' className="signup-page-button" onClick={() => HandelCustomersignup()}>Create account</button>
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        {SignUpstep <= 3 ? (
-                                            <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Next</button>
-                                        ) : (
-                                            <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Skip / Next</button>
-                                        )}
-                                    </>
-                                )}
-                                <p className="forgot-password-text">Already have an account? <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
+                                    {SignUpstep == 5 ? (
+                                        <>
+                                            {Loader ? (
+                                                <button type='button' className="signup-page-button">Please wait...</button>
+                                            ) : (
+                                                <button type='button' className="signup-page-button" onClick={() => HandelCustomersignup()}>Create account</button>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {SignUpstep <= 3 ? (
+                                                <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Next</button>
+                                            ) : (
+                                                <button type='button' className="signup-page-button" onClick={() => HandelSignupstep(SignUpstep)}>Skip / Next</button>
+                                            )}
+                                        </>
+                                    )}
+                                    <p className="forgot-password-text">Already have an account? <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
+                                </div>
                             </div>
-                        </div>
                         ) : ''}
-                        
+
                     </div>
                 </div>
             </div>
             {/* </div> */}
-            <div class="space-height" style={{height: '600px'}}></div>
-            
+            <div class="space-height" style={{ height: '600px' }}></div>
+
         </>
     );
 };

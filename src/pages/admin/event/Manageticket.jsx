@@ -29,6 +29,7 @@ const Dashboard = ({ title }) => {
     const navigate = useNavigate();
     const [Ticketshow, setTicketshow] = useState(false);
     const [Listitems, setListitems] = useState([]);
+    const [allEvents, setallEvents] = useState([]);
     const [Ticketsoldlist, setTicketsoldlist] = useState([]);
     const [Eventdata, setEventdata] = useState([]);
     const [Tickettype, setTickettype] = useState(1);
@@ -65,6 +66,7 @@ const Dashboard = ({ title }) => {
                         const fetchdata = data.data.allprice;
                         setTicketsoldlist(data.ticketdata);
                         setListitems(fetchdata);
+                        setallEvents(fetchdata)
                     }
                     setLoader(false);
                 })
@@ -311,6 +313,21 @@ const Dashboard = ({ title }) => {
         fetchAllTicket();
         fetchEvent();
     }, []);
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+        // Now filter the events based on the search term
+        if (value) {
+            
+            const filteredEvents = allEvents.filter(event =>
+                event.name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allEvents);
+        }
+    };
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -323,9 +340,15 @@ const Dashboard = ({ title }) => {
                                         <Col md={12}>
                                             <Row>
                                                 <Col md={5}>
-                                                    <div class="input-group mb-3 input-warning-o">
+                                                <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search events" />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search ticket name"
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                                 <Col md={3}>

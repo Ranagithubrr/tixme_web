@@ -74,7 +74,8 @@ const Dashboard = ({ title }) => {
                 whatsapp_no: uwhatsapp_number,
                 address: uaddress,
                 pincode: upincode,
-                hobbies: selectedHobbies
+                hobbies: selectedHobbies,
+                picture: Dpname
             }
             fetch(apiurl + 'website/update-user-details', {
                 method: 'POST',
@@ -118,7 +119,7 @@ const Dashboard = ({ title }) => {
             if (!isEmail(uemail)) {
                 return toast.error('Enter valid email address');
             }
-            if(!oldpassword){
+            if (!oldpassword) {
                 return toast.error('Enter valid password');
             }
             setLoader(true);
@@ -237,7 +238,7 @@ const Dashboard = ({ title }) => {
                         setpincode(data.data.pincode);
                         setpicture(data.data.picture);
                         setbadge(data.data.plan_name);
-
+                        setSelecteDp('');
                         setufname(data.data.first_name);
                         setulname(data.data.last_name);
                         setuemail(data.data.email);
@@ -304,6 +305,41 @@ const Dashboard = ({ title }) => {
         fetchHobby();
     }, []);
 
+    const [selecteDp, setSelecteDp] = useState(null);
+    const [Dpname, setDpname] = useState();
+    const handleBannerImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            let img = e.target.files[0];
+            setSelecteDp(URL.createObjectURL(img));
+            uploadBannerToServer(e.target.files[0]);
+        }
+    };
+    const uploadBannerToServer = async (imageFile) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', imageFile); // 'image' is the parameter name expected by your API
+            const response = await fetch('https://tixme.co/tixme_storage/api/upload-image', {
+                method: 'POST',
+                body: formData, // No headers needed, as FormData sets the Content-Type to multipart/form-data
+            });
+            if (!response.ok) {
+                toast.error('Image not uploaded try again');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json();
+            if (result) {
+                setDpname(result.image_name);
+                setpicture(selecteDp);
+            } else {
+                return toast.error('Image not uploaded try again');
+            }
+        } catch (error) {
+            toast.error('Image not uploaded try again');
+            console.error('Error uploading the image:', error);
+
+        }
+    };
+
     return (
         <>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
@@ -317,7 +353,8 @@ const Dashboard = ({ title }) => {
                                     </div>
                                     <div className="profile-info">
                                         <div className="profile-photo">
-                                            <img src={picture ? picture : Nouserphoto} className="img-fluid rounded-circle" alt="" />
+
+                                            <img src={picture ? picture : Nouserphoto} style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} alt="" />
                                         </div>
                                         <div className="profile-details">
 
@@ -366,8 +403,8 @@ const Dashboard = ({ title }) => {
                                                             <li className="nav-item"><a href="#password-settings" data-bs-toggle="tab" className="nav-link">Change Password</a>
                                                             </li>
                                                         </ul>
-                                                        <div className="tab-content">
-                                                            <div id="about-me" className="tab-pane fade active show">
+                                                        <div className="tab-content pt-3">
+                                                            <div id="about-me" className="tab-pane active show">
 
                                                                 <div className="profile-personal-info">
                                                                     <h4 className="text-primary mb-4">Personal Information</h4>
@@ -411,7 +448,7 @@ const Dashboard = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="profile-settings" className="tab-pane fade">
+                                                            <div id="profile-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Account Setting</h4>
@@ -419,7 +456,22 @@ const Dashboard = ({ title }) => {
                                                                             <div className="row">
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">
-
+                                                                                        <p>Profile picture</p>
+                                                                                        {selecteDp ? (
+                                                                                            <img src={selecteDp} alt="Uploaded" style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} />
+                                                                                        ) : ''}
+                                                                                        <input
+                                                                                            type="file"
+                                                                                            id="imageInputbanner"
+                                                                                            accept="image/*"
+                                                                                            className="form-control"
+                                                                                            onChange={handleBannerImageChange}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6"></div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="form-group">
                                                                                         <p>First Name <span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="text" placeholder="First Name" value={ufname} onChange={(e) => setufname(e.target.value)}></input>
                                                                                     </div>
@@ -479,7 +531,7 @@ const Dashboard = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="password-settings" className="tab-pane fade">
+                                                            <div id="password-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Change Password</h4>
@@ -521,7 +573,7 @@ const Dashboard = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="email-settings" className="tab-pane fade">
+                                                            <div id="email-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Edit Email Id</h4>
@@ -560,8 +612,6 @@ const Dashboard = ({ title }) => {
                                                         </div>
                                                     </div>
                                                 )}
-
-
                                             </div>
                                         </div>
                                     </div>
@@ -572,7 +622,6 @@ const Dashboard = ({ title }) => {
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

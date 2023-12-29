@@ -25,7 +25,7 @@ import MobileMenu from './mobilemenu';
 import Alert from 'react-bootstrap/Alert';
 import Arts from '../common/category/Group 1171274918.svg';
 import Business from '../common/category/Group 1171274915.svg';
-import Food from '../common/category/Group 1171274917.svg';
+import Food from '../common/category/Group 1171274941.svg';
 import Music from '../common/category/Group 1171274913.svg';
 import NIGHTLIFE from '../common/category/Group 1171274914.svg';
 import Sports from '../common/category/Group 1171274916.svg';
@@ -34,7 +34,7 @@ import { apiurl, onlyDayMonth, shortPer, app_url } from "../common/Helpers";
 import { Link, useNavigate } from "react-router-dom";
 const Home = () => {
   const navigate = useNavigate();
-
+  
   const [Eventlist, setEventlist] = useState([]);
   const [Eventloader, setEventloader] = useState(false);
   const [Listitems, setListitems] = useState([]);
@@ -134,6 +134,7 @@ const Home = () => {
           <div className="d-flex space-sec2 flex-lg-row flex-column mt-lg-0 mt-3">
             <select
               className="form-select category me-4"
+              style={{width: '30%'}}
               aria-label="Default select example"
             >
               <option value=''>Any</option>
@@ -212,7 +213,7 @@ const Home = () => {
               {Eventlist.length > 0 ? (
                 <>
                   {Eventlist.map((item, index) => (
-                    <div className="col-xl-4 col-md-6 col-12">
+                    <div className="col-xl-4 col-md-6 col-12" onClick={() => viewEvent(item._id, item.name)}>
                       <div className="bg-white rounded-10 shadow-bottom">
                         <img className="event-card-img" src={card} alt="" />
                         <div className="d-flex align-items-center justify-content-end mt-n4 me-3">

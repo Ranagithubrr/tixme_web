@@ -268,7 +268,7 @@ const Dashboard = ({ title }) => {
                                                 ) : (
                                                     <table class="table table-responsive-md">
                                                         <thead>
-                                                            <tr>
+                                                            <tr className="bb2s">
                                                                 <th style={{ width: '80px' }}><strong>#</strong></th>
                                                                 <th><strong>Plan name</strong></th>
                                                                 <th><strong>Plan active point</strong></th>
@@ -278,7 +278,7 @@ const Dashboard = ({ title }) => {
                                                         </thead>
                                                         <tbody>
                                                             {Listitems.map((item, index) => (
-                                                                <tr>
+                                                                <tr className="blr2s">
                                                                     <td><strong>{index + 1}</strong></td>
                                                                     <td><strong className="text-capitalize">{item.name}</strong></td>
                                                                     <td>{item.purchase_amount}</td>

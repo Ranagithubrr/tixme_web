@@ -1,13 +1,45 @@
 import React, { useEffect, useState } from "react";
-import Container from 'react-bootstrap/Container';
+import aboutUs from "../../../assets/about-us-pic.svg";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Link, useNavigate } from "react-router-dom";
+import Silver from "../../../assets/Sliver.svg";
+import Gold from "../../../assets/Gold.svg";
+import Platinum from "../../../assets/Platinum.svg";
+import google from "../../../assets/google.svg";
+import airBNB from "../../../assets/airBNB.svg";
+import booking from "../../../assets/booking.com.svg";
+import expedia from "../../../assets/expedia.svg";
+import TUI from "../../../assets/TUI.svg";
+import arrow from "../../../assets/arrow.svg";
+import Logo from "../../../assets/Logo.svg";
+import Search from "../../../assets/search.png";
+import Account from "../../../assets/account.svg";
+import menu from "../../../assets/menu.svg";
+import plus from "../../../assets/plus.svg";
+import location from "../../../assets/location (5) 1.svg";
+import Footer from '../../../components/footer';
+import HeaderMenu from '../../../components/headermenu';
+import MobileMenu from '../../../components/mobilemenu';
+import { FaEnvelope } from "react-icons/fa6";
 import toast from 'react-hot-toast';
-import WhitestarBtn from '../../../component/Whitestarbtn';
-import 'react-phone-input-2/lib/style.css';
 import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers';
-const Home = ({ title }) => {
+import WhitestarBtn from '../../../component/Whitestarbtn';
+import { Link, useNavigate } from "react-router-dom";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import NoResult from '../../../lotte/xxx.json';
+import Lottie from "lottie-react";
+import Select from 'react-select'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { auth, googleProvider, facebookProvider } from '../../../firebase';
+import GoogleLogo from '../../../common/icon/google.png';
+import { signInWithPopup } from 'firebase/auth';
+const About = () => {
+    const lottewidth = {
+        width: 'auto',
+        height: '320px'
+    }
     const navigate = useNavigate();
     const [Email, setEmail] = useState();
     const [otp, setOTP] = useState();
@@ -177,90 +209,102 @@ const Home = ({ title }) => {
         window.scrollTo(0, 0);
     }, []);
     return (
-        <div className="content-data">
-            <div className="signup-form-section mt-5 mb-5">
-                <Container>
-                    <Row className="signup-form-box login-area signup-page-padding">
-                        <Col md={3}></Col>
-                        <Col md={6} className="">
-                            <div className="login-area-sec">
-                                <h3 className="signup-page-title">Reset Password</h3>
-                                <p className="signup-page-desc">
-                                    Enter the email associated with your account and we'll send an OTP to reset your password.
-                                </p>
-                            </div>
-                            <div className="login-area-form-sec">
-                                {Newpassloader ? (
-                                    <>
-                                        <div className="form-group">
-                                            <p>Password <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="password" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)}></input>
-                                        </div>
-                                        <div className="form-group">
-                                            <p>Confirm Password <span className="text-danger">*</span></p>
-                                            <input className="form-control" type="password" placeholder="Confirm Password" value={ConfirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        {Otploader ? (
+        <>
+            {/* <!-- mobile nav --> */}
+            <HeaderMenu />
+            <div class="mx-lg-4 my-lg-3 banner bg-primary-color rounded-8 position-relative">
+                <MobileMenu />
+                <h1 class="banner-h fw-bold text-white text-uppercase mb-0 pb-0 animate__animated animate__bounce">
+                    Reset Password
+                </h1>
+                <div class="banner-child bg-white px-0" style={{ border: '1px solid #eee' }}>
+                    <div className=''>
+                        <Row className="login-area signup-page-padding">
+                            <Col md={3}></Col>
+                            <Col md={6} className="">
+                                <div className="login-area-sec">
+                                    <h3 className="signup-page-title">Reset Password</h3>
+                                    <p className="signup-page-desc">
+                                        Enter the email associated with your account and we'll send an OTP to reset your password.
+                                    </p>
+                                </div>
+                                <div className="login-area-form-sec">
+                                    {Newpassloader ? (
+                                        <>
                                             <div className="form-group">
-                                                <p>OTP</p>
-                                                <input
-                                                    className="form-control"
-                                                    type="number"  // Use type="text" to allow for maxLength attribute
-                                                    maxLength="6"
-                                                    placeholder="Enter OTP"
-                                                    value={otp}
-                                                    onInput={handleOTPChange}
-                                                />
+                                                <p>Password <span className="text-danger">*</span></p>
+                                                <input className="form-control" type="password" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)}></input>
                                             </div>
-                                        ) : (
                                             <div className="form-group">
-                                                <p>Email</p>
-                                                <input className="form-control" type="text" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)}></input>
+                                                <p>Confirm Password <span className="text-danger">*</span></p>
+                                                <input className="form-control" type="password" placeholder="Confirm Password" value={ConfirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
                                             </div>
-                                        )}
-                                    </>
-                                )}
-                                <p className="forgot-password-text">Wait, I remember my password <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
-
-                                <p className="forgot-password-text">Don't have an account? <Link to={app_url + 'auth/customer/signup'} className='reset-password-link'>Signup</Link></p>
-
-                                <div className="form-group">
-                                    {Loader ? (
-                                        <span>
-                                            <WhitestarBtn title={'Please wait...'} />
-                                        </span>
+                                        </>
                                     ) : (
                                         <>
-                                            {Newpassloader ? (
-                                                <span onClick={handelNewPassword}>
-                                                    <WhitestarBtn title={'New password'} />
-                                                </span>
+                                            {Otploader ? (
+                                                <div className="form-group">
+                                                    <p>OTP</p>
+                                                    <input
+                                                        className="form-control"
+                                                        type="number"  // Use type="text" to allow for maxLength attribute
+                                                        maxLength="6"
+                                                        placeholder="Enter OTP"
+                                                        value={otp}
+                                                        onInput={handleOTPChange}
+                                                    />
+                                                </div>
                                             ) : (
-                                                <>
-                                                    {Otploader ? (
-                                                        <span onClick={checkUserOtp}>
-                                                            <WhitestarBtn title={'Verify OTP'} />
-                                                        </span>
-                                                    ) : (
-                                                        < span onClick={checkUserEmail}>
-                                                            <WhitestarBtn title={'Reset password'} />
-                                                        </span>
-                                                    )}
-                                                </>
+                                                <div className="form-group">
+                                                    <p>Email</p>
+                                                    <input className="form-control" type="text" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)}></input>
+                                                </div>
                                             )}
-
                                         </>
                                     )}
+                                    <p className="forgot-password-text">Wait, I remember my password <Link to={app_url + 'auth/customer/login'} className='reset-password-link'>Login</Link></p>
+
+                                    <p className="forgot-password-text">Don't have an account? <Link to={app_url + 'auth/customer/signup'} className='reset-password-link'>Signup</Link></p>
+
+                                    <div className="form-group">
+                                        {Loader ? (
+                                            <span>
+                                                <WhitestarBtn title={'Please wait...'} />
+                                            </span>
+                                        ) : (
+                                            <>
+                                                {Newpassloader ? (
+                                                    <span onClick={handelNewPassword}>
+                                                        <WhitestarBtn title={'New password'} />
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        {Otploader ? (
+                                                            <span onClick={checkUserOtp}>
+                                                                <WhitestarBtn title={'Verify OTP'} />
+                                                            </span>
+                                                        ) : (
+                                                            < span onClick={checkUserEmail}>
+                                                                <WhitestarBtn title={'Reset password'} />
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-            </div >
-        </div >
-    )
-}
-export default Home;
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
+            </div>
+            {/* </div> */}
+            <div class="space-height" style={{ height: '600px' }}></div>
+
+        </>
+    );
+};
+
+export default About;
