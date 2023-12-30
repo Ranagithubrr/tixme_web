@@ -199,7 +199,7 @@ const Dashboard = ({ title }) => {
                                                         </ul>
 
                                                         <div className="tab-content pt-5">
-                                                            <div id="about-me" className="tab-pane fade active show">
+                                                            <div id="about-me" className="tab-pane active show">
                                                                 
                                                                 <div className="profile-personal-info">
                                                                     

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { apiurl, app_url } from "../../common/Helpers";
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 const Dashboard = ({ title }) => {
     const organizerid = localStorage.getItem('organizerid');
     const navigate = useNavigate();
@@ -11,6 +13,62 @@ const Dashboard = ({ title }) => {
     const [Totalevent, setTotalevent] = useState();
     const [Totalincome, setTotalincome] = useState();
     const [Totalticket, setTotalticket] = useState();
+
+    // Highcharts.chart('openinterest', {
+        
+    const options = {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Monthly Ticket Sales and Revenue for 2023',
+            align: 'left'
+        },
+        subtitle: {
+            text: 'Source: Company Data',
+            align: 'left'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            crosshair: true,
+            accessibility: {
+                description: 'Months'
+            }
+        },
+        yAxis: [{
+            min: 0,
+            title: {
+                text: 'Number of Tickets'
+            }
+        }, {
+            title: {
+                text: 'Revenue (USD)'
+            },
+            opposite: true
+        }],
+        tooltip: {
+            shared: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Tickets Booked',
+            data: [1200, 1100, 1500, 1400, 1300, 1600, 1700, 1800, 1900, 2000, 2100, 2200] // Replace with your data
+        }, {
+            name: 'Revenue',
+            yAxis: 1,
+            data: [12000, 11000, 15000, 14000, 13000, 16000, 17000, 18000, 19000, 20000, 21000, 22000], // Replace with your data
+            tooltip: {
+                valuePrefix: '$'
+            }
+        }]
+    };
+    
+    
 
     const fetchEvent = async () => {
         try {
@@ -157,6 +215,9 @@ const Dashboard = ({ title }) => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className="col-md-12 mb-5">
+                        <HighchartsReact highcharts={Highcharts} options={options} />
                         </div>
                     </Row>
                 </div>

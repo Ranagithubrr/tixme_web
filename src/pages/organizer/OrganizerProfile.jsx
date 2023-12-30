@@ -29,7 +29,6 @@ const Dashboard = ({ title }) => {
     const [state, setstate] = useState();
     const [country, setcountry] = useState();
     const [pincode, setpincode] = useState();
-    const [picture, setpicture] = useState();
     const [Bankaccount, setBankaccount] = useState();
     const [Bankname, setBankname] = useState();
     const [Holdername, setHoldername] = useState();
@@ -52,6 +51,7 @@ const Dashboard = ({ title }) => {
     const [password, setpassword] = useState();
     const [confirmpassword, setconfirmpassword] = useState();
     const [oldpassword, setoldpassword] = useState();
+    const [picture, setpicture] = useState();
 
     const [Hobby, setHobby] = useState([]);
     const [selectedHobbies, setSelectedHobbies] = useState([]);
@@ -79,6 +79,8 @@ const Dashboard = ({ title }) => {
                         setufname(data.data.first_name);
                         setulname(data.data.last_name);
                         setuemail(data.data.email);
+                        setpicture(data.data.profile_picture);                        
+                        setSelecteDp(null);
                         setphone_number(data.data.phone_number);
                         setBankaccount(data.data.bankaccount);
                         setBankname(data.data.bankname);
@@ -162,6 +164,7 @@ const Dashboard = ({ title }) => {
                 bankname: uBankname,
                 holdername: uHoldername,
                 swiftcode: uSwift,
+                profile_picture: Dpname
             }
             fetch(apiurl + 'website/update-organizer-details', {
                 method: 'POST',
@@ -247,6 +250,42 @@ const Dashboard = ({ title }) => {
             console.error('Api error:', error);
         }
     }
+
+    const [selecteDp, setSelecteDp] = useState(null);
+    const [Dpname, setDpname] = useState();
+    const handleBannerImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            let img = e.target.files[0];
+            setSelecteDp(URL.createObjectURL(img));
+            uploadBannerToServer(e.target.files[0]);
+        }
+    };
+    const uploadBannerToServer = async (imageFile) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', imageFile); // 'image' is the parameter name expected by your API
+            const response = await fetch('https://tixme.co/tixme_storage/api/upload-image', {
+                method: 'POST',
+                body: formData, // No headers needed, as FormData sets the Content-Type to multipart/form-data
+            });
+            if (!response.ok) {
+                toast.error('Image not uploaded try again');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json();
+            if (result) {
+                setDpname(result.image_name);
+                setpicture(selecteDp);
+            } else {
+                return toast.error('Image not uploaded try again');
+            }
+        } catch (error) {
+            toast.error('Image not uploaded try again');
+            console.error('Error uploading the image:', error);
+
+        }
+    };
+
     useEffect(() => {
 
         fetchData();
@@ -270,7 +309,7 @@ const Dashboard = ({ title }) => {
                                     </div>
                                     <div className="profile-info">
                                         <div className="profile-photo">
-                                            <img src={picture ? picture : Nouserphoto} className="img-fluid rounded-circle" alt="" />
+                                            <img src={picture ? picture : Nouserphoto} style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }}  alt="" />
                                         </div>
                                         <div className="profile-details">
 
@@ -314,7 +353,7 @@ const Dashboard = ({ title }) => {
                                                         </ul>
 
                                                         <div className="tab-content pt-5">
-                                                            <div id="email-settings" className="tab-pane fade">
+                                                            <div id="email-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Edit Email Id</h4>
@@ -350,7 +389,7 @@ const Dashboard = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="about-me" className="tab-pane fade active show">
+                                                            <div id="about-me" className="tab-pane active show">
                                                                 <div className="profile-personal-info">
 
                                                                     <div className="row mb-2">
@@ -412,12 +451,28 @@ const Dashboard = ({ title }) => {
 
                                                                 </div>
                                                             </div>
-                                                            <div id="profile-settings" className="tab-pane fade">
+                                                            <div id="profile-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Account Setting</h4>
                                                                         <form>
                                                                             <div className="row">
+                                                                            <div className="col-md-6">
+                                                                                    <div className="form-group">
+                                                                                        <p>Organizer icon</p>
+                                                                                        {selecteDp ? (
+                                                                                            <img src={selecteDp} alt="Uploaded" style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} />
+                                                                                        ) : ''}
+                                                                                        <input
+                                                                                            type="file"
+                                                                                            id="imageInputbanner"
+                                                                                            accept="image/*"
+                                                                                            className="form-control"
+                                                                                            onChange={handleBannerImageChange}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6"></div>
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">
                                                                                         <p>Upload your Icon<span className="text-danger">*</span></p>
@@ -483,7 +538,7 @@ const Dashboard = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="password-settings" className="tab-pane fade">
+                                                            <div id="password-settings" className="tab-pane">
                                                                 <div className="pt-3">
                                                                     <div className="settings-form">
                                                                         <h4 className="text-primary">Change Password</h4>

@@ -96,32 +96,32 @@ function App() {
           {/* auth */}
           <Route path={app_url + 'auth/customer/signup'} element={<CustomerSignup title={'Tixme'} />} />
           <Route path={app_url + 'auth/customer/login'} element={<CustomerLogin title={'Tixme'} />} />
-          <Route path={app_url + 'auth/customer/forgot-password'} element={<WebsiteLayout> <CustomerFpassword title={'Tixme'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'auth/customer/forgot-password'} element={<CustomerFpassword title={'Tixme'} />} />
           <Route path={app_url + 'auth/organizer/login'} element={<OrganizerLogin title={'Tixme'} />} />
           <Route path={app_url + 'auth/organizer/signup'} element={<OrganizerSignup title={'Tixme'} />} />
-          <Route path={app_url + 'auth/organizer/forgot-password'} element={<WebsiteLayout> <OrganizerFpassword title={'Tixme'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'auth/organizer/forgot-password'} element={<OrganizerFpassword title={'Tixme'} />} />
           <Route path={app_url + 'auth/admin/login'} element={<AdminLogin title={'Tixme'} />} />
           {/* website */}
           {/* <Route path={app_url} element={<WebsiteLayout> <Home title={'Tixme'} /> </WebsiteLayout>} /> */}
+          {/* <Route path={app_url + 'aboutus'} element={<WebsiteLayout> <Aboutus title={'About Us'} /> </WebsiteLayout>} /> */}
+          {/* <Route path={app_url + 'privacy-policy'} element={<WebsiteLayout> <Privacy title={'Privacy policy'} /> </WebsiteLayout>} /> */}
+          {/* <Route path={app_url + 'faq'} element={<WebsiteLayout> <Faq title={'FAQ'} /> </WebsiteLayout>} /> */}
+          {/* <Route path={app_url + 'contact'} element={<WebsiteLayout> <Contact title={'Contact Us'} /> </WebsiteLayout>} /> */}
           <Route path={app_url} element={<Home />} />
           <Route path={app_url + 'test'} element={<XYZ title={'Tixme'} />} />
           <Route path={`${app_url}event/:id/:name`} element={<Event title={'Tixme'} />} />
-          {/* <Route path={app_url + 'aboutus'} element={<WebsiteLayout> <Aboutus title={'About Us'} /> </WebsiteLayout>} /> */}
-          <Route path={app_url + 'aboutus'} element={<About />} />
           <Route path={app_url + 'terms-and-conditions'} element={<WebsiteLayout> <Terms title={'Terms & conditions'} /> </WebsiteLayout>} />
-          {/* <Route path={app_url + 'privacy-policy'} element={<WebsiteLayout> <Privacy title={'Privacy policy'} /> </WebsiteLayout>} /> */}
+          <Route path={app_url + 'aboutus'} element={<About />} />
           <Route path={app_url + 'privacy-policy'} element={<Policy />} />
-          {/* <Route path={app_url + 'faq'} element={<WebsiteLayout> <Faq title={'FAQ'} /> </WebsiteLayout>} /> */}
           <Route path={app_url + 'faq'} element={<Faqs />} />
-          {/* <Route path={app_url + 'contact'} element={<WebsiteLayout> <Contact title={'Contact Us'} /> </WebsiteLayout>} /> */}
           <Route path={app_url + 'contact'} element={<Contact />} />
           <Route path={app_url + 'organizers'} element={<WebsiteLayout> <Organizers title={'Organizers'} /> </WebsiteLayout>} />
           <Route path={app_url + 'raise-ticket'} element={<WebsiteLayout> <Raiseticket title={'Raise Ticket'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'events'} element={<WebsiteLayout> <Events title={'Events'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'events'} element={<Events title={'Events'} />} />
           <Route path={`${app_url}organizer-profile/:id/:name`} element={<WebsiteLayout> <OrganizerDetails title={'Organizer Profile'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'cart-details'} element={<WebsiteLayout> <CartDetails title={'Your Cart'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'order-successful-page'} element={<WebsiteLayout> <OrderSuccessful title={'Payment status'} /> </WebsiteLayout>} />
-          <Route path={app_url + 'order-failed-page'} element={<WebsiteLayout> <OrderFailed title={'Payment status'} /> </WebsiteLayout>} />
+          <Route path={app_url + 'cart-details'} element={<CartDetails title={'Your Cart'} />} />
+          <Route path={app_url + 'order-successful-page'} element={<OrderSuccessful title={'Payment status'} />} />
+          <Route path={app_url + 'order-failed-page'} element={<OrderFailed title={'Payment status'} />} />
           <Route path={app_url + 'scanner'} element={<Scaner title={'Payment status'} />} />
           {/* Customer */}
           <Route path={customer_url + 'dashboard'} element={<CustomerLayout title={'Dashboard'}> <CustomerDashboard title={'Dashboard'} /> </CustomerLayout>} />
@@ -144,33 +144,33 @@ function App() {
           <Route path={`${organizer_url}view-support-ticket/:id`} element={<OrganizerLayout title={'Mange Tickets'}> <TicketView title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'ticket-sold-list'} element={<OrganizerLayout> <TicketSoldlist title={'Tickets sold list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tickets-list'} element={<OrganizerLayout> <Ticketlist title={'Tickets list'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'payout-request'} element={<OrganizerLayout> <PayoutList title={'Payout list'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'payout-request'} element={<OrganizerLayout title={'Payout list'}> <PayoutList /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tixme-scanner'} element={<OrganizerLayout> <Tixmescanner title={'Tixme scanner'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tixme-scanner-page'} element={<OrganizerLayout> <Tixmescannerpage title={'Tixme scanner'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tixme-validate'} element={<OrganizerLayout> <Qrvalidation title={'QR validate'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'analytics'} element={<OrganizerLayout> <Analytics title={'Analytics'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'my-profile'} element={<OrganizerLayout> <OrganizerProfile title={'My profile'} /> </OrganizerLayout>} />
           {/* Admin */}
-          <Route path={admin_url + 'dashboard'} element={<AdminLayout> <AdminDashboard title={'Admin Dashboard'} /> </AdminLayout>} />
-          <Route path={admin_url + 'add-category'} element={<AdminLayout> <AddCategory title={'Add Category'} /> </AdminLayout>} />
-          <Route path={admin_url + 'all-category'} element={<AdminLayout> <AllCategory title={'All Category'} /> </AdminLayout>} />
-          <Route path={admin_url + 'add-event-type'} element={<AdminLayout> <AddEventtype title={'Add Event Type'} /> </AdminLayout>} />
-          <Route path={admin_url + 'all-event-type'} element={<AdminLayout> <AllEventtype title={'All Event Type'} /> </AdminLayout>} />
+          <Route path={admin_url + 'dashboard'} element={<AdminLayout title={'Admin Dashboard'}> <AdminDashboard /> </AdminLayout>} />
+          <Route path={admin_url + 'add-category'} element={<AdminLayout title={'Add Category'}> <AddCategory /> </AdminLayout>} />
+          <Route path={admin_url + 'all-category'} element={<AdminLayout title={'All Category'}> <AllCategory /> </AdminLayout>} />
+          <Route path={admin_url + 'add-event-type'} element={<AdminLayout title={'Add Event Type'}> <AddEventtype /> </AdminLayout>} />
+          <Route path={admin_url + 'all-event-type'} element={<AdminLayout title={'All Event Type'}> <AllEventtype /> </AdminLayout>} />
           <Route path={admin_url + 'all-events-list'} element={<AdminLayout title={'All Events'}> <AllEventlist/> </AdminLayout>} />
           <Route path={`${admin_url}event/manage-ticket/:id/:name`} element={<AdminLayout title={'Mange Tickets'}> <AdminManageTicket title={'Mange Tickets'} /> </AdminLayout>} />
           <Route path={`${admin_url}event/mange-attendee/:id/:name`} element={<AdminLayout title={'Mange Attendee'}> <AdminTicketattendee title={'Mange Attendee'} /> </AdminLayout>} />
-          <Route path={`${admin_url}event/edit-event/:id/:name`} element={<AdminLayout> <EditEvent title={'Edit event'} /> </AdminLayout>} />
-          <Route path={admin_url + 'all-customers'} element={<AdminLayout> <AllCustomers title={'All Customers'} /> </AdminLayout>} />
-          <Route path={`${admin_url}customers/:id/:name`} element={<AdminLayout> <AllCustomers title={'Customers'} /> </AdminLayout>} />
-          <Route path={`${admin_url}user-details/:id/:name`} element={<AdminLayout> <AdminCustomerProfile title={'Customers'} /> </AdminLayout>} />
-          <Route path={`${admin_url}organizer-details/:id/:name`} element={<AdminLayout> <AdminOrganizerProfile title={'Organizer'} /> </AdminLayout>} />
-          <Route path={`${admin_url}payout-request/:id/:name`} element={<AdminLayout> <AdminPayoutrequest title={'Payout request'} /> </AdminLayout>} />
-          <Route path={admin_url + 'active-organizer'} element={<AdminLayout> <ActiveOrganizer title={'Active Organizer'} /> </AdminLayout>} />
-          <Route path={admin_url + 'pending-organizer'} element={<AdminLayout> <PendingOrganizer title={'Pending Organizer'} /> </AdminLayout>} />
-          <Route path={admin_url + 'support-tickets'} element={<AdminLayout title={'Manage Tickets'}> <Supportlist title={'Support Tickets'} /> </AdminLayout>} />
-          <Route path={admin_url + 'contact-us'} element={<AdminLayout> <Contactlist title={'Contact us list'} /> </AdminLayout>} />
-          <Route path={admin_url + 'membership'} element={<AdminLayout> <Membership title={'Membership'} /> </AdminLayout>} />
-          <Route path={`${admin_url}view-support-ticket/:id`} element={<AdminLayout title={'Mange Tickets'}> <AdminTicketView title={'Mange Tickets'} /> </AdminLayout>} />
+          <Route path={`${admin_url}event/edit-event/:id/:name`} element={<AdminLayout title={'Edit event'}> <EditEvent /> </AdminLayout>} />
+          <Route path={admin_url + 'all-customers'} element={<AdminLayout title={'All Customers'}> <AllCustomers /> </AdminLayout>} />
+          <Route path={`${admin_url}customers/:id/:name`} element={<AdminLayout title={'Customers'}> <AllCustomers /> </AdminLayout>} />
+          <Route path={`${admin_url}user-details/:id/:name`} element={<AdminLayout title={'Customers'}> <AdminCustomerProfile /> </AdminLayout>} />
+          <Route path={`${admin_url}organizer-details/:id/:name`} element={<AdminLayout title={'Organizer'}> <AdminOrganizerProfile /> </AdminLayout>} />
+          <Route path={`${admin_url}payout-request/:id/:name`} element={<AdminLayout title={'Payout request'}> <AdminPayoutrequest /> </AdminLayout>} />
+          <Route path={admin_url + 'active-organizer'} element={<AdminLayout title={'Active Organizer'}> <ActiveOrganizer /> </AdminLayout>} />
+          <Route path={admin_url + 'pending-organizer'} element={<AdminLayout title={'Pending Organizer'}> <PendingOrganizer /> </AdminLayout>} />
+          <Route path={admin_url + 'support-tickets'} element={<AdminLayout title={'Manage Tickets'}> <Supportlist /> </AdminLayout>} />
+          <Route path={admin_url + 'contact-us'} element={<AdminLayout title={'Contact us list'}> <Contactlist /> </AdminLayout>} />
+          <Route path={admin_url + 'membership'} element={<AdminLayout title={'Membership'}> <Membership /> </AdminLayout>} />
+          <Route path={`${admin_url}view-support-ticket/:id`} element={<AdminLayout title={'Mange Tickets'}> <AdminTicketView /> </AdminLayout>} />
         </Routes>
       </BrowserRouter>
     </>

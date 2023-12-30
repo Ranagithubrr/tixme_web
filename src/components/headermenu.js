@@ -12,8 +12,16 @@ import sport from "./assets/sport.svg";
 import { Link } from "react-router-dom";
 import foot from "./assets/food.svg";
 import art from "./assets/art.svg";
-import { app_url } from "../common/Helpers";
+import { app_url, apiurl, organizer_url, customer_url } from "../common/Helpers";
 const Header = () => {
+  const customer_token = localStorage.getItem("userauth");
+  const organizername = localStorage.getItem("organizername");
+  const country_name = localStorage.getItem("countryname");
+  const accountTargetUrl = customer_token
+    ? customer_url + "dashboard"
+    : organizername
+      ? organizer_url + "dashboard"
+      : app_url + "auth/customer/login";
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-white bg-white d-lg-none mx-4 rounded-8 top-10 d-block mb-5">
@@ -47,7 +55,7 @@ const Header = () => {
             <ul className="navbar-nav">
               <li className="nav-item d-flex align-items-center justify-content-start">
                 <Link
-                  className="nav-link text-primary pe-1 font-nav"
+                  className="nav-link text-primary-theme pe-1 font-nav"
                   to={app_url}
                 >
                   Home
@@ -55,14 +63,14 @@ const Header = () => {
                 </Link>
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
-                <Link className="nav-link text-primary pe-1 font-nav" to={app_url + 'events'}>
+                <Link className="nav-link text-primary-theme pe-1 font-nav" to={app_url + 'events'}>
                   Events
                   <img className="nav-plus" src={plus} alt="" />
                 </Link>
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
                 <Link
-                  className="nav-link text-primary pe-1 font-nav"
+                  className="nav-link text-primary-theme pe-1 font-nav"
                   to={app_url + 'aboutus'}
                 >
                   About Us
@@ -71,7 +79,7 @@ const Header = () => {
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
                 <Link
-                  className="nav-link text-primary pe-1 font-nav"
+                  className="nav-link text-primary-theme pe-1 font-nav"
                   to={app_url + 'contact'}
                 >
                   Contact Us
@@ -80,24 +88,53 @@ const Header = () => {
               </li>
               <li className="nav-item border rounded border-primary align-self-start px-2 my-1">
                 <Link
-                  className="nav-link text-primary pt-1 pb-1p font-nav"
+                  className="nav-link text-primary-theme pt-1 pb-1p font-nav"
                   to={app_url + 'auth/organizer/signup'}
                 >
                   List your event
                 </Link>
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
-                <Link
-                  className="nav-link text-primary pe-1 font-nav"
-                  to={app_url + 'auth/customer/login'}
-                >
-                  Login/Sign Up
-                  <img className="nav-plus" src={plus} alt="" />
-                </Link>
+
+                {customer_token || organizername ? (
+                  <>
+                    {customer_token ? (
+                      <Link
+                        className="nav-link text-primary-theme pe-1 font-nav"
+                        to={customer_url + "dashboard"}
+                      >
+                        My account
+                        <img className="nav-plus" src={plus} alt="" />
+                      </Link>
+                    ) : (
+                      <></>
+                    )}
+                    {organizername ? (
+                      <Link
+                        className="nav-link text-primary-theme pe-1 font-nav"
+                        to={organizer_url + "dashboard"}
+                      >
+                        My account
+                        <img className="nav-plus" src={plus} alt="" />
+                      </Link>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                ) : (
+                  <Link
+                    className="nav-link text-primary-theme pe-1 font-nav"
+                    to={app_url + 'auth/customer/login'}
+                  >
+                    Login/Sign Up
+                    <img className="nav-plus" src={plus} alt="" />
+                  </Link>
+                )}
+
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
                 <a
-                  className="nav-link text-primary pe-1 font-nav"
+                  className="nav-link text-primary-theme pe-1 font-nav"
                   href="contact-us.html"
                 >
                   Location

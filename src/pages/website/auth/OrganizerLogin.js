@@ -26,7 +26,7 @@ import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers
 import { Link, useNavigate } from "react-router-dom";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import NoResult from '../../../lotte/xxx.json';
+import SignupImg from '../../../common/image/signup.svg';
 import Lottie from "lottie-react";
 import Select from 'react-select'
 import Swal from 'sweetalert2'
@@ -162,7 +162,7 @@ const About = () => {
                         </div>
                         <div className="col-md-6">
                             <div className="text-center">
-                                <Lottie className="no-result-img" animationData={NoResult} style={lottewidth} />
+                            <img className="no-result-img" src={SignupImg} style={lottewidth} />
                             </div>
                         </div>
                     </div>

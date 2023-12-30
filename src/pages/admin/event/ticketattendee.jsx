@@ -5,6 +5,7 @@ import {
     ModalBody,
     ModalHeader
 } from 'reactstrap';
+import DateIcon from "../../../common/icon/date 2.svg";
 import Norecord from '../../../component/Norecordui';
 import QRsuccess from '../../../common/icon/qr-code-pay.png';
 import toast from 'react-hot-toast';
@@ -16,12 +17,14 @@ import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import QRCode from 'react-qr-code';
 import { FaRegCreditCard } from "react-icons/fa";
 import Searchicon from '../../../common/icon/searchicon.png';
-import { apiurl, shortPer } from '../../../common/Helpers';
+import { apiurl, shortPer, get_min_date, get_date_time } from '../../../common/Helpers';
 import Table from 'react-bootstrap/Table';
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaClock } from "react-icons/fa6";
 import { FaCircleMinus } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa6";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
 
 const Dashboard = ({ title }) => {
     const [Loader, setLoader] = useState(false);
@@ -38,6 +41,62 @@ const Dashboard = ({ title }) => {
     const { id, name } = useParams();
     const [modal, setModal] = useState(false);
     const [ShowQr, setShowQr] = useState(false);
+
+
+    const [Startdate, setStartdate] = useState(new Date());
+    const [Endtdate, setEndtdate] = useState(new Date());
+    const [viewStartdate, setviewStartdate] = useState();
+    const [viewEndtdate, setviewEndtdate] = useState();
+    const [valueStartdate, setvalueStartdate] = useState();
+    const [valueEndtdate, setvalueEndtdate] = useState();
+    const handelStartdatechange = (date) => {
+        setStartdate(date);
+        const get_start_date = get_date_time(date);
+        setviewStartdate(get_start_date[0].Dateview);
+        setvalueStartdate(get_min_date(date));
+    }
+    const handelEnddatechange = (date) => {
+        setEndtdate(date);
+        const get_end_date = get_date_time(date);
+        setviewEndtdate(get_end_date[0].Dateview);
+        setvalueEndtdate(get_min_date(date));
+    }
+
+    const [Daterange, setDaterange] = useState(false);
+    const HandelDatefilterreset = () => {
+        setviewStartdate('');
+        setviewEndtdate('');
+        setvalueStartdate('');
+        setvalueEndtdate('');
+        setListitems(dataList);
+        setDaterange(!Daterange);
+    }
+    const HandelDatefilter = () => {
+        if (!valueStartdate) {
+            return toast.error('Start date is requied')
+        }
+        if (!valueEndtdate) {
+            return toast.error('End date is requied')
+        }
+        handleDateRangeChange(valueStartdate, valueEndtdate);
+    }
+    const handleDateRangeChange = (startDate, endDate) => {
+        if (startDate && endDate) {
+            const filteredEvents = dataList.filter(event => {
+                const eventDate = event.mindate; // Date of the event
+
+                // Check if the event's date is within the given date range
+                return eventDate >= startDate && eventDate <= endDate;
+            });
+            setListitems(filteredEvents);
+        } else {
+            // If either startDate or endDate is missing, reset to show all events
+            setListitems(dataList);
+        }
+        setDaterange(!Daterange);
+    };
+
+
     const generateRandomNumber = () => {
         return Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
     };
@@ -133,8 +192,88 @@ const Dashboard = ({ title }) => {
     useEffect(() => {
         fetchOrders();
     }, []);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term across multiple fields
+        if (value) {
+            const filteredEvents = dataList.filter(event =>
+                event.bookingid.toLowerCase().includes(value.toLowerCase()) ||
+                event.order_amount.toString().toLowerCase().includes(value.toLowerCase()) ||
+                event.customer_name.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search dataList is empty, reset to show all events
+            setListitems(dataList);
+        }
+    };
+
+    const handleVisibilityChange = (selectedVisibility) => {
+        if (selectedVisibility === '1') {
+            // Filter events where order_amount is not null and greater than 0
+            const filteredEvents = dataList.filter(event =>
+                event.order_amount != null && event.order_amount > 0);
+            setListitems(filteredEvents);
+        } else if (selectedVisibility === '2') {
+            // Filter events where order_amount is null
+            const filteredEvents = dataList.filter(event =>
+                event.order_amount == null);
+            setListitems(filteredEvents);
+        } else {
+            // If no valid option is selected, show all events
+            setListitems(dataList);
+        }
+    };
+    
+
     return (
         <>
+        <Modal isOpen={Daterange} toggle={() => setDaterange(!Daterange)} centered>
+                <ModalHeader toggle={!Daterange}>Select date</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">Start Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewStartdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Startdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelStartdatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">End Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewEndtdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Endtdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelEnddatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilter} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1 w-100" type="button">Filter</button>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilterreset} className="mb-0 mr-5  btn btn-dark list-Ticket-mng-1 w-100" type="button">Reset</button>
+                        </Col>
+                    </Row>
+                </ModalBody>
+            </Modal>
             <Modal isOpen={modal} toggle={() => setModal(!modal)} centered size={'xl'}>
                 <ModalHeader toggle={!modal}>Order Details</ModalHeader>
                 <ModalBody>
@@ -281,31 +420,39 @@ const Dashboard = ({ title }) => {
                                         </Col>
                                         <Col md={12} className="py-3">
                                             <Row>
-                                                <Col md={2}>
+                                                <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input type="text" class="form-control" placeholder="Date range" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><  FiFlag /></span>
-                                                        <input type="text" class="form-control" placeholder="Status" />
+                                                        <input readOnly type="text" class="form-control" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
                                                         <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <div class="input-group mb-3 input-warning-o">
-                                                        <span class="input-group-text search-box-icon-1"><FaRegCreditCard /></span>
-                                                        <input type="text" class="form-control" placeholder="Ticket Type" />
-                                                        <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
+
+                                                    <div className="input-group mb-3 input-warning-o">
+                                                        <span className="input-group-text search-box-icon-1"><FaRegCreditCard /></span>
+                                                        <select
+                                                            className="form-control"
+                                                            onChange={e => handleVisibilityChange(e.target.value)}
+                                                            defaultValue=""
+                                                        >
+                                                            <option value="">Select Ticket Type</option>
+                                                            <option value="2">Free</option>
+                                                            <option value="1">Paid</option>
+                                                        </select>
+                                                        <span className="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
-                                                <Col md={5}>
+                                                <Col md={6}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                        <input type="text" class="form-control" placeholder="Search by amount , payment method..." />
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Search by amount , booking id, customer name..."
+                                                            value={searchTerm}
+                                                            onChange={handleSearchChange}
+                                                        />
                                                     </div>
                                                 </Col>
                                             </Row>

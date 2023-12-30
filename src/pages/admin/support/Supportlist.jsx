@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, admin_url, getSupportbagecolor } from '../../../common/Helpers';
+import { apiurl, admin_url, getSupportbagecolor , get_date_time, get_min_date } from '../../../common/Helpers';
 import Searchicon from '../../../common/icon/searchicon.png';
 import WhiteButton from '../../../component/Whitestarbtn';
 import Norecord from '../../../component/Norecordui';
+import DateIcon from "../../../common/icon/date 2.svg";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
+import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import Select from 'react-select'
-import { FaCircle } from "react-icons/fa6"; 
+import { FaCircle } from "react-icons/fa6";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import Flatpickr from "react-flatpickr";
+    import "flatpickr/dist/themes/material_green.css";
 const Dashboard = ({ title }) => {
     const MySwal = withReactContent(Swal)
     const [modal, setModal] = useState(false);
@@ -20,7 +24,7 @@ const Dashboard = ({ title }) => {
     const [ListLoader, setListLoader] = useState(false);
     const [apiLoader, setapiLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
-
+    const [allData, setallData] = useState([]);
     const [Email, setEmail] = useState();
     const [Updatid, setUpdatid] = useState();
     const [Title, setTitle] = useState();
@@ -44,6 +48,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
+                        setallData(data.data);
                     } else {
 
                     }
@@ -172,6 +177,14 @@ const Dashboard = ({ title }) => {
     const selectPriorityfilter = (selectedValue) => {
         setPriorityfiltervalue(selectedValue);
         setPriorityfiltertype(selectedValue.value);
+        if (selectedValue.value) {
+            const filteredEvents = allData.filter(event =>
+                event.isclose.toString() === selectedValue.value);
+            setListitems(filteredEvents);
+        } else {
+            setListitems(allData);
+        }
+
     };
 
     const CustomOption = ({ innerProps, label, value }) => {
@@ -179,13 +192,13 @@ const Dashboard = ({ title }) => {
 
         // Apply different icon colors based on the value
         switch (value) {
-            case 'New Tickets':
+            case '0':
                 iconColor = 'text-warning';
                 break;
-            case 'On-Going Tickets':
+            case '1':
                 iconColor = 'text-primary';
                 break;
-            case 'Resolved Tickets':
+            case '2':
                 iconColor = 'text-success';
                 break;
             default:
@@ -207,15 +220,126 @@ const Dashboard = ({ title }) => {
     const PriorityfilterOption = [
         {
             options: [
-                { value: "New Tickets", label: "New Tickets" },
-                { value: "On-Going Tickets", label: "On-Going Tickets" },
-                { value: "Resolved Tickets", label: "Resolved Tickets" },
+                { value: "0", label: "New Tickets" },
+                { value: "1", label: "On-Going Tickets" },
+                { value: "2", label: "Resolved Tickets" },
             ]
         }
     ]
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = allData.filter(event =>
+                event.uniqueid.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allData);
+        }
+    };
+
+
+    const [Startdate, setStartdate] = useState(new Date());
+    const [Endtdate, setEndtdate] = useState(new Date());
+    const [viewStartdate, setviewStartdate] = useState();
+    const [viewEndtdate, setviewEndtdate] = useState();
+    const [valueStartdate, setvalueStartdate] = useState();
+    const [valueEndtdate, setvalueEndtdate] = useState();
+    const handelStartdatechange = (date) => {
+        setStartdate(date);
+        const get_start_date = get_date_time(date);
+        setviewStartdate(get_start_date[0].Dateview);
+        setvalueStartdate(get_min_date(date));
+    }
+    const handelEnddatechange = (date) => {
+        setEndtdate(date);
+        const get_end_date = get_date_time(date);
+        setviewEndtdate(get_end_date[0].Dateview);
+        setvalueEndtdate(get_min_date(date));
+    }
+
+    const [Daterange, setDaterange] = useState(false);
+    const HandelDatefilterreset = () => {
+        setviewStartdate('');
+        setviewEndtdate('');
+        setvalueStartdate('');
+        setvalueEndtdate('');
+        setListitems(Listitems);
+        setDaterange(!Daterange);
+    }
+    const HandelDatefilter = () => {
+        if (!valueStartdate) {
+            return toast.error('Start date is requied')
+        }
+        if (!valueEndtdate) {
+            return toast.error('End date is requied')
+        }
+        handleDateRangeChange(valueStartdate, valueEndtdate);
+    }
+    const handleDateRangeChange = (startDate, endDate) => {
+        if (startDate && endDate) {
+            const filteredEvents = allData.filter(event => {
+                const eventDate = event.mindate; // Date of the event
+                // Check if the event's date is within the given date range
+                return eventDate >= startDate && eventDate <= endDate;
+            });
+            setListitems(filteredEvents);
+        } else {
+            // If either startDate or endDate is missing, reset to show all events
+            setListitems(allData);
+        }
+        setDaterange(!Daterange);
+    };
 
     return (
         <>
+            <Modal isOpen={Daterange} toggle={() => setDaterange(!Daterange)} centered>
+                <ModalHeader toggle={!Daterange}>Select date</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">Start Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewStartdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Startdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelStartdatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">End Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewEndtdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Endtdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelEnddatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilter} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1 w-100" type="button">Filter</button>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilterreset} className="mb-0 mr-5  btn btn-dark list-Ticket-mng-1 w-100" type="button">Reset</button>
+                        </Col>
+                    </Row>
+                </ModalBody>
+            </Modal>
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
                     <Row className="justify-content-center">
@@ -226,18 +350,14 @@ const Dashboard = ({ title }) => {
                                         <Col md={12}>
                                             <div className="ticket-list">
                                                 <Row className="react-select-h">
-                                                    <Col md={3}>
-                                                        <Select
-                                                            isClearable={false}
-                                                            options={DatefilterOption}
-                                                            className='react-select'
-                                                            classNamePrefix='select'
-                                                            placeholder='Select Filter'
-                                                            onChange={selectDatefiltertype}
-                                                            value={Datevalue}
-                                                        />
+                                                    <Col md={4}>
+                                                        <div class="input-group mb-3 input-warning-o">
+                                                            <span class="input-group-text search-box-icon-1 br-n" ><FiClock /></span>
+                                                            <input readOnly type="text" class="form-control  blr-n" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
+                                                            <span class="input-group-text search-box-icon-1  bl-n" ><FiChevronDown /></span>
+                                                        </div>
                                                     </Col>
-                                                    <Col md={3}>
+                                                    <Col md={4}>
                                                         <Select
                                                             isClearable={false}
                                                             options={PriorityfilterOption[0].options}
@@ -249,11 +369,17 @@ const Dashboard = ({ title }) => {
                                                             value={Priorityfiltervalue}
                                                         />
                                                     </Col>
-                                                    <Col md={3}></Col>
-                                                    <Col md={3}>
+                                                    <Col md={4}>
                                                         <div class="input-group mb-3 input-warning-o grey-border">
                                                             <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                            <input type="text" class="form-control" placeholder="Search for ticket" />
+
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search for ticket"
+                                                                value={searchTerm}
+                                                                onChange={handleSearchChange}
+                                                            />
                                                         </div>
                                                     </Col>
                                                     {ListLoader ? (
