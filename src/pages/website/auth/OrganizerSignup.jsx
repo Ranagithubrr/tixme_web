@@ -35,7 +35,7 @@ const About = () => {
         height: '320px'
     }
     const navigate = useNavigate();
-    const [SignUpstep, SetSignUpstep] = useState(1);
+    const [SignUpstep, SetSignUpstep] = useState(2);
     const [Loader, setLoader] = useState(false);
     const [Confirmemail, setConfirmemail] = useState();
     const [Email, setEmail] = useState();
@@ -149,12 +149,7 @@ const About = () => {
         SetSignUpstep(Number(no) - 1);
     }
     const HandelSignupstep = async (no) => {
-        if (no == 1) {
-            if (!isEmail(Email)) {
-                return toast.error('Enter valid email');
-            }
-            HandelEmailCheck();
-        }
+        
         if (no == 2) {
             if (!Firstname || !Lastname || !Email || !Confirmemail || !Phonenumber) {
                 return toast.error('Required field must not be empty');
@@ -170,7 +165,7 @@ const About = () => {
             } else {
                 return toast.error('Email and confirm email must me same');
             }
-            SetSignUpstep(3);
+            HandelEmailCheck();
         }
         if (no == 3) {
             if (!Password || !ConfirmPassword) {
@@ -209,7 +204,7 @@ const About = () => {
                 .then(data => {
                     setLoader(false);
                     if (data.success == true) {
-                        SetSignUpstep(2);
+                        SetSignUpstep(3);
                     } else {
                         toast.error(data.message);
                     }
@@ -243,22 +238,22 @@ const About = () => {
                     <div className='row form-area'>
                         <div className="col-md-6">
                             <div>
-                                <h3 className="mb-5" style={{ fontWeight: '600', color: '#000' }}>Create an organizer account</h3>
+                                <h3 className="mb-5" style={{ fontWeight: '600', color: '#000' }}>Organizer Contact Form</h3>
                                 {SignUpstep == 2 || SignUpstep == 1 ? (
                                     <>
-                                        <div class="input-group mb-3 input-warning-o">
-                                            <span class="input-group-text">
-                                                <FaEnvelope />
-                                            </span>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Yourname@gmail.com"
-                                                value={Email} onChange={(e) => setEmail(e.target.value)}
-                                            />
-                                        </div>
                                         {SignUpstep == 2 ? (
                                             <>
+                                                <div class="input-group mb-3 input-warning-o">
+                                                    <span class="input-group-text">
+                                                        <FaEnvelope />
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Yourname@gmail.com"
+                                                        value={Email} onChange={(e) => setEmail(e.target.value)}
+                                                    />
+                                                </div>
                                                 <div className="form-group">
                                                     <p>Confirm Email address <span className="text-danger">*</span></p>
                                                     <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>

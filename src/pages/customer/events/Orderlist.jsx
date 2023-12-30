@@ -41,13 +41,13 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_green.css";
 const Dashboard = ({ title }) => {
 
+    const navigate = useNavigate();
+    const Beartoken = localStorage.getItem('userauth');
     const [Loader, setLoader] = useState(false);
     const [ModalLoader, setModalLoader] = useState(true);
-    const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
     const [allEvents, setAllEvents] = useState([]);
     const [CategoryList, setCategoryList] = useState([]);
-    const Beartoken = localStorage.getItem('userauth');
 
     const [Startdate, setStartdate] = useState(new Date());
     const [Endtdate, setEndtdate] = useState(new Date());
@@ -373,7 +373,7 @@ const Dashboard = ({ title }) => {
                                         <p>{Ordersavedata.order_amount && Ordersavedata.order_amount > 0 ? 'Paid' : 'Free'}</p>
                                     </div>
                                     <div>
-                                        <h5 className="text-bold">total Ticket :</h5>
+                                        <h5 className="text-bold">Total Ticket :</h5>
                                         <p>{Orderitemlist.length}</p>
                                     </div>
                                     {Orderitemlist.length > 0 ? (
@@ -404,12 +404,11 @@ const Dashboard = ({ title }) => {
                                                     <div className="ticket-box">
                                                         <div className="ticket-qr text-center">
                                                             {item.is_transfer == 1 ? (
-                                                                <div class="alert alert-primary alert-dismissible fade show">
-                                                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                                                    Transferred to <span className="font-capitalize"> {item.owner_name} </span>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                                                    </button>
-                                                                </div>
+                                                                <>
+                                                                    <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
+                                                                    <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Transferred to</p>
+                                                                    <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> {item.owner_email}</span>
+                                                                </>
                                                             ) : (
                                                                 <div className="text-center">
                                                                     {item.scan_status == 0 ? (
