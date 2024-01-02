@@ -26,14 +26,43 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import SignupImg from '../../../common/image/signup.svg';
 import Lottie from "lottie-react";
+import { Country, State, City } from 'country-state-city';
+import Select from 'react-select';
 
 const About = () => {
     const lottewidth = {
         width: 'auto',
         height: '320px'
     }
+
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedState, setSelectedState] = useState(null);
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+    useEffect(() => {
+        setCountries(Country.getAllCountries().map(({ isoCode, name }) => ({ value: isoCode, label: name })));
+    }, []);
+
+    useEffect(() => {
+        if (selectedCountry) {
+            setStates(State.getStatesOfCountry(selectedCountry.value).map(({ isoCode, name }) => ({ value: isoCode, label: name })));
+        } else {
+            setStates([]);
+        }
+        setSelectedState(null);
+    }, [selectedCountry]);
+
+    useEffect(() => {
+        if (selectedState) {
+            setCities(City.getCitiesOfState(selectedCountry.value, selectedState.value).map(({ name }) => ({ value: name, label: name })));
+        } else {
+            setCities([]);
+        }
+    }, [selectedState, selectedCountry]);
+
     const navigate = useNavigate();
-    const [SignUpstep, SetSignUpstep] = useState(1);
+    const [SignUpstep, SetSignUpstep] = useState(2);
     const [Loader, setLoader] = useState(false);
     const [Confirmemail, setConfirmemail] = useState();
     const [Email, setEmail] = useState();
@@ -46,12 +75,13 @@ const About = () => {
     const [WhatsappNumber, setWhatsappNumber] = useState();
     const [Address1, setAddress1] = useState();
     const [Pincode, setPincode] = useState();
-    const [City, setCity] = useState();
-    const [State, setState] = useState();
-    const [Country, setCountry] = useState();
-    const [Terms, setTerms] = useState(1);
-    const [Marketing, setMarketing] = useState(1);
 
+    const [fCity, setfCity] = useState();
+    const [fState, setfState] = useState();
+    const [fCountry, setfCountry] = useState();
+
+    const [Terms, setTerms] = useState(false);
+    const [Marketing, setMarketing] = useState(false);
     const [Hobby, setHobby] = useState([]);
     const [selectedHobbies, setSelectedHobbies] = useState([]);
 
@@ -63,9 +93,9 @@ const About = () => {
             if (!isEmail(Email)) {
                 return toast.error('Enter valid email');
             }
-            HandelEmailCheck();
         }
         if (no == 2) {
+            
             if (!Firstname || !Lastname || !Email || !Confirmemail || !Phonenumber) {
                 return toast.error('Required field must not be empty');
             }
@@ -80,7 +110,13 @@ const About = () => {
             } else {
                 return toast.error('Email and confirm email must me same');
             }
-            SetSignUpstep(3);
+            if (!Terms) {
+                return toast.error('Please agree to the terms and conditions.');
+            }
+            if (!Marketing) {
+                return toast.error('Please agree to the receive marketing.');
+            }
+            HandelEmailCheck();
         }
         if (no == 3) {
             if (!Password || !ConfirmPassword) {
@@ -119,7 +155,7 @@ const About = () => {
                 .then(data => {
                     setLoader(false);
                     if (data.success == true) {
-                        SetSignUpstep(2);
+                        SetSignUpstep(3);
                     } else {
                         toast.error(data.message);
                     }
@@ -150,9 +186,12 @@ const About = () => {
                 area_code: "+91",
                 whatsapp_no: WhatsappNumber ? WhatsappNumber : '',
                 address: Address1 ? Address1 : '',
-                city: City ? City : '',
-                state: State ? State : '',
-                country: Country ? Country : '',
+                city: fCity ? fCity.label : '',
+                state: fState ? fState.label : '',
+                country: fCountry ? fCountry.label : '',
+                cityvalue: fCity ? fCity.value : '',
+                statevalue: fState ? fState.value : '',
+                countryvalue: fCountry ? fCountry.value : '',
                 pincode: Pincode,
                 agree_to_terms: 1,
                 agree_to_receive_marketing: 1,
@@ -247,19 +286,19 @@ const About = () => {
                                 <h3 className="mb-5" style={{ fontWeight: '600', color: '#000' }}>Create an customer account</h3>
                                 {SignUpstep == 2 || SignUpstep == 1 ? (
                                     <>
-                                        <div class="input-group mb-3 input-warning-o">
-                                            <span class="input-group-text">
-                                                <FaEnvelope />
-                                            </span>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Yourname@gmail.com"
-                                                value={Email} onChange={(e) => setEmail(e.target.value)}
-                                            />
-                                        </div>
                                         {SignUpstep == 2 ? (
                                             <>
+                                                <div class="input-group mb-3 input-warning-o">
+                                                    <span class="input-group-text">
+                                                        <FaEnvelope />
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Yourname@gmail.com"
+                                                        value={Email} onChange={(e) => setEmail(e.target.value)}
+                                                    />
+                                                </div>
                                                 <div className="form-group">
                                                     <p>Confirm Email address <span className="text-danger">*</span></p>
                                                     <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>
@@ -286,12 +325,12 @@ const About = () => {
                                                     />
                                                 </div>
                                                 <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e) => setTerms(e.target.value)} />
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e) => setTerms(e.target.checked)} />
                                                     <label class="form-check-label" for="exampleCheck1">Agree to terms, privacy policy</label>
                                                 </div>
 
                                                 <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input" id="exampleCheck2" onChange={(e) => setMarketing(e.target.value)} />
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck2" onChange={(e) => setMarketing(e.target.checked)} />
                                                     <label class="form-check-label" for="exampleCheck2">Agree to receive marketing</label>
                                                 </div>
                                             </>
@@ -310,42 +349,62 @@ const About = () => {
                                             <p>Confirm Password <span className="text-danger">*</span></p>
                                             <input className="form-control" type="password" placeholder="Confirm Password" value={ConfirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
                                         </div>
-                                    </>
-                                ) : (
-                                    ''
-                                )}
-                                {SignUpstep == 4 ? (
-                                    <>
                                         <div className="form-group">
                                             <p>WhatsApp no</p>
                                             <input className="form-control" type="number" placeholder="WhatsApp no" value={WhatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)}></input>
                                         </div>
                                         <div className="form-group">
-                                            <p>Address Line 1 </p>
-                                            <input className="form-control" type="text" placeholder="Address Line 1" value={Address1} onChange={(e) => setAddress1(e.target.value)}></input>
+                                            <p>Select Country</p>
+                                            <Select
+                                                options={countries}
+                                                value={selectedCountry}
+                                                onChange={setSelectedCountry}
+                                                placeholder="Select Country"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <p>Select State</p>
+                                            <Select
+                                                options={states}
+                                                value={selectedState}
+                                                onChange={setSelectedState}
+                                                placeholder="Select State"
+                                                isDisabled={!selectedCountry}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <p>Select City</p>
+                                            <Select
+                                                options={cities}
+                                                placeholder="Select City"
+                                                isDisabled={!selectedState}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <p>Your Address</p>
+                                            <input className="form-control" type="text" placeholder="Your Address" value={Address1} onChange={(e) => setAddress1(e.target.value)}></input>
                                         </div>
                                         <div className="form-group">
                                             <p>Pincode</p>
                                             <input className="form-control" type="text" placeholder="Pincode" value={Pincode} onChange={(e) => setPincode(e.target.value)}></input>
                                         </div>
                                     </>
-                                ) : ''}
+                                ) : (
+                                    ''
+                                )}
+                                
 
-                                {SignUpstep != 5 ? (
+                                {SignUpstep != 4 ? (
                                     <>
                                         <div className='button-area mt-4'>
 
-                                            {SignUpstep >= 2 ? (
+                                            {SignUpstep >= 3 ? (
                                                 <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
                                             ) : ''}
 
-                                            {SignUpstep == 5 ? (
+                                            {SignUpstep == 4 ? (
                                                 <>
-                                                    {Loader ? (
-                                                        <button type='button' className="signup-page-button">Please wait...</button>
-                                                    ) : (
-                                                        <button type='button' className="signup-page-button" onClick={() => HandelCustomersignup()}>Create account</button>
-                                                    )}
+
                                                 </>
                                             ) : (
                                                 <>
@@ -365,29 +424,34 @@ const About = () => {
 
                             </div>
                         </div>
-                        {SignUpstep != 5 ? (
+                        {SignUpstep != 4 ? (
                             <div className="col-md-6">
                                 <div className="text-center">
                                     <img className="no-result-img" src={SignupImg} style={lottewidth} />
                                 </div>
                             </div>
                         ) : (<>
-                            <div className="col-md-12 px-5-">
-                                <div className="form-group">
-                                    <p>Select hobby</p>
-                                    {Hobby.map((item, index) => (
-                                        <span
-                                            key={item.name}
-                                            className={`hobby-box ${selectedHobbies.includes(item.name) ? 'hobby-active' : ''}`}
-                                            onClick={() => toggleHobby(item.name)}
-                                        >
-                                            {item.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+
                         </>)}
-                        {SignUpstep == 5 ? (
+                        {SignUpstep == 4 ? (
+                                    <>
+                                        <div className="col-md-12 px-5-">
+                                            <div className="form-group">
+                                                <p>Select hobby</p>
+                                                {Hobby.map((item, index) => (
+                                                    <span
+                                                        key={item.name}
+                                                        className={`hobby-box ${selectedHobbies.includes(item.name) ? 'hobby-active' : ''}`}
+                                                        onClick={() => toggleHobby(item.name)}
+                                                    >
+                                                        {item.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : ''}
+                        {SignUpstep == 4 ? (
                             <div className="col-md-12">
                                 <div className='button-area mt-4'>
 
@@ -395,7 +459,7 @@ const About = () => {
                                         <button type='button' className="signup-page-button mr-3" onClick={() => HandelSignupstepback(SignUpstep)}>Back</button>
                                     ) : ''}
 
-                                    {SignUpstep == 5 ? (
+                                    {SignUpstep == 4 ? (
                                         <>
                                             {Loader ? (
                                                 <button type='button' className="signup-page-button">Please wait...</button>
