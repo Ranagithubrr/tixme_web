@@ -79,13 +79,19 @@ const Dashboard = ({ title }) => {
                         setufname(data.data.first_name);
                         setulname(data.data.last_name);
                         setuemail(data.data.email);
-                        setpicture(data.data.profile_picture);                        
+                        setpicture(data.data.profile_picture);
                         setSelecteDp(null);
                         setphone_number(data.data.phone_number);
                         setBankaccount(data.data.bankaccount);
                         setBankname(data.data.bankname);
                         setHoldername(data.data.holdername);
                         setSwift(data.data.swiftcode);
+
+                        setuBankaccount(data.data.bankaccount);
+                        setuConfirmBankaccount(data.data.bankaccount);
+                        setuBankname(data.data.bankname);
+                        setuHoldername(data.data.holdername);
+                        setuSwift(data.data.swiftcode);
 
                     }
                     setApiLoader(false)
@@ -287,7 +293,6 @@ const Dashboard = ({ title }) => {
     };
 
     useEffect(() => {
-
         fetchData();
     }, []);
 
@@ -309,7 +314,7 @@ const Dashboard = ({ title }) => {
                                     </div>
                                     <div className="profile-info">
                                         <div className="profile-photo">
-                                            <img src={picture ? picture : Nouserphoto} style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }}  alt="" />
+                                            <img src={picture ? picture : Nouserphoto} style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} alt="" />
                                         </div>
                                         <div className="profile-details">
 
@@ -457,12 +462,9 @@ const Dashboard = ({ title }) => {
                                                                         <h4 className="text-primary">Account Setting</h4>
                                                                         <form>
                                                                             <div className="row">
-                                                                            <div className="col-md-6">
+                                                                                <div className="col-md-6">
                                                                                     <div className="form-group">
-                                                                                        <p>Organizer icon</p>
-                                                                                        {selecteDp ? (
-                                                                                            <img src={selecteDp} alt="Uploaded" style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} />
-                                                                                        ) : ''}
+                                                                                        <p>Upload your Icon<span className="text-danger">*</span></p>
                                                                                         <input
                                                                                             type="file"
                                                                                             id="imageInputbanner"
@@ -472,12 +474,10 @@ const Dashboard = ({ title }) => {
                                                                                         />
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className="col-md-6"></div>
                                                                                 <div className="col-md-6">
-                                                                                    <div className="form-group">
-                                                                                        <p>Upload your Icon<span className="text-danger">*</span></p>
-                                                                                        
-                                                                                    </div>
+                                                                                    {selecteDp ? (
+                                                                                        <img src={selecteDp} alt="Uploaded" style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '100%' }} />
+                                                                                    ) : ''}
                                                                                 </div>
                                                                                 <div className="col-md-6">
                                                                                     <div className="form-group">

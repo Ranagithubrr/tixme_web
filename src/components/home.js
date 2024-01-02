@@ -174,7 +174,7 @@ const Home = () => {
                   <SwiperSlide>
                     <div className="text-center position-relative">
                       <div className="event-card pt-4">
-                        <img onClick={() => setFilterCategory(item._id)} className="event-img  animate__animated animate__bounce" src={CategoryImage[index].image} alt="" />
+                        <img className="event-img  animate__animated animate__bounce" src={CategoryImage[index].image} alt="" />
                         <small className="d-block text-card-color my-2 mt-3"> {item.name} </small>
                       </div>
                       <div className="fade-effect"></div>

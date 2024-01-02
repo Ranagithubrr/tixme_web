@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../../common/elements/JoinStartButton";
 import Searchicon from '../../../common/icon/searchicon.png';
 import Norecord from '../../../component/Norecordui';
+import Nouserphoto from '../../../common/image/nouser.png';
 import { Button, Col, Row } from "react-bootstrap";
 import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
@@ -16,25 +17,27 @@ import Hourglasslogo from "../../../common/icon/hourglass.svg";
 import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth } from '../../../common/Helpers';
+import Noimg from "../../../common/image/noimg.jpg";
+import { apiurl, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import Select from 'react-select'
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard = ({ title }) => {
     const { id } = useParams();
-    const [Loader, setLoader] = useState(false);
+    const [Loader, setLoader] = useState(true);
     const navigate = useNavigate();
     const [Listitems, setListitems] = useState([]);
+    const [OrganizerData, setOrganizerData] = useState();
     const [CategoryList, setCategoryList] = useState([]);
     const MySwal = withReactContent(Swal);
- 
+
     const fetchmyEvent = async () => {
         try {
             setLoader(true)
             const requestData = {
                 id: id,
             };
-            fetch(apiurl + 'event/list', {
+            fetch(apiurl + 'website/organizer-details', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Set the Content-Type header to JSON
@@ -44,7 +47,8 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setListitems(data.data);
+                        setListitems(data.events);
+                        setOrganizerData(data.data);
                     }
                     setLoader(false)
                 })
@@ -79,6 +83,26 @@ const Dashboard = ({ title }) => {
                         <Col md={12}>
                             <Card className="py-4 grey-bg">
                                 <Card.Body>
+                                    {Loader ? (
+                                        <div className="linear-background w-100"> </div>
+                                    ) : (
+                                        <Row>
+                                            <Col md={3}>
+                                                <div className="my-follower-account-box text-center">
+                                                    <img
+                                                        height={70}
+                                                        width={70}
+                                                        src={OrganizerData.profile_picture ? OrganizerData.profile_picture : Nouserphoto}
+                                                        alt=""
+                                                        className="organiger-logo mb-2"
+                                                    />
+                                                    <p className="org-name">{OrganizerData.name}</p>
+                                                    <p className="org-event-count">{Listitems.length} Events</p>
+                                                </div>
+                                            </Col>
+                                            <Col md={9}></Col>
+                                        </Row>
+                                    )}
                                     <Row className="justify-content-center">
                                         {Loader ? (
                                             <div className="linear-background w-100"> </div>
@@ -91,11 +115,11 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={Eimage} className="list-thum-img" alt="" />
+                                                                            <img src={item.thum_image ? item.thum_image : Noimg} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>
-                                                                                <span className="list-event-name">{item.name}</span>
+                                                                                <Link to={`${app_url}event/${item._id}/${item.display_name}`}><span className="list-event-name">{item.name}</span></Link>
                                                                                 <p className="list-event-desc mb-0">{shortPer(item.event_desc, 100)}</p>
                                                                             </div>
                                                                             <div className="list-event-location">
@@ -137,7 +161,7 @@ const Dashboard = ({ title }) => {
                                                                                             </span>
                                                                                             <span className="event-time d-block">{item.event_duration}</span>
                                                                                         </div>
-                                                                                        
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>

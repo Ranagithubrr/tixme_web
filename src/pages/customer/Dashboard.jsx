@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import JoinStartButton from "../../common/elements/JoinStartButton";
 import Searchicon from '../../common/icon/searchicon.png';
 import Norecord from '../../component/Norecordui';
-import Eimage from "../../common/image/eimage.png";
+import Noimg from "../../common/image/noimg.jpg";
 import {
     Modal,
     Input,
@@ -22,7 +22,7 @@ import EditPng from '../../common/icon/Edit.png';
 import DateIcon from "../../common/icon/date 2.svg";
 import ArrowPng from "../../common/icon/Arrow.svg";
 import TranferImg from "../../common/image/Tranfer.svg";
-import { apiurl, imgurl, admin_url, organizer_url, shortPer, isEmail, onlyDayMonth, app_url } from '../../common/Helpers';
+import { apiurl, imgurl, admin_url, organizer_url, shortPer, isEmail, get_min_date, onlyDayMonth, app_url } from '../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import { FaTimes } from 'react-icons/fa';
 import QRCode from 'react-qr-code';
@@ -74,28 +74,9 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         if (data.data) {
-                            const listdata = data.data;
-
-                            // Function to format a date to YYYYMMDD
-                            const formatDate = (date) => {
-                                const d = new Date(date),
-                                    day = ('0' + d.getDate()).slice(-2),
-                                    month = ('0' + (d.getMonth() + 1)).slice(-2),
-                                    year = d.getFullYear();
-                                return `${year}${month}${day}`;
-                            };
-
-                            // Get today's date in YYYYMMDD format
-                            const todate = formatDate(new Date());
-
-                            // Function to compare dates in YYYYMMDD format
-                            const compareDates = (date1, date2) => {
-                                return parseInt(date1, 10) >= parseInt(date2, 10);
-                            };
-                            // Filter listdata based on the date condition
-                            const filteredData = listdata.filter(item => {
-                                return compareDates(item.eventData[0].start_mindate, todate); // Using the new date format and column
-                            });
+                            const filteredData = data.data.filter(item =>
+                                item.eventData.length > 0 && item.eventData[0].end_mindate >= get_min_date(new Date())
+                            );
                             setListitems(filteredData);
                         }
 
@@ -455,7 +436,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={Eimage} className="list-thum-img" alt="" />
+                                                                            <img src={item.eventData[0].thum_image ? item.eventData[0].thum_image : Noimg} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

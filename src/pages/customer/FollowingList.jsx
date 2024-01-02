@@ -94,6 +94,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
+                        console.log("s",data.data);
                         setAlllist(data.data);
                     } else {
                     }

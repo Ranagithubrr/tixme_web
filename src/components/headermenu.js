@@ -124,7 +124,7 @@ const Header = () => {
                 ) : (
                   <Link
                     className="nav-link text-primary-theme pe-1 font-nav"
-                    to={app_url + 'auth/customer/login'}
+                    to={app_url + 'auth/login-signup'}
                   >
                     Login/Sign Up
                     <img className="nav-plus" src={plus} alt="" />

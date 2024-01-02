@@ -319,7 +319,7 @@ const About = () => {
                                             {Loader ? (
                                                 <button type='button' className="signup-page-button">Please wait...</button>
                                             ) : (
-                                                <button type='button' className="signup-page-button" onClick={() => HandelOrganizersignup()}>Create account</button>
+                                                <button type='button' className="signup-page-button" onClick={() => HandelOrganizersignup()}>Submit</button>
                                             )}
                                         </>
                                     ) : (

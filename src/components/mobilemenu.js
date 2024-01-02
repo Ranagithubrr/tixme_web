@@ -31,6 +31,8 @@ const Header = () => {
     const [CurrentCity, setCurrentCity] = useState();
 
     const customer_token = localStorage.getItem("userauth");
+    const customer_name = localStorage.getItem("username");
+
     const organizername = localStorage.getItem("organizername");
     const country_name = localStorage.getItem("countryname");
     const accountTargetUrl = customer_token
@@ -264,13 +266,15 @@ const Header = () => {
                                     <>
                                         {customer_token ? (
                                             <Link class="nav-link text-primary-theme pt-1 pb-1p font-nav" to={customer_url + "dashboard"}>
-                                                My account
+                                                <p className="mb-0 text-dark">Customer Account</p>
+                                                <span className="font-bold">{customer_name}</span>
                                             </Link>
                                         ) : (
                                             <>
                                                 {organizername ? (
                                                     <Link class="nav-link text-primary-theme pt-1 pb-1p font-nav" to={organizer_url + "dashboard"}>
-                                                        My account
+                                                        <p className="mb-0 text-dark">Organizer Account</p>
+                                                        <span className="font-bold"> {organizername}</span>
                                                     </Link>
                                                 ) : (
                                                     <></>
@@ -279,7 +283,7 @@ const Header = () => {
                                         )}
                                     </>
                                 ) : (
-                                    <Link class="nav-link text-primary-theme pt-1 pb-1p font-nav" to={app_url + 'auth/customer/login'}>
+                                    <Link class="nav-link text-primary-theme pt-1 pb-1p font-nav" to={app_url + 'auth/login-signup'}>
                                         Login/Sign Up
                                     </Link>
                                 )}
@@ -289,6 +293,7 @@ const Header = () => {
                                     <a
                                         class="nav-link text-primary-theme px-1 font-nav-small"
                                         href="#"
+                                        style={{ marginTop: '-10px' }}
                                     >
                                         {country_name ? country_name : 'Location'}
                                         <img class="nav-plus" src={plus} alt="" />

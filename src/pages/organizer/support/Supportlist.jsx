@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { apiurl, organizer_url, isEmail, getSupportbagecolor, get_date_time, get_min_date } from '../../../common/Helpers';
+import { apiurl, organizer_url, isEmail, getSupportbagecolor, get_date_time, get_min_date, shortPer } from '../../../common/Helpers';
 
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
@@ -8,7 +8,7 @@ import Searchicon from '../../../common/icon/searchicon.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import WhiteButton from '../../../component/Whitestarbtn';
 import Norecord from '../../../component/Norecordui';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Select from 'react-select'
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import Swal from 'sweetalert2'
@@ -17,12 +17,14 @@ import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_green.css";
-
+import { useParams } from 'react-router-dom';
 import { FaCircle } from "react-icons/fa6";
 const Dashboard = ({ title }) => {
+    const navigate = useNavigate();
     const MySwal = withReactContent(Swal)
     const OrganizerId = localStorage.getItem('organizerid');
     const Beartoken = localStorage.getItem('userauth');
+    const { eventid } = useParams();
     const [newTitle, setnewTitle] = useState();
     const [newMessage, setnewMessage] = useState();
 
@@ -95,7 +97,40 @@ const Dashboard = ({ title }) => {
         }
         setDaterange(!Daterange);
     };
-
+    const [FormLoader, setFormLoader] = useState(false);
+    const [EventData, setEventData] = useState();
+    const fetchEventData = async () => {
+        setFormLoader(true)
+        try {
+            const requestData = {
+                id: eventid
+            };
+            fetch(apiurl + 'event/get-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setEventData(data.data);
+                        setTicketTypelist(data.data.allprice.map(ticket => ({ value: ticket.name, label: ticket.name })));
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setFormLoader(false)
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setFormLoader(false)
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            setFormLoader(false)
+        }
+    }
     const fetchList = async () => {
         setListLoader(true)
         try {
@@ -306,11 +341,17 @@ const Dashboard = ({ title }) => {
     }
     useEffect(() => {
         fetchList();
-    }, []);
+        if (eventid) {
+            fetchEventData();
+        } else {
+            setFormLoader(false);
+            setEventData(null);
+        }
+    }, [eventid]);
 
 
     // select code
-    const [TicketTypelist, setTicketTypelist] = useState([{ value: "Ticket Type test", label: "Ticket Type test" }]);
+    const [TicketTypelist, setTicketTypelist] = useState([]);
     const [TicketTypevalue, setTicketTypevalue] = useState();
     const [TicketType, setTicketType] = useState();
     const TicketTypeOption = [
@@ -338,21 +379,21 @@ const Dashboard = ({ title }) => {
 
     const StoreNewTicket = async () => {
         try {
-            if (!Email) {
-                return toast.error('Type your email');
-            }
-            if (!isEmail(Email)) {
-                return toast.error('Enter valid email');
-            }
             if (!Message) {
                 return toast.error('Type your Message');
+            }
+            if(EventData){
+                if(!TicketTypevalue){
+                    return toast.error('Select request ticket type');
+                }
             }
             const requestData = {
                 id: OrganizerId,
                 email: Email,
                 message: Message,
-                tickettype: TicketTypevalue,
+                tickettype: TicketTypevalue ? TicketTypevalue : null,
                 priority: TicketPriorityvalue,
+                eventid: EventData ? EventData._id : null,
             };
             setLoader(true);
             fetch(apiurl + 'website/organizer/support/insert', {
@@ -371,6 +412,10 @@ const Dashboard = ({ title }) => {
                     setTicketTypevalue('');
                     setTicketPriority('');
                     setTicketPriorityvalue('');
+                    if (eventid) {
+                        setEventData('');
+                        navigate(organizer_url + 'support-tickets');
+                    }
                     fetchList();
                 } else {
                     toast.error(data.message);
@@ -554,14 +599,14 @@ const Dashboard = ({ title }) => {
                                                     <Col md={4}>
                                                         <div class="input-group mb-3 input-warning-o grey-border">
                                                             <span class="input-group-text"><img src={Searchicon} alt="" /></span>
-                                                            
+
                                                             <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Search for ticket"
-                                                            value={searchTerm}
-                                                            onChange={handleSearchChange}
-                                                        />
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search for ticket"
+                                                                value={searchTerm}
+                                                                onChange={handleSearchChange}
+                                                            />
                                                         </div>
                                                     </Col>
                                                     {ListLoader ? (
@@ -578,7 +623,9 @@ const Dashboard = ({ title }) => {
                                                                         <Col md={12} className="mb-5">
                                                                             <div className="support-tickets-list-1">
                                                                                 <div className="xyz-ticket-desc-box">
-                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority && item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)} </p>
+                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority ? (
+                                                                                        <>{item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)}</>
+                                                                                    ) : ''}</p>
                                                                                     <p className="ticket-type-12">{item.tickettype}</p>
                                                                                     <p className="ticket-message7">{item.message}</p>
                                                                                 </div>
@@ -611,47 +658,67 @@ const Dashboard = ({ title }) => {
                                                     <h3 className="mb-1" style={{ fontWeight: '600' }}>Create Quick Ticket</h3>
                                                     <p className="mb-1" style={{ fontWeight: '500', fontSize: '14px' }}>Write and address new queries and issues</p>
                                                 </div>
-                                                <div className="form-area-1 py-4">
-                                                    <div className="form-group">
-                                                        <p className="mb-2">Customer Email</p>
-                                                        <input className="form-control" type="text" placeholder="Type Email" value={Email} onChange={(e) => setEmail(e.target.value)}></input>
+                                                {FormLoader ? (
+                                                    <div className="linear-background w-100"> </div>
+                                                ) : (
+                                                    <div className="form-area-1 py-4">
+                                                        <div>
+                                                            {EventData ? (
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="profile-blog">
+                                                                            <h5 class="text-primary d-inline">Event details</h5>
+                                                                            <img src={EventData.thum_image} alt="" class="img-fluid mt-4 mb-4 w-100 rounded" />
+                                                                            <h4><a href="post-details.html" class="text-black">{EventData.display_name}</a></h4>
+                                                                            <p class="mb-0">{shortPer(EventData.event_desc, 100)}</p>
+                                                                            <p class="mb-0">Start From : <span className="text-warning">{EventData.start_date} {EventData.start_time}</span></p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : ''}
+                                                        </div>
+                                                        {EventData ? (
+                                                            <div className="form-group">
+                                                            <p className="mb-2">Request Ticket Type</p>
+                                                            <Select
+                                                                isClearable={false}
+                                                                options={TicketTypeOption}
+                                                                className='react-select'
+                                                                classNamePrefix='select'
+                                                                placeholder='Choose Type'
+                                                                onChange={selectTicketType}
+                                                                value={TicketType}
+                                                            />
+                                                        </div>
+                                                        ) : ''}
+                                                        <div className="form-group">
+                                                            <p className="mb-2">Priority Status</p>
+                                                            <Select
+                                                                isClearable={false}
+                                                                options={TicketPriorityOption}
+                                                                className='react-select'
+                                                                classNamePrefix='select'
+                                                                placeholder='Select Status'
+                                                                onChange={selectTicketPriority}
+                                                                value={TicketPriority}
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <p className="mb-2">Message</p>
+                                                            <textarea class="form-control" rows="5" placeholder="Type messages here.." value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                                                        </div>
+                                                        <div className="form-group">
+                                                            {Loader ? (
+                                                                <button className="btn btn-primary w-100" type="button">Please wait...</button>
+                                                            ) : (
+                                                                <>
+                                                                {EventData ? (<button className="btn btn-dark mb-2 w-100" onClick={() => setEventData(null)} type="button">Cancel</button>) : ''}
+                                                                <button className="btn btn-primary  mb-2 w-100" onClick={StoreNewTicket} type="button">Submit</button>
+                                                                </>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <div className="form-group">
-                                                        <p className="mb-2">Request Ticket Type</p>
-                                                        <Select
-                                                            isClearable={false}
-                                                            options={TicketTypeOption}
-                                                            className='react-select'
-                                                            classNamePrefix='select'
-                                                            placeholder='Choose Type'
-                                                            onChange={selectTicketType}
-                                                            value={TicketType}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <p className="mb-2">Priority Status</p>
-                                                        <Select
-                                                            isClearable={false}
-                                                            options={TicketPriorityOption}
-                                                            className='react-select'
-                                                            classNamePrefix='select'
-                                                            placeholder='Select Status'
-                                                            onChange={selectTicketPriority}
-                                                            value={TicketPriority}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <p className="mb-2">Ticket Body</p>
-                                                        <textarea class="form-control" rows="5" placeholder="Type ticket issue here.." value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        {Loader ? (
-                                                            <button className="btn btn-primary w-100" type="button">Please wait...</button>
-                                                        ) : (
-                                                            <button className="btn btn-primary w-100" onClick={StoreNewTicket} type="button">Submit</button>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                                )}
                                             </div>
                                         </Col>
                                     </Row>

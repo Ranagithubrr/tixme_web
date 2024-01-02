@@ -5,13 +5,14 @@ import Norecord from '../../../component/Norecordui';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
+import { FaTimes } from 'react-icons/fa';
 import {
     Modal,
     Input,
     ModalBody,
     ModalHeader
 } from 'reactstrap';
-import Eimage from "../../../common/image/eimage.png";
+import Noimg from "../../../common/image/noimg.jpg";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import toast from 'react-hot-toast';
@@ -154,13 +155,13 @@ const Dashboard = ({ title }) => {
     const HandelTransferTicket = async () => {
         try {
             setTTloader(true)
-            if(!Emailid && !isEmail(Emailid)){
+            if (!Emailid && !isEmail(Emailid)) {
                 return toast.error('Enter valid email id');
             }
-            if(quantity < 1){
+            if (quantity < 1) {
                 return toast.error('Enter valid quantity');
             }
-            if(!Transferid){
+            if (!Transferid) {
                 return toast.error('Server issue try again');
             }
             const requestData = {
@@ -181,7 +182,7 @@ const Dashboard = ({ title }) => {
                     if (data.success == true) {
                         toast.success('Transfer successfully');
                         setModalTT(!modalTT);
-                    }else{
+                    } else {
                         toast.success(data.message);
                     }
                     setTTloader(false)
@@ -208,8 +209,12 @@ const Dashboard = ({ title }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
-                        setListitems(data.data);
-                        setAllEvents(data.data);
+                        const filteredData = data.data.filter(item =>
+                            item.eventData.length > 0 && item.eventData[0].end_mindate >= get_min_date(new Date())
+                        );
+                        // Now set the state with the filtered data
+                        setListitems(filteredData);
+                        setAllEvents(filteredData);
                     }
                     setLoader(false)
                 })
@@ -324,7 +329,11 @@ const Dashboard = ({ title }) => {
     return (
         <>
             <Modal isOpen={modal} toggle={() => setModal(!modal)} centered size={'xl'}>
-                <ModalHeader toggle={!modal}>Order Details</ModalHeader>
+                <ModalHeader toggle={!modal}>Order Details
+                <button className="close p-0" onClick={() => setModal(!modal)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody>
                     <Row>
                         {ModalLoader ? (
@@ -439,7 +448,11 @@ const Dashboard = ({ title }) => {
                 </ModalBody>
             </Modal>
             <Modal isOpen={modalTT} toggle={() => setModalTT(!modalTT)} centered size={'lg'}>
-                <ModalHeader toggle={!modalTT}>Transfer Ticket</ModalHeader>
+                <ModalHeader toggle={!modalTT}>Transfer Ticket
+                <button className="close p-0" onClick={() => setModalTT(!modalTT)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody>
                     <Row>
                         {ModalLoader ? (
@@ -572,7 +585,7 @@ const Dashboard = ({ title }) => {
                                                 <Col md={3}>
                                                     <div class="input-group mb-3 input-warning-o">
                                                         <span class="input-group-text search-box-icon-1"><FiClock /></span>
-                                                        <input readOnly type="text" class="form-control" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
+                                                        <input style={{cursor: 'pointer'}} readOnly type="text" class="form-control" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
                                                         <span class="input-group-text search-box-icon-1"><FiChevronDown /></span>
                                                     </div>
                                                 </Col>
@@ -595,7 +608,7 @@ const Dashboard = ({ title }) => {
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
-                                                                            <img src={Eimage} className="list-thum-img" alt="" />
+                                                                            <img src={item.eventData[0].thum_image ? item.eventData[0].thum_image : Noimg} className="list-thum-img" alt="" />
                                                                         </Col>
                                                                         <Col md={5} className="list-data">
                                                                             <div>

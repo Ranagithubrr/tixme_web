@@ -1253,3 +1253,10 @@ button.signup-page-button {
   font-weight: 600;
   color: #0047AB;
 }
+.view-event-btn {
+  background: #0047ab;
+  color: #fff !important;
+  padding: 4px 8px;
+  border-radius: 5px;
+  float: inline-end;
+}

@@ -421,7 +421,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
-                                                                <Link to={organizer_url + 'support-tickets'}><button className="list-rais-ticket-btn" type="button">Raise Ticket</button></Link>
+                                                                <Link to={`${organizer_url}support-tickets/${item._id}`}><button className="list-rais-ticket-btn" type="button">Raise Ticket</button></Link>
                                                                 <button onClick={() => HandelChangeStatus(item._id)} className="list-active-ticket-btn" type="button">{item.visibility == 1 ? 'Active' : 'Deactive'}<img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>

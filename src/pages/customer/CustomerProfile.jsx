@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
 import { apiurl, admin_url, isEmail, app_url } from '../../common/Helpers';
+import Select from 'react-select';
 import Whitebtn from '../../component/Whitestarbtn';
 import PhoneInput from 'react-phone-input-2';
 import Nouserphoto from '../../common/image/nouser.png';
 import { useNavigate } from "react-router-dom";
+import { Country, State, City } from 'country-state-city';
 import toast from "react-hot-toast";
 const Dashboard = ({ title }) => {
     const navigate = useNavigate();
@@ -33,6 +35,34 @@ const Dashboard = ({ title }) => {
         setTags(newTags);
     };
 
+
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedState, setSelectedState] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+    useEffect(() => {
+        setCountries(Country.getAllCountries().map(({ isoCode, name }) => ({ value: isoCode, label: name })));
+    }, []);
+
+    useEffect(() => {
+        if (selectedCountry) {
+            setStates(State.getStatesOfCountry(selectedCountry.value).map(({ isoCode, name }) => ({ value: isoCode, label: name })));
+            // setSelectedState(null);
+        } else {
+            setStates([]);
+        }
+    }, [selectedCountry]);
+
+    useEffect(() => {
+        if (selectedState) {
+            setCities(City.getCitiesOfState(selectedCountry.value, selectedState.value).map(({ name }) => ({ value: name, label: name })));
+        } else {
+            setCities([]);
+        }
+    }, [selectedState, selectedCountry]);
+
     const [name, setname] = useState();
     const [fname, setfname] = useState();
     const [lname, setlname] = useState();
@@ -41,9 +71,9 @@ const Dashboard = ({ title }) => {
     const [phone_number, setphone_number] = useState();
     const [whatsapp_number, setwhatsapp_number] = useState();
     const [address, setaddress] = useState();
-    const [city, setcity] = useState();
-    const [state, setstate] = useState();
-    const [country, setcountry] = useState();
+    const [fcity, setfcity] = useState();
+    const [fstate, setfstate] = useState();
+    const [fcountry, setfcountry] = useState();
     const [pincode, setpincode] = useState();
     const [picture, setpicture] = useState();
 
@@ -75,7 +105,13 @@ const Dashboard = ({ title }) => {
                 address: uaddress,
                 pincode: upincode,
                 hobbies: selectedHobbies,
-                picture: Dpname
+                picture: Dpname,
+                city: selectedCity ? selectedCity.label : '',
+                state: selectedState ? selectedState.label : '',
+                country: selectedCountry ? selectedCountry.label : '',
+                cityvalue: selectedCity ? selectedCity.value : '',
+                statevalue: selectedState ? selectedState.value : '',
+                countryvalue: selectedCountry ? selectedCountry.value : '',
             }
             fetch(apiurl + 'website/update-user-details', {
                 method: 'POST',
@@ -232,9 +268,12 @@ const Dashboard = ({ title }) => {
                         setphone_number(data.data.phone_number);
                         setwhatsapp_number(data.data.whatsapp_no);
                         setaddress(data.data.address);
-                        setcity(data.data.city);
-                        setstate(data.data.state);
-                        setcountry(data.data.country);
+                        setfcity(data.data.city);
+                        setfstate(data.data.state);
+                        setfcountry(data.data.country);
+                        setSelectedCountry({value: data.data.countryvalue, label: data.data.country});
+                        setSelectedState({value: data.data.statevalue, label: data.data.state});
+                        setSelectedCity({value: data.data.cityvalue, label: data.data.city});
                         setpincode(data.data.pincode);
                         setpicture(data.data.picture);
                         setbadge(data.data.plan_name);
@@ -439,11 +478,12 @@ const Dashboard = ({ title }) => {
                                                                         <div className="col-sm-9 col-7"><span>{whatsapp_number ? '+ ' + whatsapp_number : 'Not found'}</span>
                                                                         </div>
                                                                     </div>
+
                                                                     <div className="row mb-2">
                                                                         <div className="col-sm-3 col-5">
                                                                             <h5 className="f-w-500">Location <span className="pull-end">:</span></h5>
                                                                         </div>
-                                                                        <div className="col-sm-9 col-7"><span>{address}, {country ? 'City - ' + city + ',' : ''}  {country ? 'Country - ' + country + ',' : ''} Pincode - {pincode}</span>
+                                                                        <div className="col-sm-9 col-7"><span>{address}, {fcountry ? 'City - ' + fcity + ',' : ''}  {fcountry ? 'Country - ' + fcountry + ',' : ''} Pincode - {pincode}</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -491,7 +531,41 @@ const Dashboard = ({ title }) => {
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-6">
-
+                                                                                    <div className="form-group">
+                                                                                        <p>Select Country</p>
+                                                                                        <Select
+                                                                                            options={countries}
+                                                                                            value={selectedCountry}
+                                                                                            onChange={setSelectedCountry}
+                                                                                            placeholder="Select Country"
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="form-group">
+                                                                                        <p>Select State</p>
+                                                                                        <Select
+                                                                                            options={states}
+                                                                                            value={selectedState}
+                                                                                            onChange={setSelectedState}
+                                                                                            placeholder="Select State"
+                                                                                            isDisabled={!selectedCountry}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
+                                                                                    <div className="form-group">
+                                                                                        <p>Select City</p>
+                                                                                        <Select
+                                                                                            options={cities}
+                                                                                            value={selectedCity}
+                                                                                            placeholder="Select City"
+                                                                                            onChange={setSelectedCity}
+                                                                                            isDisabled={!selectedState}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-md-6">
                                                                                     <div className="form-group">
                                                                                         <p>Address <span className="text-danger">*</span></p>
                                                                                         <input className="form-control" type="text" placeholder="Address" value={uaddress} onChange={(e) => setuaddress(e.target.value)}></input>

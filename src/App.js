@@ -58,6 +58,7 @@ import CustomerSignup from './pages/website/auth/CustomerSignup';
 import OrganizerLogin from './pages/website/auth/OrganizerLogin';
 import OrganizerSignup from './pages/website/auth/OrganizerSignup';
 import AdminLogin from './pages/website/auth/AdminLogin';
+import LoginSignup from './pages/website/auth/LoginSignup';
 // website
 
 // import Home from './pages/website/Home';
@@ -94,6 +95,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* auth */}
+          <Route path={app_url + 'auth/login-signup'} element={<LoginSignup/>} />
           <Route path={app_url + 'auth/customer/signup'} element={<CustomerSignup title={'Tixme'} />} />
           <Route path={app_url + 'auth/customer/login'} element={<CustomerLogin title={'Tixme'} />} />
           <Route path={app_url + 'auth/customer/forgot-password'} element={<CustomerFpassword title={'Tixme'} />} />
@@ -126,14 +128,14 @@ function App() {
           {/* Customer */}
           <Route path={customer_url + 'dashboard'} element={<CustomerLayout title={'Dashboard'}> <CustomerDashboard title={'Dashboard'} /> </CustomerLayout>} />
           <Route path={customer_url + 'support-tickets'} element={<CustomerLayout> <CustomerSupportlist title={'Support Tickets'} /> </CustomerLayout>} />
-          <Route path={customer_url + 'my-order-list'} element={<CustomerLayout title={'Events'}> <CustomerOrderlist title={'All Order List'} /> </CustomerLayout>} />
+          <Route path={customer_url + 'my-order-list'} element={<CustomerLayout title={'My Tickets'}> <CustomerOrderlist title={'All Order List'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-profile'} element={<CustomerLayout title={'My profile'}> <CustomerProfile /> </CustomerLayout>} />
           <Route path={customer_url + 'following'} element={<CustomerLayout title={'My following'}> <FollowingList title={'My following'} /> </CustomerLayout>} />
           <Route path={`${customer_url}organizer-events/:id`} element={<CustomerLayout title={'Organizer Events'}> <OrganizerEvents /> </CustomerLayout>} />
           <Route path={customer_url + 'savedevents'} element={<CustomerLayout title={'My saved event'}> <SavedeventsList title={'My saved event'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-rewards'} element={<CustomerLayout title={'My Rewards'}> <Myrewards title={'My Rewards'} /> </CustomerLayout>} />
           {/* Organizer */}
-          <Route path={organizer_url + 'dashboard'} element={<OrganizerLayout> <Dashboard title={'Organizer Dashboard'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'dashboard'} element={<OrganizerLayout title={'Organizer Dashboard'}> <Dashboard /> </OrganizerLayout>} />
           <Route path={organizer_url + 'event/add-event'} element={<OrganizerLayout> <EventType title={'Create new event'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/edit-event/:id/:name`} element={<OrganizerLayout title={'Edit event'}> <EditEvent /> </OrganizerLayout>} />
           <Route path={`${organizer_url}event/view-event/:id/:name`} element={<OrganizerLayout> <EventView title={'Event details'} /> </OrganizerLayout>} />
@@ -142,15 +144,16 @@ function App() {
           <Route path={`${organizer_url}event/mange-attendee/:id/:name/:ticket_name`} element={<OrganizerLayout title={'Mange Attendee'}> <Ticketattendee title={'Mange Attendee'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'event/all-event-list'} element={<OrganizerLayout title={'Event Management'}> <EventList title={'All event list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'support-tickets'} element={<OrganizerLayout title={'Mange Tickets'}> <OrganizerSupportlist title={'Mange Tickets'} /> </OrganizerLayout>} />
+          <Route path={`${organizer_url}support-tickets/:eventid`} element={<OrganizerLayout title={'Mange Tickets'}> <OrganizerSupportlist title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={`${organizer_url}view-support-ticket/:id`} element={<OrganizerLayout title={'Mange Tickets'}> <TicketView title={'Mange Tickets'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'ticket-sold-list'} element={<OrganizerLayout> <TicketSoldlist title={'Tickets sold list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tickets-list'} element={<OrganizerLayout> <Ticketlist title={'Tickets list'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'payout-request'} element={<OrganizerLayout title={'Payout list'}> <PayoutList /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'tixme-scanner'} element={<OrganizerLayout> <Tixmescanner title={'Tixme scanner'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'tixme-scanner-page'} element={<OrganizerLayout> <Tixmescannerpage title={'Tixme scanner'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'tixme-scanner'} element={<OrganizerLayout title={'Tixme scanner'}> <Tixmescanner /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'tixme-scanner-page'} element={<OrganizerLayout title={'Tixme scanner'}> <Tixmescannerpage /> </OrganizerLayout>} />
           <Route path={organizer_url + 'tixme-validate'} element={<OrganizerLayout> <Qrvalidation title={'QR validate'} /> </OrganizerLayout>} />
           <Route path={organizer_url + 'analytics'} element={<OrganizerLayout> <Analytics title={'Analytics'} /> </OrganizerLayout>} />
-          <Route path={organizer_url + 'my-profile'} element={<OrganizerLayout> <OrganizerProfile title={'My profile'} /> </OrganizerLayout>} />
+          <Route path={organizer_url + 'my-profile'} element={<OrganizerLayout title={'My profile'}> <OrganizerProfile /> </OrganizerLayout>} />
           {/* Admin */}
           <Route path={admin_url + 'dashboard'} element={<AdminLayout title={'Admin Dashboard'}> <AdminDashboard /> </AdminLayout>} />
           <Route path={admin_url + 'add-category'} element={<AdminLayout title={'Add Category'}> <AddCategory /> </AdminLayout>} />
@@ -172,6 +175,7 @@ function App() {
           <Route path={admin_url + 'contact-us'} element={<AdminLayout title={'Contact us list'}> <Contactlist /> </AdminLayout>} />
           <Route path={admin_url + 'membership'} element={<AdminLayout title={'Membership'}> <Membership /> </AdminLayout>} />
           <Route path={`${admin_url}view-support-ticket/:id`} element={<AdminLayout title={'Mange Tickets'}> <AdminTicketView /> </AdminLayout>} />
+          <Route path={`${admin_url}event/view-event/:id/:name`} element={<AdminLayout> <EventView title={'Event details'} /> </AdminLayout>} />
         </Routes>
       </BrowserRouter>
     </>

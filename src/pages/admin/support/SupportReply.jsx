@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, getSupportbagecolor } from '../../../common/Helpers';
+import { apiurl, getSupportbagecolor, admin_url, shortPer } from '../../../common/Helpers';
 import Alert from 'react-bootstrap/Alert';
 import { Link, useParams } from "react-router-dom";
 import Select from 'react-select'
@@ -30,6 +30,41 @@ const Dashboard = ({ title }) => {
     ]
 
     const { id } = useParams();
+    
+    const [FormLoader, setFormLoader] = useState(false);
+    const [EventData, setEventData] = useState();
+    const fetchEventData = async (eventid) => {
+        setFormLoader(true)
+        try {
+            const requestData = {
+                id: eventid
+            };
+            fetch(apiurl + 'event/get-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setEventData(data.data);
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setFormLoader(false)
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setFormLoader(false)
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            setFormLoader(false)
+        }
+    }
+
     const GetSupportDetails = async () => {
         try {
             const requestData = {
@@ -47,6 +82,7 @@ const Dashboard = ({ title }) => {
                 .then(data => {
                     if (data.success == true) {
                         setSupportData(data.data)
+                        fetchEventData(data.data.eventid);
                         if (data.data.isclose == 0) {
                             setIsclosetype([{ value: "1", label: "Pending" }])
                         }
@@ -136,6 +172,33 @@ const Dashboard = ({ title }) => {
                                                         <Col md={6} className='text-end'>
                                                             <p>Posted at {SupportData.time}</p>
                                                         </Col>
+                                                        {FormLoader ? (
+                                                            <div className="linear-background w-100"> </div>
+                                                        ) : (
+                                                            <>
+                                                                <Col md={6}>
+                                                                    <div>
+                                                                        {EventData ? (
+                                                                            <div class="card">
+                                                                                <div class="card-body">
+                                                                                    <div class="profile-blog">
+                                                                                        <div style={{flex: 1}}>
+                                                                                            <h5 class="text-primary d-inline">Event details</h5>
+                                                                                            <Link className="view-event-btn" to={`${admin_url}event/view-event/${EventData._id}/${EventData.display_name}`}>View Event</Link>
+                                                                                        </div>
+                                                                                        <img src={EventData.thum_image} alt="" class="img-fluid mt-4 mb-4 w-100 rounded" />
+                                                                                        <h4><a href="post-details.html" class="text-black">{EventData.display_name}</a></h4>
+                                                                                        <p class="mb-0">{shortPer(EventData.event_desc, 100)}</p>
+                                                                                        <p class="mb-0">Start From : <span className="text-warning">{EventData.start_date} {EventData.start_time}</span></p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : ''}
+                                                                    </div>
+                                                                </Col>
+                                                                <Col md={6}></Col>
+                                                            </>
+                                                        )}
                                                         <Col md={12}>
                                                             <div className="py-4">
                                                                 <p className="ticket-type-12">{SupportData.tickettype}</p>

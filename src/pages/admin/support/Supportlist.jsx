@@ -396,7 +396,11 @@ const Dashboard = ({ title }) => {
                                                                         <Col md={12} className="mb-5">
                                                                             <div className="support-tickets-list-1">
                                                                                 <div className="xyz-ticket-desc-box">
-                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority && item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)} </p>
+                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> 
+                                                                                    {item.priority ? (
+                                                                                        <>{item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)}</>
+                                                                                    ) : ''}
+                                                                                    </p>
                                                                                     <p className="ticket-type-12">{item.tickettype}</p>
                                                                                     <p className="ticket-message7">{item.message}</p>
                                                                                 </div>

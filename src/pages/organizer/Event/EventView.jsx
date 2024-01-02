@@ -52,7 +52,7 @@ const Type = ({ title }) => {
         }
     }
     const countTicketsold = (ticketName) => {
-        const count = Ticketlist.filter(item => item.name === ticketName).length;
+        const count = TicketBookinglist.filter(item => item.ticket_name === ticketName).length;
         return count;
     };
     const countTicketRevenue = (ticketName, price) => {
@@ -149,7 +149,7 @@ const Type = ({ title }) => {
                                                             <li className="nav-item"><a href="#price" data-bs-toggle="tab" className="nav-link">Event Tickets</a></li>
                                                         </ul>
                                                         <div className="tab-content pt-5">
-                                                            <div id="about-me" className="tab-pane fade active show">
+                                                            <div id="about-me" className="tab-pane active show">
 
                                                                 <div className="profile-personal-info">
                                                                     <div className="row mb-2">
@@ -255,13 +255,13 @@ const Type = ({ title }) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="price" className="tab-pane fade">
+                                                            <div id="price" className="tab-pane">
                                                                 <div className="profile-personal-info">
 
 
                                                                     <div className="row mb-2">
                                                                         {Ticketlist.map((item, index) => (
-                                                                            <div className="col-md-3">
+                                                                            <div className="col-md-4">
                                                                                 <div class="card" style={{ border: '1px solid #eee' }}>
                                                                                     <div class="card-header border-0 pb-0">
                                                                                         <h2 class="card-title">{item.name}</h2>
@@ -286,15 +286,15 @@ const Type = ({ title }) => {
                                                                                         <div class="row">
                                                                                             <div class="col-4 pt-3 pb-3 border-end">
                                                                                                 <h3 class="mb-1 text-primary">{item.quantity}</h3>
-                                                                                                <span>Quantity</span>
+                                                                                                <span style={{font: '7px'}}>Quantity</span>
                                                                                             </div>
                                                                                             <div class="col-4 pt-3 pb-3 border-end">
                                                                                                 <h3 class="mb-1 text-primary">{countTicketsold(item.name)}</h3>
-                                                                                                <span>Sold</span>
+                                                                                                <span style={{font: '7px'}}>Sold</span>
                                                                                             </div>
                                                                                             <div class="col-4 pt-3 pb-3">
                                                                                                 <h3 class="mb-1 text-primary">{Eventdata.countrysymbol} {countTicketRevenue(item.name, item.price)}</h3>
-                                                                                                <span>Revenue</span>
+                                                                                                <span style={{font: '7px'}}>Revenue</span>
                                                                                             </div>
                                                                                             <div class="col-12 pt-3 pb-3">
                                                                                                 <button onClick={() => showOrderitemList(item.name)} type="button" class="btn btn-success">View History</button>
@@ -317,7 +317,7 @@ const Type = ({ title }) => {
                                                                                                 <div class="table-responsive">
                                                                                                     <table class="table table-responsive-md">
                                                                                                         <thead>
-                                                                                                            <tr>
+                                                                                                            <tr className="bb2s">
                                                                                                                 <th style={{ width: '80px' }}><strong>#</strong></th>
                                                                                                                 <th><strong>Customer Name</strong></th>
                                                                                                                 <th><strong>Date</strong></th>
@@ -326,7 +326,7 @@ const Type = ({ title }) => {
                                                                                                         </thead>
                                                                                                         <tbody>
                                                                                                             {Listitems.map((item, index) => (
-                                                                                                                <tr>
+                                                                                                                <tr className="blr2s">
                                                                                                                     <td><strong>{index + 1}</strong></td>
                                                                                                                     <td>
                                                                                                                         {item.owner_name} <br />

@@ -37,6 +37,7 @@ const About = () => {
 
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
@@ -186,12 +187,12 @@ const About = () => {
                 area_code: "+91",
                 whatsapp_no: WhatsappNumber ? WhatsappNumber : '',
                 address: Address1 ? Address1 : '',
-                city: fCity ? fCity.label : '',
-                state: fState ? fState.label : '',
-                country: fCountry ? fCountry.label : '',
-                cityvalue: fCity ? fCity.value : '',
-                statevalue: fState ? fState.value : '',
-                countryvalue: fCountry ? fCountry.value : '',
+                city: selectedCity ? selectedCity.label : '',
+                state: selectedState ? selectedState.label : '',
+                country: selectedCountry ? selectedCountry.label : '',
+                cityvalue: selectedCity ? selectedCity.value : '',
+                statevalue: selectedState ? selectedState.value : '',
+                countryvalue: selectedCountry ? selectedCountry.value : '',
                 pincode: Pincode,
                 agree_to_terms: 1,
                 agree_to_receive_marketing: 1,
@@ -208,7 +209,9 @@ const About = () => {
                 .then(data => {
                     setLoader(false);
                     if (data.success == true) {
-                        localStorage.setItem('customerauth', data.token);
+                        localStorage.setItem('userauth', data.token);
+                        localStorage.setItem('username', data.username);
+                        localStorage.setItem('user_role', 1);
                         toast.success('Account created successfully', {
                             duration: 3000,
                         });
@@ -378,6 +381,7 @@ const About = () => {
                                                 options={cities}
                                                 placeholder="Select City"
                                                 isDisabled={!selectedState}
+                                                onChange={setSelectedCity}
                                             />
                                         </div>
                                         <div className="form-group">

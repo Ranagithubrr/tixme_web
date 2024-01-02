@@ -236,7 +236,7 @@ const Dashboard = ({ title }) => {
                                                                                 <div className="event_list_box">
                                                                                     <Row>
                                                                                         <Col md={5}>
-                                                                                            <img src={imgurl + item.thum_image}  className="list-thum-img" alt="" />
+                                                                                            <img src={item.thum_image}  className="list-thum-img" alt="" />
                                                                                         </Col>
                                                                                         <Col md={4} className="list-data pt-3">
                                                                                             <div className="mb-4">

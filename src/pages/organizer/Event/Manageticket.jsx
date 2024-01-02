@@ -419,7 +419,7 @@ const Dashboard = ({ title }) => {
                 </div>
             </div >
             <Modal isOpen={Ticketshow} toggle={() => setTicketshow(!Ticketshow)} className='modal-dialog-centered modal-lg'>
-                <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Create new ticket</ModalHeader>
+                <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Manage Ticket</ModalHeader>
                 <ModalBody className=''>
                     {EditApiLoader ? (
                         <div className="linear-background w-100"> </div>
