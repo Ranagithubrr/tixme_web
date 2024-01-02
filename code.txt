@@ -18,8 +18,11 @@
 
 
 amitmajumder559@gmail.com
-
 12345678
-
 1234567891
 --legacy-peer-deps
+
+import { FaTimes } from 'react-icons/fa';
+<button className="close p-0" onClick={() => setModalTT(!modalTT)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>

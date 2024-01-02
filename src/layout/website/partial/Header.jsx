@@ -162,7 +162,8 @@ const Header = () => {
   return (
     <>
       <Modal isOpen={newmodal} toggle={() => setNewModal(!newmodal)} centered>
-        <ModalHeader toggle={!newmodal}>Select location</ModalHeader>
+        <ModalHeader toggle={!newmodal}>Select location
+        </ModalHeader>
         <ModalBody>
           <Row>
             <Col md={12} className="text-center">

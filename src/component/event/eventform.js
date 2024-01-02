@@ -22,6 +22,7 @@ import withReactContent from 'sweetalert2-react-content';
 import WhitestarBtn from '../Whitestarbtn';
 import Select from 'react-select'
 import Flatpickr from "react-flatpickr";
+import { FaTimes } from 'react-icons/fa';
 import "flatpickr/dist/themes/material_green.css";
 import Lottie from "lottie-react";
 import TicketLotte from '../../lotte/ticketanimation.json';
@@ -1508,7 +1509,11 @@ const Type = ({ title, editid }) => {
                 </Row >
             )}
             <Modal isOpen={Ticketshow} toggle={() => setTicketshow(!Ticketshow)} className='modal-dialog-centered modal-lg'>
-                <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Create new ticket</ModalHeader>
+                <ModalHeader className='bg-transparent' toggle={() => setTicketshow(!Ticketshow)}>Create new ticket
+                <button className="close p-0" onClick={() => setTicketshow(!Ticketshow)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody className=''>
                     <Row>
                         <Col md={12} className="justify-content-center d-flex">

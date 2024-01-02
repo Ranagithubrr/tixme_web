@@ -14,6 +14,7 @@ import sport from "./assets/sport.svg";
 import foot from "./assets/food.svg";
 import art from "./assets/art.svg";
 import { Link } from "react-router-dom";
+import { FaTimes } from 'react-icons/fa';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, Col, Row } from "react-bootstrap";
 import { app_url, apiurl, organizer_url, customer_url } from "../common/Helpers";
@@ -165,7 +166,11 @@ const Header = () => {
     return (
         <>
             <Modal isOpen={newmodal} toggle={() => setNewModal(!newmodal)} centered>
-                <ModalHeader toggle={!newmodal}>Select location</ModalHeader>
+                <ModalHeader toggle={!newmodal}>Select location
+                    <button className="close p-0" onClick={() => setNewModal(!newmodal)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
                 <ModalBody>
                     <Row>
                         <Col md={12} className="text-center">
@@ -285,7 +290,7 @@ const Header = () => {
                                         class="nav-link text-primary-theme px-1 font-nav-small"
                                         href="#"
                                     >
-                                        {country_name ? country_name : 'Location'} 
+                                        {country_name ? country_name : 'Location'}
                                         <img class="nav-plus" src={plus} alt="" />
                                     </a>
                                 </div>
