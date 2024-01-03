@@ -57,11 +57,11 @@ const Sidebar = () => {
                             <span className="nav-text">saved Events</span>
                         </Link>
                         </li>
-                        {/* <li onClick={() => d()}><Link to={customer_url+ 'support-tickets'} className="ai-icon" aria-expanded="false">
+                        <li onClick={() => d()}><Link to={customer_url+ 'support-tickets'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
                             <span className="nav-text">Support</span>
                         </Link>
-                        </li> */}
+                        </li>
                         {/* <li onClick={() => d()}><Link to={customer_url+ 'my-profile'} className="ai-icon" aria-expanded="false">
                             <img src={supportIcon} alt="Your Logo" />
                             <span className="nav-text">Profile Managment</span>

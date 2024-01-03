@@ -26,7 +26,7 @@ import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
 import TranferImg from "../../../common/image/Tranfer.svg";
-import { apiurl, isEmail, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, get_date_time, get_min_date, app_url } from '../../../common/Helpers';
+import { apiurl, isEmail, imgurl, admin_url, customer_url, shortPer, onlyDayMonth, get_date_time, get_min_date, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 
 import QRCode from 'react-qr-code';
@@ -604,6 +604,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
+                                                            <Link to={`${customer_url}support-tickets/${item.eventData[0]._id}`}><button className="list-rais-ticket-btn" type="button">Raise Ticket</button></Link>
                                                                 <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>

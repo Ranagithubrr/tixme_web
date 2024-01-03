@@ -213,7 +213,7 @@ const Home = () => {
               {Eventlist.length > 0 ? (
                 <>
                   {Eventlist.map((item, index) => (
-                    <div className="col-xl-4 col-md-6 col-12" onClick={() => viewEvent(item._id, item.name)}>
+                    <div className="col-xl-4 col-md-6 col-12 cursor-pointer" onClick={() => viewEvent(item._id, item.name)}>
                       <div className="bg-white rounded-10 shadow-bottom">
                         <img className="event-card-img" src={card} alt="" />
                         <div className="d-flex align-items-center justify-content-end mt-n4 me-3">

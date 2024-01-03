@@ -24,6 +24,7 @@ import AdminLayout from './layout/admin/Layout'
 // Customer
 import CustomerDashboard from './pages/customer/Dashboard';
 import CustomerSupportlist from './pages/customer/support/Supportlist';
+import CustomerTicketView from './pages/customer/support/SupportReply';
 import CustomerOrderlist from './pages/customer/events/Orderlist';
 import FollowingList from './pages/customer/FollowingList';
 import OrganizerEvents from './pages/customer/events/Organizerevents';
@@ -128,6 +129,8 @@ function App() {
           {/* Customer */}
           <Route path={customer_url + 'dashboard'} element={<CustomerLayout title={'Dashboard'}> <CustomerDashboard title={'Dashboard'} /> </CustomerLayout>} />
           <Route path={customer_url + 'support-tickets'} element={<CustomerLayout> <CustomerSupportlist title={'Support Tickets'} /> </CustomerLayout>} />
+          <Route path={`${customer_url}support-tickets/:eventid`} element={<CustomerLayout title={'Mange Tickets'}> <CustomerSupportlist title={'Mange Tickets'} /> </CustomerLayout>} />
+          <Route path={`${customer_url}view-support-ticket/:id`} element={<CustomerLayout title={'Mange Tickets'}> <CustomerTicketView title={'Mange Tickets'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-order-list'} element={<CustomerLayout title={'My Tickets'}> <CustomerOrderlist title={'All Order List'} /> </CustomerLayout>} />
           <Route path={customer_url + 'my-profile'} element={<CustomerLayout title={'My profile'}> <CustomerProfile /> </CustomerLayout>} />
           <Route path={customer_url + 'following'} element={<CustomerLayout title={'My following'}> <FollowingList title={'My following'} /> </CustomerLayout>} />
