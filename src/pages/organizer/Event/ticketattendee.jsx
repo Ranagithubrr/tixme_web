@@ -358,6 +358,9 @@ const Dashboard = ({ title }) => {
                                                             {item.is_transfer == 1 ? (
                                                                 <>
                                                                     <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
+                                                                    <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                    <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                    <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
                                                                     <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Transferred to</p>
                                                                     <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> {item.owner_email}</span>
                                                                 </>
@@ -366,13 +369,19 @@ const Dashboard = ({ title }) => {
                                                                     {item.scan_status == 0 ? (
                                                                         <>
                                                                             <QRCode style={{ height: "auto", width: "150px" }} value={JSON.stringify({ id: item._id, time: generateRandomNumber(), index: index })} />
-                                                                            <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
                                                                             <span class="mt-0 badge-theme-warning badge-theme mt-3 mb-3 d-block w-100"><FaClock /> Pending</span>
                                                                         </>
                                                                     ) : (
                                                                         <>
                                                                             <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
-                                                                            <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
                                                                             <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> Success</span>
                                                                         </>
                                                                     )}
