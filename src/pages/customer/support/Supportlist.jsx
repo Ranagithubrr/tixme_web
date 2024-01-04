@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { apiurl, organizer_url, isEmail, getSupportbagecolor, get_date_time, get_min_date, shortPer, customer_url } from '../../../common/Helpers';
+
 import { Button, Col, Row } from "react-bootstrap";
 import Card from 'react-bootstrap/Card';
-import { apiurl, admin_url, isEmail } from '../../../common/Helpers';
+
+import Searchicon from '../../../common/icon/searchicon.png';
+import DateIcon from "../../../common/icon/date 2.svg";
 import WhiteButton from '../../../component/Whitestarbtn';
-import { Link } from "react-router-dom";
+import Norecord from '../../../component/Norecordui';
+import { Link, useNavigate } from "react-router-dom";
+import Select from 'react-select'
+import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 import Swal from 'sweetalert2'
 import toast from "react-hot-toast";
 import withReactContent from 'sweetalert2-react-content'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_green.css";
+import { useParams } from 'react-router-dom';
+import { FaCircle } from "react-icons/fa6";
 const Dashboard = ({ title }) => {
+    const navigate = useNavigate();
     const MySwal = withReactContent(Swal)
     const OrganizerId = localStorage.getItem('organizerid');
     const Beartoken = localStorage.getItem('userauth');
+    const { eventid } = useParams();
     const [newTitle, setnewTitle] = useState();
     const [newMessage, setnewMessage] = useState();
 
@@ -19,8 +32,10 @@ const Dashboard = ({ title }) => {
     const [newmodal, setNewModal] = useState(false);
     const [Btnloader, setBtnloader] = useState(false);
     const [Loader, setLoader] = useState(false);
+    const [ListLoader, setListLoader] = useState(false);
     const [apiLoader, setapiLoader] = useState(false);
     const [Listitems, setListitems] = useState([]);
+    const [allData, setallData] = useState([]);
 
     const [Email, setEmail] = useState();
     const [Updatid, setUpdatid] = useState();
@@ -30,95 +45,177 @@ const Dashboard = ({ title }) => {
     const [Messagelog, setMessagelog] = useState([]);
 
     const [ReplyMessage, setReplyMessage] = useState();
+
+    const [Startdate, setStartdate] = useState(new Date());
+    const [Endtdate, setEndtdate] = useState(new Date());
+    const [viewStartdate, setviewStartdate] = useState();
+    const [viewEndtdate, setviewEndtdate] = useState();
+    const [valueStartdate, setvalueStartdate] = useState();
+    const [valueEndtdate, setvalueEndtdate] = useState();
+    const handelStartdatechange = (date) => {
+        setStartdate(date);
+        const get_start_date = get_date_time(date);
+        setviewStartdate(get_start_date[0].Dateview);
+        setvalueStartdate(get_min_date(date));
+    }
+    const handelEnddatechange = (date) => {
+        setEndtdate(date);
+        const get_end_date = get_date_time(date);
+        setviewEndtdate(get_end_date[0].Dateview);
+        setvalueEndtdate(get_min_date(date));
+    }
+
+    const [Daterange, setDaterange] = useState(false);
+    const HandelDatefilterreset = () => {
+        setviewStartdate('');
+        setviewEndtdate('');
+        setvalueStartdate('');
+        setvalueEndtdate('');
+        setListitems(Listitems);
+        setDaterange(!Daterange);
+    }
+    const HandelDatefilter = () => {
+        if (!valueStartdate) {
+            return toast.error('Start date is requied')
+        }
+        if (!valueEndtdate) {
+            return toast.error('End date is requied')
+        }
+        handleDateRangeChange(valueStartdate, valueEndtdate);
+    }
+    const handleDateRangeChange = (startDate, endDate) => {
+        if (startDate && endDate) {
+            const filteredEvents = allData.filter(event => {
+                const eventDate = event.mindate; // Date of the event
+                // Check if the event's date is within the given date range
+                return eventDate >= startDate && eventDate <= endDate;
+            });
+            setListitems(filteredEvents);
+        } else {
+            // If either startDate or endDate is missing, reset to show all events
+            setListitems(allData);
+        }
+        setDaterange(!Daterange);
+    };
+    const [FormLoader, setFormLoader] = useState(false);
+    const [EventData, setEventData] = useState();
+    const fetchEventData = async () => {
+        setFormLoader(true)
+        try {
+            const requestData = {
+                id: eventid
+            };
+            fetch(apiurl + 'event/get-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        setEventData(data.data);
+                        setTicketTypelist(data.data.allprice.map(ticket => ({ value: ticket.name, label: ticket.name })));
+                    } else {
+                        toast.error(data.message);
+                    }
+                    setFormLoader(false)
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setFormLoader(false)
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            setFormLoader(false)
+        }
+    }
     const fetchList = async () => {
-        setLoader(true)
+        setListLoader(true)
         try {
             fetch(apiurl + 'website/customer/support/list', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${Beartoken}`,
-                }
+                },
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success == true) {
                         setListitems(data.data);
-                        setLoader(false)
+                        setallData(data.data);
+                        setListLoader(false)
                     } else {
 
                     }
-                    setLoader(false)
+                    setListLoader(false)
                 })
                 .catch(error => {
                     console.error('Insert error:', error);
-                    setLoader(false)
+                    setListLoader(false)
                 });
         } catch (error) {
             console.error('Api error:', error);
-            setLoader(false)
+            setListLoader(false)
         }
 
     }
-    const HandelOrganizerform = async () => {
-        try {
-            if (!newTitle) {
-                return toast.error('Title is required');
-            }
-            if (!newMessage) {
-                return toast.error('Message is required');
-            }
-            const id = OrganizerId;
-            const requestData = {
-                id: id,
-                title: newTitle,
-                message: newMessage
-            };
-            setLoader(true);
-            fetch(apiurl + 'website/organizer/support/insert', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData),
-            }).then(response => response.json()).then(data => {
-                setLoader(false);
-                if (data.success == true) {
-                    MySwal.fire({
-                        text: "Support ticket submitted successfully!",
-                        icon: "success"
-                    });
-                    setNewModal(!newmodal)
-                    setnewTitle('');
-                    setnewMessage('');
-                    fetchList();
-                } else {
-                    toast.error(data.message);
-                }
-                setLoader(false);
-            }).catch(error => {
-                setLoader(false);
-                toast.error('Insert error: ' + error.message);
-                console.error('Insert error:', error);
-            });
-
-        } catch (error) {
-
+    useEffect(() => {
+        fetchList();
+        if (eventid) {
+            fetchEventData();
+        } else {
+            setFormLoader(false);
+            setEventData(null);
         }
+    }, [eventid]);
+    // select code
+    const [TicketTypelist, setTicketTypelist] = useState([]);
+    const [TicketTypevalue, setTicketTypevalue] = useState();
+    const [TicketType, setTicketType] = useState();
+    const TicketTypeOption = [
+        {
+            options: TicketTypelist
+        }
+    ]
+    const selectTicketType = (SelectValue) => {
+        setTicketType(SelectValue);
+        setTicketTypevalue(SelectValue.value);
     };
-    const Handelform = async () => {
+    // select code
+    const [TicketPrioritylist, setTicketPrioritylist] = useState([{ value: "High Priority", label: "High Priority" }]);
+    const [TicketPriorityvalue, setTicketPriorityvalue] = useState();
+    const [TicketPriority, setTicketPriority] = useState();
+    const TicketPriorityOption = [
+        {
+            options: TicketPrioritylist
+        }
+    ]
+    const selectTicketPriority = (SelectValue) => {
+        setTicketPriority(SelectValue);
+        setTicketPriorityvalue(SelectValue.value);
+    };
+
+    const StoreNewTicket = async () => {
         try {
-            if (!newTitle) {
-                return toast.error('Title is required');
+            if (!Message) {
+                return toast.error('Type your Message');
             }
-            if (!newMessage) {
-                return toast.error('Message is required');
+            if(EventData){
+                if(!TicketTypevalue){
+                    return toast.error('Select request ticket type');
+                }
             }
-            const id = OrganizerId;
             const requestData = {
-                id: id,
-                title: newTitle,
-                message: newMessage
+                id: OrganizerId,
+                email: Email,
+                message: Message,
+                tickettype: TicketTypevalue ? TicketTypevalue : null,
+                priority: TicketPriorityvalue,
+                eventid: EventData ? EventData._id : null,
+                isfororganizer: EventData ? EventData.organizer_id : null,
             };
             setLoader(true);
             fetch(apiurl + 'website/customer/support/insert', {
@@ -131,13 +228,17 @@ const Dashboard = ({ title }) => {
             }).then(response => response.json()).then(data => {
                 setLoader(false);
                 if (data.success == true) {
-                    MySwal.fire({
-                        text: "Support ticket submitted successfully!",
-                        icon: "success"
-                    });
-                    setNewModal(!newmodal)
-                    setnewTitle('');
-                    setnewMessage('');
+                    toast.success('Submitted successfully');
+                    setEmail('');
+                    setMessage('');
+                    setTicketType('');
+                    setTicketTypevalue('');
+                    setTicketPriority('');
+                    setTicketPriorityvalue('');
+                    if (eventid) {
+                        setEventData('');
+                        navigate(customer_url + 'support-tickets');
+                    }
                     fetchList();
                 } else {
                     toast.error(data.message);
@@ -145,290 +246,290 @@ const Dashboard = ({ title }) => {
                 setLoader(false);
             }).catch(error => {
                 setLoader(false);
-                toast.error('Insert error: ' + error.message);
-                console.error('Insert error:', error);
+                toast.error('Error: ' + error.message);
             });
-
         } catch (error) {
+            toast.error(error);
+        }
+    }
+    const [Priorityfiltertype, setPriorityfiltertype] = useState();
+    const [Priorityfiltervalue, setPriorityfiltervalue] = useState();
+    const selectPriorityfilter = (selectedValue) => {
+        setPriorityfiltervalue(selectedValue);
+        setPriorityfiltertype(selectedValue.value);
+        if (selectedValue.value) {
+            const filteredEvents = allData.filter(event =>
+                event.isclose.toString() === selectedValue.value);
+            setListitems(filteredEvents);
+        } else {
+            setListitems(allData);
+        }
 
+    };
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+
+        // Now filter the events based on the search term
+        if (value) {
+            const filteredEvents = allData.filter(event =>
+                event.uniqueid.toLowerCase().includes(value.toLowerCase()));
+            setListitems(filteredEvents);
+        } else {
+            // If the search term is empty, reset to show all events
+            setListitems(allData);
         }
     };
-    const HandelReplyapi = async () => {
-        if (!ReplyMessage) {
-            return toast.error('Reply message is required');
-        }
-        try {
-            setBtnloader(true)
-            const requestData = {
-                replymessage: ReplyMessage,
-                id: Updatid
-            };
-            fetch(apiurl + 'website/support/store-replay', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        toast.success(data.data);
-                        Handelviewmodal(Updatid)
-                        setReplyMessage('');
-                    } else {
 
-                    }
-                    setBtnloader(false)
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                    setBtnloader(false)
+    const CustomOption = ({ innerProps, label, value }) => {
+        let iconColor = '';
 
-                });
-        } catch (error) {
-            console.error('Api error:', error);
-            setModal(false)
-            setBtnloader(false)
+        // Apply different icon colors based on the value
+        switch (value) {
+            case '0':
+                iconColor = 'text-warning';
+                break;
+            case '1':
+                iconColor = 'text-primary';
+                break;
+            case '2':
+                iconColor = 'text-success';
+                break;
+            default:
+                iconColor = '';
         }
-    }
-    const Handelnewmodal = async () => {
-        setNewModal(true)
-    }
-    const Handelviewmodal = async (id) => {
-        try {
-            const requestData = {
-                id: id,
-            };
-            setModal(true)
-            setapiLoader(true)
-            fetch(apiurl + 'admin/support/view', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success == true) {
-                        setUpdatid(data.data._id);
-                        setEmail(data.data.email);
-                        setTitle(data.data.title);
-                        setIsopen(data.data.isclose);
-                        setMessage(data.data.message);
-                        setMessagelog(data.data.messagelog);
-                        setapiLoader(false)
-                    } else {
-                        setModal(false)
-                        setapiLoader(false)
-                    }
-                })
-                .catch(error => {
-                    console.error('Insert error:', error);
-                    setModal(false)
-                    setapiLoader(false)
-                });
-        } catch (error) {
-            console.error('Api error:', error);
-            setModal(false)
+
+        return (
+            <div {...innerProps}>
+                <span><span style={{ paddingLeft: '5px' }} className={`ticket-sts-icon ${iconColor}`}><FaCircle /></span> <span className="cpointer">{label}</span></span>
+            </div>
+        );
+    };
+    const customStyles = {
+        option: (provided, state) => ({
+            ...provided,
+            padding: 10,
+        }),
+    };
+    const PriorityfilterOption = [
+        {
+            options: [
+                { value: "0", label: "New Tickets" },
+                { value: "1", label: "On-Going Tickets" },
+                { value: "2", label: "Resolved Tickets" },
+            ]
         }
-    }
-    useEffect(() => {
-        fetchList();
-    }, []);
+    ]
 
     return (
         <>
-            <Modal isOpen={modal} toggle={() => setModal(!modal)}>
-                <ModalHeader toggle={!modal}>Support</ModalHeader>
+            <Modal isOpen={Daterange} toggle={() => setDaterange(!Daterange)} centered>
+                <ModalHeader toggle={!Daterange}>Select date</ModalHeader>
                 <ModalBody>
-                    {apiLoader || Loader ? (
-                        <div className="linear-background w-100"> </div>
-                    ) : (
-                        <>
-                            <Row>
-                                <Col md={12}>
-                                    <h5 className="text-black">Email</h5>
-                                    <p class="mb-0">{Email}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Title</h5>
-                                    <p class="mb-0 text-info">{Title}</p>
-                                </Col>
-                                <Col md={12}>
-                                    <h5 className="text-black">Message</h5>
-                                    <p class="mb-0 text-danger">{Message}</p>
-                                </Col>
-                                <Col md={12} className='border-bottom py-2 mb-4'></Col>
-                                <Col md={12}>
-                                    {Messagelog ? (
-                                        <div id="DZ_W_TimeLine" className="widget-timeline dz-scroll px-4 height300 overflow-y-scroll">
-                                            <ul className="timeline">
-                                                {[...Messagelog].reverse().map((item, index) => (
-                                                    <li key={index}>
-                                                        <div className={item.usertype === 'Admin' ? 'timeline-badge primary' : 'timeline-badge warning'}></div>
-                                                        <a className="timeline-panel text-muted" href="javascript:void(0);">
-                                                            <span>{item.date} | {item.usertype === 'Admin' ? 'ADMIN' : 'USER'}</span>
-                                                            <h6 className="mb-0">{item.replymessage}</h6>
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="alert alert-primary alert-dismissible fade show">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                                <strong>No Reply Found!</strong>
-                                                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </Col>
-                                <Col md={12} className='border-bottom py-2'></Col>
-                                {Isopen === 1 ? (
-                                    <div className="alert alert-danger alert-dismissible fade show">
-                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                        <strong>Support ticket closed</strong>
-                                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Col md={12} className="mt-3">
-                                            <div className="form-group">
-                                                <p>Message <span className="text-danger">*</span></p>
-                                                <textarea placeholder="Type your message" class="form-control" rows="3" value={ReplyMessage} onChange={(e) => setReplyMessage(e.target.value)}></textarea>
-                                            </div>
-                                        </Col>
-                                        <Col md={12}>
-                                            <div className="form-group">
-                                                {Btnloader ? (
-                                                    <Button className='signup-page-btn'>Please wait...</Button>
-                                                ) : (
-                                                    <span onClick={HandelReplyapi}><WhiteButton title={'Send'} /></span>
-                                                )}
-                                            </div>
-                                        </Col>
-                                    </>
-                                )}
-                            </Row>
-                        </>
-                    )}
+                    <Row>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">Start Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewStartdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Startdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelStartdatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6} className="mb-2 mt-0">
+                            <label htmlFor="" className="text-black">End Date</label>
+                            <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
+                                <span class="input-group-text"><img src={DateIcon} alt="" /></span>
+                                <input type="text" class="pl-5 form-control date-border-redius date-border-redius-input" placeholder="Select date" readOnly value={viewEndtdate} />
+                                <div className="date-style-picker">
+                                    <Flatpickr
+                                        value={Endtdate}
+                                        id='date-picker'
+                                        className='form-control'
+                                        onChange={date => handelEnddatechange(date)}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilter} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1 w-100" type="button">Filter</button>
+                        </Col>
+                        <Col md={6}>
+                            <button onClick={HandelDatefilterreset} className="mb-0 mr-5  btn btn-dark list-Ticket-mng-1 w-100" type="button">Reset</button>
+                        </Col>
+                    </Row>
                 </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" onClick={() => setModal(!modal)}>
-                        Cancel
-                    </Button>
-                </ModalFooter>
             </Modal>
-            <Modal isOpen={newmodal} toggle={() => setNewModal(!newmodal)}>
-                <ModalHeader toggle={!newmodal}>Raise new ticket</ModalHeader>
-                <ModalBody>
-                    <div className="form-group">
-                        <p>Title <span className="text-danger">*</span></p>
-                        <input className="form-control" type="text" value={newTitle} placeholder="Enter title" onChange={(e) => setnewTitle(e.target.value)}></input>
-                    </div>
-                    <div className="form-group">
-                        <p>Message <span className="text-danger">*</span></p>
-                        <textarea class="form-control" rows="3" value={newMessage} onChange={(e) => setnewMessage(e.target.value)}></textarea>
-                    </div>
-                    <div className="form-group">
-                        {Loader ? (
-                            <Button className='signup-page-btn'>Please wait...</Button>
-                        ) : (
-                            <>
-                                <span onClick={Handelform}><WhiteButton title={'Submit'} /></span>
-                            </>
-                        )}
-                    </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" onClick={() => setNewModal(!newmodal)}>
-                        Cancel
-                    </Button>
-                </ModalFooter>
-            </Modal >
             <div className="content-body" style={{ background: '#F1F1F1' }}>
                 <div className="container-fluid">
-                    <div className="page-titles">
-                        <Button variant="link" className="page-theme-btn position-right" onClick={() => Handelnewmodal()}>Raise new ticket</Button>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item">{title}</li>
-                        </ol>
-                    </div>
+
                     <Row className="justify-content-center">
                         <Col md={12}>
                             <Card className="py-4">
                                 <Card.Body>
-                                    <Row className="justify-content-center">
-                                        <Col md={12}>
-                                            {Loader ? (
-                                                <div className="linear-background w-100"> </div>
-                                            ) : (
-                                                <>
-                                                    {Listitems.length > 0 ? (
+                                    <Row>
+                                        <Col md={8}>
+                                            <div className="ticket-list">
+                                                <Row className="react-select-h">
+                                                    <Col md={4}>
+                                                        <div class="input-group mb-3 input-warning-o">
+                                                            <span class="input-group-text search-box-icon-1 br-n" ><FiClock /></span>
+                                                            <input readOnly type="text" class="form-control  blr-n" value={viewStartdate && viewEndtdate ? viewStartdate + '-' + viewEndtdate : ''} placeholder="Date range" onClick={() => setDaterange(!Daterange)} />
+                                                            <span class="input-group-text search-box-icon-1  bl-n" ><FiChevronDown /></span>
+                                                        </div>
+                                                    </Col>
+                                                    <Col md={4}>
+                                                        <Select
+                                                            isClearable={false}
+                                                            options={PriorityfilterOption[0].options}
+                                                            components={{ Option: CustomOption }}
+                                                            className='react-select'
+                                                            classNamePrefix='select'
+                                                            placeholder='Select Status'
+                                                            onChange={selectPriorityfilter}
+                                                            value={Priorityfiltervalue}
+                                                        />
+                                                    </Col>
+                                                    <Col md={4}>
+                                                        <div class="input-group mb-3 input-warning-o grey-border">
+                                                            <span class="input-group-text"><img src={Searchicon} alt="" /></span>
+
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search for ticket"
+                                                                value={searchTerm}
+                                                                onChange={handleSearchChange}
+                                                            />
+                                                        </div>
+                                                    </Col>
+                                                    {ListLoader ? (
                                                         <>
-                                                            <div class="table-responsive">
-                                                                {Loader ? (
-                                                                    <div className="linear-background w-100"> </div>
-                                                                ) : (
-                                                                    <table class="table table-responsive-md">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th style={{ width: '80px' }}><strong>#</strong></th>
-                                                                                <th><strong>User email</strong></th>
-                                                                                <th><strong>Date</strong></th>
-                                                                                <th><strong>Title</strong></th>
-                                                                                <th><strong>Message</strong></th>
-                                                                                <th><strong>Status</strong></th>
-                                                                                <th></th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {Listitems.map((item, index) => (
-                                                                                <tr>
-                                                                                    <td><strong>{index + 1}</strong></td>
-                                                                                    <td>{item.email}</td>
-                                                                                    <td>{item.date}</td>
-                                                                                    <td>{item.title}</td>
-                                                                                    <td>{item.message}</td>
-                                                                                    <td>{item.isclose === 0 ? (<span class="badge badge-rounded badge-success">Open</span>) : (<span class="badge badge-rounded badge-danger">Closed</span>)}</td>
-                                                                                    <td>
-                                                                                        <div class="dropdown">
-                                                                                            <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
-                                                                                                <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="5" cy="12" r="2" /><circle fill="#000000" cx="12" cy="12" r="2" /><circle fill="#000000" cx="19" cy="12" r="2" /></g></svg>
-                                                                                            </button>
-                                                                                            <div class="dropdown-menu">
-                                                                                                <Button variant="link" onClick={() => Handelviewmodal(item._id)} class="dropdown-item">View</Button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            ))}
-                                                                        </tbody>
-                                                                    </table>
-                                                                )}
-                                                            </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
+                                                            <div className="mb-5 linear-background w-100" style={{ height: '150px' }}> </div>
                                                         </>
                                                     ) : (
-                                                        <div class="no-data-box">
-                                                            <p>No Data Found !</p>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
+                                                        <>
+                                                            {Listitems.length > 0 ? (
+                                                                <>
+                                                                    {Listitems.map((item, index) => (
+                                                                        <Col md={12} className="mb-5">
+                                                                            <div className="support-tickets-list-1">
+                                                                                <div className="xyz-ticket-desc-box">
+                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority ? (
+                                                                                        <>{item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)}</>
+                                                                                    ) : ''}</p>
+                                                                                    <p className="ticket-type-12">{item.tickettype}</p>
+                                                                                    <p className="ticket-message7">{item.message}</p>
+                                                                                </div>
+                                                                                <Row className="ticket-box-time1">
+                                                                                    <Col md={6}>
+                                                                                        <p className="date-and-time-ticket">Posted at {item.time}</p>
+                                                                                    </Col>
+                                                                                    <Col md={6} className="text-end">
+                                                                                        <Link to={`${customer_url}view-support-ticket/${item._id}`} className="Open-Ticket-link">Open Ticket</Link>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                            </div>
+                                                                        </Col>
+                                                                    ))}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Norecord />
+                                                                </>
+                                                            )}
 
+                                                        </>
+                                                    )}
+                                                </Row>
+                                            </div>
+                                        </Col>
+                                        <Col md={4}>
+                                            <div className="ticket-form">
+                                                <div className="pb-3 border-bottom" style={{ borderColor: '#000', borderWidth: '1px' }}>
+                                                    <h3 className="mb-1" style={{ fontWeight: '600' }}>Create Quick Ticket</h3>
+                                                    <p className="mb-1" style={{ fontWeight: '500', fontSize: '14px' }}>Write and address new queries and issues</p>
+                                                </div>
+                                                {FormLoader ? (
+                                                    <div className="linear-background w-100"> </div>
+                                                ) : (
+                                                    <div className="form-area-1 py-4">
+                                                        <div>
+                                                            {EventData ? (
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <div class="profile-blog">
+                                                                            <h5 class="text-primary d-inline">Event details</h5>
+                                                                            <img src={EventData.thum_image} alt="" class="img-fluid mt-4 mb-4 w-100 rounded" />
+                                                                            <h4>{EventData.display_name}</h4>
+                                                                            <p class="mb-0">{shortPer(EventData.event_desc, 100)}</p>
+                                                                            <p class="mb-0">Start From : <span className="text-warning">{EventData.start_date} {EventData.start_time}</span></p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : ''}
+                                                        </div>
+                                                        {EventData ? (
+                                                            <div className="form-group">
+                                                            <p className="mb-2">Request Ticket Type</p>
+                                                            <Select
+                                                                isClearable={false}
+                                                                options={TicketTypeOption}
+                                                                className='react-select'
+                                                                classNamePrefix='select'
+                                                                placeholder='Choose Type'
+                                                                onChange={selectTicketType}
+                                                                value={TicketType}
+                                                            />
+                                                        </div>
+                                                        ) : ''}
+                                                        <div className="form-group">
+                                                            <p className="mb-2">Priority Status</p>
+                                                            <Select
+                                                                isClearable={false}
+                                                                options={TicketPriorityOption}
+                                                                className='react-select'
+                                                                classNamePrefix='select'
+                                                                placeholder='Select Status'
+                                                                onChange={selectTicketPriority}
+                                                                value={TicketPriority}
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <p className="mb-2">Message</p>
+                                                            <textarea class="form-control" rows="5" placeholder="Type messages here.." value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                                                        </div>
+                                                        <div className="form-group">
+                                                            {Loader ? (
+                                                                <button className="btn btn-primary w-100" type="button">Please wait...</button>
+                                                            ) : (
+                                                                <>
+                                                                {EventData ? (<button className="btn btn-dark mb-2 w-100" onClick={() => setEventData(null)} type="button">Cancel</button>) : ''}
+                                                                <button className="btn btn-primary  mb-2 w-100" onClick={StoreNewTicket} type="button">Submit</button>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </Col>
                                     </Row>
                                 </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-            </div>
+                            </Card >
+                        </Col >
+                    </Row >
+                </div >
+            </div >
 
         </>
     )

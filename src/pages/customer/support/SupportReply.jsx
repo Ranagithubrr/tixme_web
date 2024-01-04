@@ -16,21 +16,6 @@ const Dashboard = ({ title }) => {
     const [Message, setMessage] = useState();
     const { id } = useParams();
 
-    const [Isclosetype, setIsclosetype] = useState();
-    const [Isclosetypevalue, setIsclosetypevalue] = useState();
-    const selectIsclosetype = (selectedValue) => {
-        setIsclosetype(selectedValue);
-        setIsclosetypevalue(selectedValue.value);
-    };
-    const IscloseOption = [
-        {
-            options: [
-                { value: "1", label: "Pending" },
-                { value: "2", label: "Resolved" }
-            ]
-        }
-    ]
-
     const [FormLoader, setFormLoader] = useState(false);
     const [EventData, setEventData] = useState();
     const fetchEventData = async (eventid) => {
@@ -104,15 +89,11 @@ const Dashboard = ({ title }) => {
             if (!Message) {
                 return toast.error('Type your Message');
             }
-            if (!Isclosetypevalue && EventData) {
-                return toast.error('Select status');
-            }
             setBtnLoader(true)
             const requestData = {
                 replymessage: Message,
                 id: id,
-                usertype: "organizer",
-                closestatus: EventData ? Isclosetypevalue : null
+                usertype: "customer",
             };
             fetch(apiurl + 'website/support/store-replay', {
                 method: 'POST',
@@ -175,7 +156,7 @@ const Dashboard = ({ title }) => {
                                                                             <div class="card">
                                                                                 <div class="card-body">
                                                                                     <div class="profile-blog">
-                                                                                        <div style={{ flex: 1 }}>
+                                                                                        <div style={{flex: 1}}>
                                                                                             <h5 class="text-primary d-inline">Event details</h5>
                                                                                             <Link className="view-event-btn" to={`${organizer_url}event/view-event/${EventData._id}/${EventData.display_name}`}>View Event</Link>
                                                                                         </div>
@@ -203,8 +184,8 @@ const Dashboard = ({ title }) => {
                                                                 <div className="reply-message-cs">
                                                                     <Row>
                                                                         <Col md={6}>
-                                                                            {item.usertype == 'User' ? (
-                                                                                <p><span className="bage-light-css">Organizer</span></p>
+                                                                            {item.usertype == 'organizer' || item.usertype == 'customer'  || item.usertype == 'user' ? (
+                                                                                <p><span className="bage-light-css" style={{textTransform: 'capitalize'}}>{item.usertype}</span></p>
                                                                             ) : (
                                                                                 <p><span className="bage-danger-css">{item.usertype}</span></p>
                                                                             )}
@@ -221,25 +202,7 @@ const Dashboard = ({ title }) => {
                                                         ))}
                                                         {SupportData.isclose != 2 ? (
                                                             <Col md={12}>
-
                                                                 <div className="reply-area-1 border-light p-3" style={{ background: '#FCFCFC', border: '1px solid #FCFCFC', borderRadius: '10px' }}>
-                                                                    {EventData ? (
-                                                                        <Row>
-                                                                            <Col md={4} className="react-select-h mb-3">
-                                                                                <p className="mb-2">Ticket status</p>
-                                                                                <Select
-                                                                                    isClearable={false}
-                                                                                    options={IscloseOption}
-                                                                                    className='react-select'
-                                                                                    classNamePrefix='select'
-                                                                                    placeholder='Select Filter'
-                                                                                    onChange={selectIsclosetype}
-                                                                                    value={Isclosetype}
-                                                                                />
-                                                                            </Col>
-                                                                        </Row>
-                                                                    ) : ''}
-
                                                                     <p className="mb-3" style={{ fontWeight: '600' }}>Reply to Ticket</p>
                                                                     <div className="form-group">
                                                                         <p className="mb-2">Ticket Body</p>

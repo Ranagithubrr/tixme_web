@@ -104,6 +104,9 @@ const Home = () => {
         }
     }
 
+
+
+
     const addToCart = (item) => {
         // Initialize cartItems as an empty array if it's undefined
         const existingItem = cartItems.find((cartItem) => cartItem.name === item.name);
@@ -232,6 +235,48 @@ const Home = () => {
             }
         }
     };
+
+
+    const HandelSavecart = async () => {
+        try {
+            if (!Beartoken) {
+                toast.error("Login to your account");
+                navigate(app_url + 'auth/customer/login');
+                return;
+            }
+            setApiLoader(true);
+            const requestData = {
+                totalamount: Subtotal,
+                cartitem: cartItems
+            }
+            fetch(apiurl + 'order/cartdata/insert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Beartoken}`, // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        navigate(`${app_url}cart-details-fill/${data.data}`);
+                    } else {
+                        toast.error(data.data);
+                        setApiLoader(false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                    setApiLoader(false);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+            setApiLoader(false);
+        }
+
+    };
+
     return (
         <>
             {" "}
@@ -296,7 +341,7 @@ const Home = () => {
                                                             <Col md={6} className="my-2 text-end">
                                                                 <h5 className="cart-amount-small-amount">Rs. {allItemsTotalPrice}</h5>
                                                             </Col>
-                                                            {Iswallet ? (
+                                                            {/* {Iswallet ? (
                                                                 <>
                                                                     <Col md={12}>
                                                                         <div class="widget-stat card bg-success">
@@ -318,8 +363,8 @@ const Home = () => {
 
                                                                     </Col>
                                                                 </>
-                                                            ) : ''}
-                                                            {WantRedeem ? (
+                                                            ) : ''} */}
+                                                            {/* {WantRedeem ? (
                                                                 <Col md={12} className="mb-3">
                                                                     <h3 className="cart-amount-small-title theme-color font-600">Reward Points</h3>
                                                                     <input type="text" class="form-control" placeholder="Enter Reward Points"
@@ -328,8 +373,8 @@ const Home = () => {
                                                                     />
                                                                 </Col>
 
-                                                            ) : ''}
-                                                            {DiscountAmount ? (
+                                                            ) : ''} */}
+                                                            {/* {DiscountAmount ? (
                                                                 <>
                                                                     <Col md={6} className="my-2">
                                                                         <h5 className="cart-amount-small-title">Discount</h5>
@@ -338,7 +383,7 @@ const Home = () => {
                                                                         <h5 className="cart-amount-small-amount">{DiscountAmount}</h5>
                                                                     </Col>
                                                                 </>
-                                                            ) : ''}
+                                                            ) : ''} */}
                                                             <Col md={12} className="py-3">
                                                                 <div className="border-bottom"></div>
                                                             </Col>
@@ -354,7 +399,7 @@ const Home = () => {
                                                                     <Button className='signup-page-btn'>Please wait...</Button>
                                                                 ) : (
                                                                     <div className="mt-3 paynow-btn-box">
-                                                                        <span onClick={() => saveCartToLocalStorage()}>
+                                                                        <span onClick={() => HandelSavecart()}>
                                                                             <Whitestarbtn title={'Pay now'} />
                                                                         </span>
                                                                     </div>
@@ -373,12 +418,7 @@ const Home = () => {
                                 <Col md={12}>
                                     <Card>
                                         <Card.Body>
-                                            <div class="alert alert-danger solid alert-dismissible fade show">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                                                Your cart is empty !
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                                </button>
-                                            </div>
+                                            <h2 className="text-danger " style={{fontWeight: '600'}}>Your cart is empty !</h2>
                                         </Card.Body>
                                     </Card>
                                 </Col>

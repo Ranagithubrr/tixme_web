@@ -382,8 +382,8 @@ const Dashboard = ({ title }) => {
             if (!Message) {
                 return toast.error('Type your Message');
             }
-            if(EventData){
-                if(!TicketTypevalue){
+            if (EventData) {
+                if (!TicketTypevalue) {
                     return toast.error('Select request ticket type');
                 }
             }
@@ -623,9 +623,24 @@ const Dashboard = ({ title }) => {
                                                                         <Col md={12} className="mb-5">
                                                                             <div className="support-tickets-list-1">
                                                                                 <div className="xyz-ticket-desc-box">
-                                                                                    <p><span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span><span className="ticket-head-tt1">Ticket# {item.uniqueid}</span> {item.priority ? (
-                                                                                        <>{item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)}</>
-                                                                                    ) : ''}</p>
+                                                                                    <p>
+                                                                                        <span className={`ticket-sts-icon ${getSupportbagecolor(item.isclose)}`}><FaCircle /></span>
+                                                                                        <span className="ticket-head-tt1">Ticket# {item.uniqueid}</span>
+                                                                                        {item.priority ? (
+                                                                                            <>
+                                                                                                {item.priority == 'High Priority' ? (
+                                                                                                    <>
+                                                                                                        <span className="bage-danger-css">{item.priority}</span>
+                                                                                                    </>
+                                                                                                ) : (
+                                                                                                    <>
+                                                                                                        <span className="bage-light-css">{item.priority}</span>
+                                                                                                    </>
+                                                                                                )}
+                                                                                            </>
+                                                                                        ) : ''}
+                                                                                        {item.isfororganizer ? (<span className="bage-danger-css mx-1">Customer ticket issue</span>) : ''}
+                                                                                    </p>
                                                                                     <p className="ticket-type-12">{item.tickettype}</p>
                                                                                     <p className="ticket-message7">{item.message}</p>
                                                                                 </div>
@@ -669,7 +684,7 @@ const Dashboard = ({ title }) => {
                                                                         <div class="profile-blog">
                                                                             <h5 class="text-primary d-inline">Event details</h5>
                                                                             <img src={EventData.thum_image} alt="" class="img-fluid mt-4 mb-4 w-100 rounded" />
-                                                                            <h4><a href="post-details.html" class="text-black">{EventData.display_name}</a></h4>
+                                                                            <h4>{EventData.display_name}</h4>
                                                                             <p class="mb-0">{shortPer(EventData.event_desc, 100)}</p>
                                                                             <p class="mb-0">Start From : <span className="text-warning">{EventData.start_date} {EventData.start_time}</span></p>
                                                                         </div>
@@ -679,17 +694,17 @@ const Dashboard = ({ title }) => {
                                                         </div>
                                                         {EventData ? (
                                                             <div className="form-group">
-                                                            <p className="mb-2">Request Ticket Type</p>
-                                                            <Select
-                                                                isClearable={false}
-                                                                options={TicketTypeOption}
-                                                                className='react-select'
-                                                                classNamePrefix='select'
-                                                                placeholder='Choose Type'
-                                                                onChange={selectTicketType}
-                                                                value={TicketType}
-                                                            />
-                                                        </div>
+                                                                <p className="mb-2">Request Ticket Type</p>
+                                                                <Select
+                                                                    isClearable={false}
+                                                                    options={TicketTypeOption}
+                                                                    className='react-select'
+                                                                    classNamePrefix='select'
+                                                                    placeholder='Choose Type'
+                                                                    onChange={selectTicketType}
+                                                                    value={TicketType}
+                                                                />
+                                                            </div>
                                                         ) : ''}
                                                         <div className="form-group">
                                                             <p className="mb-2">Priority Status</p>
@@ -712,8 +727,8 @@ const Dashboard = ({ title }) => {
                                                                 <button className="btn btn-primary w-100" type="button">Please wait...</button>
                                                             ) : (
                                                                 <>
-                                                                {EventData ? (<button className="btn btn-dark mb-2 w-100" onClick={() => setEventData(null)} type="button">Cancel</button>) : ''}
-                                                                <button className="btn btn-primary  mb-2 w-100" onClick={StoreNewTicket} type="button">Submit</button>
+                                                                    {EventData ? (<button className="btn btn-dark mb-2 w-100" onClick={() => setEventData(null)} type="button">Cancel</button>) : ''}
+                                                                    <button className="btn btn-primary  mb-2 w-100" onClick={StoreNewTicket} type="button">Submit</button>
                                                                 </>
                                                             )}
                                                         </div>

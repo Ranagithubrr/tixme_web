@@ -62,3 +62,4 @@ export const onlyDayMonth = (dateString) => {
         return `${day} ${month}`;
     } else { return dateString; }
 }
+

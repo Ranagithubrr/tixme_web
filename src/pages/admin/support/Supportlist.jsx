@@ -400,6 +400,7 @@ const Dashboard = ({ title }) => {
                                                                                     {item.priority ? (
                                                                                         <>{item.priority == 'High Priority' ? (<><span className="bage-danger-css">{item.priority}</span></>) : (<><span className="bage-light-css">{item.priority}</span></>)}</>
                                                                                     ) : ''}
+                                                                                    {item.isfororganizer ? (<span className="bage-danger-css mx-1">Customer ticket issue</span>) : ''}
                                                                                     </p>
                                                                                     <p className="ticket-type-12">{item.tickettype}</p>
                                                                                     <p className="ticket-message7">{item.message}</p>

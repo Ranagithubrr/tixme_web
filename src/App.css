@@ -1260,3 +1260,18 @@ button.signup-page-button {
   border-radius: 5px;
   float: inline-end;
 }
+.cart-count {
+  position: absolute;
+  top: -8px; /* Adjust the positioning as needed */
+  right: -8px; /* Adjust the positioning as needed */
+  background-color: #000; /* Blue background color */
+  color: #fff; /* Text color */
+  border-radius: 50%; /* Make it circular */
+  width: 20px; /* Adjust the size as needed */
+  height: 20px; /* Adjust the size as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px; /* Adjust the font size as needed */
+  font-weight: bold;
+}

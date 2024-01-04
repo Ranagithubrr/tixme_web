@@ -5,10 +5,213 @@ import 'react-phone-input-2/lib/style.css';
 import { Link } from "react-router-dom";
 import { FiLogIn } from "react-icons/fi";
 import { FiPlus } from "react-icons/fi";
-import { app_url } from '../../../common/Helpers';
+import { app_url, apiurl, isEmail } from '../../../common/Helpers';
+import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { FaTimes } from 'react-icons/fa';
+import {
+    Modal,
+    Input,
+    ModalBody,
+    ModalHeader
+} from 'reactstrap';
+import Select from 'react-select'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { Button, Col, Row } from "react-bootstrap";
 const About = () => {
+    const navigate = useNavigate();
+    const [ContactModal, setContactModal] = useState(false);
+    const [Confirmemail, setConfirmemail] = useState();
+    const [Email, setEmail] = useState();
+    const [Phonenumber, setPhonenumber] = useState();
+    const [Firstname, setFirstname] = useState();
+    const [Lastname, setLastname] = useState();
+    const [Message, setMessage] = useState();
+    const [Countryname, setCountryname] = useState();
+    const [countryList, setcountryList] = useState([{ value: "", label: "Country" }]);
+    const [Country, setCountry] = useState();
+    const [Loader, setLoader] = useState(false);
+    const MySwal = withReactContent(Swal)
+
+    const HandelOrganizersignup = async () => {
+        try {
+            if (!Firstname || !Lastname || !Email || !Confirmemail || !Phonenumber) {
+                return toast.error('Required field must not be empty');
+            }
+            if (!isEmail(Email)) {
+                return toast.error('Enter valid email address');
+            }
+            if (!isEmail(Confirmemail)) {
+                return toast.error('Enter valid confirm email address');
+            }
+            if (Email === Confirmemail) {
+
+            } else {
+                return toast.error('Email and confirm email must me same');
+            }
+            setLoader(true);
+            const requestData = {
+                first_name: Firstname,
+                last_name: Lastname,
+                email: Email,
+                phone_number: Phonenumber,
+                countryname: Countryname,
+                message: Message,
+                area_code: "+91",
+                agree_to_terms: 1,
+                isactive: 0
+            };
+            fetch(apiurl + 'auth/organizer/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    setLoader(false);
+                    if (data.success == true) {
+                        MySwal.fire({
+                            icon: 'success',
+                            title: '',
+                            text: 'Your information has been received, we shall get back shortly! We are working on curating your extraordinary event. Please contact us for any further details or concerns.',
+                        }).then((result) => {
+                            navigate(app_url);
+                        });
+                    } else {
+                        toast.error(data.message);
+                    }
+                })
+                .catch(error => {
+                    setLoader(false);
+                    toast.error('Insert error: ' + error.message);
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+        }
+
+    }
+    const fetchCountry = async () => {
+        try {
+            fetch(apiurl + 'admin/country-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type header to JSON
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success == true) {
+                        const countryData = data.data;
+                        const CountryOption = countryData.map(category => ({
+                            value: category.name,
+                            label: category.name
+                        }));
+                        setcountryList(CountryOption);
+                    }
+                })
+                .catch(error => {
+                    console.error('Insert error:', error);
+                });
+        } catch (error) {
+            console.error('Api error:', error);
+        }
+    }
+    const CountryOption = [
+        {
+            options: countryList
+        }
+    ]
+    const selectCountry = (selectedValue) => {
+        setCountry(selectedValue);
+        setCountryname(selectedValue.label);
+    };
+    const handlePhoneChange = (newPhone) => {
+        setPhonenumber(newPhone);
+    };
+    useEffect(() => {
+        fetchCountry();
+    }, []);
     return (
         <>
+            <Modal isOpen={ContactModal} toggle={() => setContactModal(!ContactModal)} centered>
+                <ModalHeader toggle={!ContactModal}>Organizer Contact Form
+                    <button className="close p-0" onClick={() => setContactModal(!ContactModal)} style={{ position: 'absolute', top: '5px', right: '10px', border: 'none', background: 'transparent' }}>
+                        <FaTimes />
+                    </button>
+                </ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md={12}>
+                            <div className="form-group">
+                                <p>Email address <span className="text-danger">*</span></p>
+                                <input className="form-control" type="text" placeholder="email Address" value={Email} onChange={(e) => setEmail(e.target.value)}></input>
+                            </div>
+                            <div className="form-group">
+                                <p>Confirm Email address <span className="text-danger">*</span></p>
+                                <input className="form-control" type="text" placeholder="Confirm email Address" value={Confirmemail} onChange={(e) => setConfirmemail(e.target.value)}></input>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <div className="form-group">
+                                <p>First Name <span className="text-danger">*</span></p>
+                                <input className="form-control" type="text" placeholder="First Name" value={Firstname} onChange={(e) => setFirstname(e.target.value)}></input>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <div className="form-group">
+                                <p>Last Name <span className="text-danger">*</span></p>
+                                <input className="form-control" type="text" placeholder="Last Name" value={Lastname} onChange={(e) => setLastname(e.target.value)}></input>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <div className="form-group">
+                                <p>Phone number <span className="text-danger">*</span></p>
+                                {/* <input className="form-control" type="number" placeholder="Phone number" value={Phonenumber} onChange={handlePhoneChange}></input> */}
+                                <PhoneInput
+                                    country={'us'}
+                                    className="phone-number-with-code"
+                                    enableSearch={true}
+                                    placeholder={'Phone number'}
+                                    autoFormat={true}
+                                    value={Phonenumber}
+                                    onChange={handlePhoneChange}
+                                />
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <div className="form-group">
+                                <p>Select country <span className="text-danger">*</span></p>
+                                <Select
+                                    isClearable={false}
+                                    options={CountryOption}
+                                    className='react-select'
+                                    classNamePrefix='select'
+                                    onChange={selectCountry}
+                                    value={Country}
+                                />
+
+                            </div>
+                        </Col>
+                        <div className="form-group">
+                            <p>Message</p>
+                            <textarea class="form-control" rows="3" value={Message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                        </div>
+                        <Col md={12}>
+                            {Loader ? (
+                                <button type='button' className="signup-page-button">Please wait...</button>
+                            ) : (
+                                <button type='button' className="signup-page-button" onClick={() => HandelOrganizersignup()}>Contact Us</button>
+                            )}
+                        </Col>
+                    </Row>
+                </ModalBody>
+            </Modal>
             {/* <!-- mobile nav --> */}
             <HeaderMenu />
             <div class="mx-lg-4 my-lg-3 banner bg-primary-color rounded-8 position-relative">
@@ -50,7 +253,7 @@ const About = () => {
                                 <h3 className="event-category-title theme-color">Organizer</h3>
                                 <p className="event-category-desc text-black mb-4">Welcome to TIXME,</p>
                                 <div className="text-center">
-                                    <Link to={app_url + 'auth/organizer/signup'} className="btn btn-primary text-white px-5"><span className="mr-2"><FiPlus /></span> Contact Us</Link>
+                                    <span onClick={() => setContactModal(!ContactModal)} className="btn btn-primary text-white px-5"><span className="mr-2"><FiPlus /></span> Contact Us</span>
                                 </div>
                             </div>
                         </div>

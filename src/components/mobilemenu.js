@@ -15,6 +15,7 @@ import foot from "./assets/food.svg";
 import art from "./assets/art.svg";
 import { Link } from "react-router-dom";
 import { FaTimes } from 'react-icons/fa';
+import { FaShoppingCart } from 'react-icons/fa';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, Col, Row } from "react-bootstrap";
 import { app_url, apiurl, organizer_url, customer_url } from "../common/Helpers";
@@ -114,6 +115,32 @@ const Header = () => {
         // Call the function to get current location
         getCurrentLocation();
     }, []); // Empty dependency array to ensure useEffect runs only once
+    
+    const [Totalcart, setTotalcart] = useState(0);
+    const cartCheck = localStorage.getItem('cart');
+
+    function CartListItem() {
+        if (cartCheck) {
+            const { items, quantities } = JSON.parse(cartCheck);
+            setTotalcart(items.length)
+        }
+        return (
+            <li className="nav-item align-self-center me-7 cursor-pointer">
+                <Link to={app_url + 'cart-details'}>
+                    <div className="position-relative">
+                        <FaShoppingCart size={30} color="#003B8F" />
+                        {Totalcart > 0 && (
+                            <div className="cart-count">{Totalcart}</div>
+                        )}
+                    </div>
+                </Link>
+            </li>
+        );
+    }
+
+    useEffect(() => {
+        CartListItem()
+    }, [cartCheck]);
     const getMyLoc = async () => {
         setMyCountry(CurrentCountry);
         setMyCity(CurrentCity);
@@ -256,11 +283,12 @@ const Header = () => {
                                     <img class="nav-plus" src={plus} alt="" />
                                 </Link>
                             </li>
-                            <li class="nav-item border rounded border-primary align-self-center me-7">
+                            <li class="nav-item border rounded border-primary align-self-center me-3">
                                 <Link class="nav-link text-primary-theme pt-1 pb-1p font-nav" to={app_url + 'auth/organizer/signup'}>
                                     List your event
                                 </Link>
                             </li>
+                            <CartListItem />
                             <li class="nav-item position-absolute end-0 bg-white nav-box me-0 d-flex flex-column justify-content-center align-items-center rounded-8">
                                 {customer_token || organizername ? (
                                     <>

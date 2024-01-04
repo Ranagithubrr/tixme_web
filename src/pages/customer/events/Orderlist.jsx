@@ -26,7 +26,7 @@ import EditPng from '../../../common/icon/Edit.png';
 import DateIcon from "../../../common/icon/date 2.svg";
 import ArrowPng from "../../../common/icon/Arrow.svg";
 import TranferImg from "../../../common/image/Tranfer.svg";
-import { apiurl, isEmail, imgurl, admin_url, organizer_url, shortPer, onlyDayMonth, get_date_time, get_min_date, app_url } from '../../../common/Helpers';
+import { apiurl, isEmail, imgurl, admin_url, customer_url, shortPer, onlyDayMonth, get_date_time, get_min_date, app_url } from '../../../common/Helpers';
 import { FiPlus, FiFlag, FiClock, FiChevronDown } from "react-icons/fi";
 
 import QRCode from 'react-qr-code';
@@ -415,6 +415,9 @@ const Dashboard = ({ title }) => {
                                                             {item.is_transfer == 1 ? (
                                                                 <>
                                                                     <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
+                                                                    <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                    <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                    <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
                                                                     <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Transferred to</p>
                                                                     <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> {item.owner_email}</span>
                                                                 </>
@@ -423,13 +426,19 @@ const Dashboard = ({ title }) => {
                                                                     {item.scan_status == 0 ? (
                                                                         <>
                                                                             <QRCode style={{ height: "auto", width: "150px" }} value={JSON.stringify({ id: item._id, time: generateRandomNumber(), index: index })} />
-                                                                            <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
                                                                             <span class="mt-0 badge-theme-warning badge-theme mt-3 mb-3 d-block w-100"><FaClock /> Pending</span>
                                                                         </>
                                                                     ) : (
                                                                         <>
                                                                             <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
-                                                                            <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
+                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                            <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
                                                                             <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> Success</span>
                                                                         </>
                                                                     )}
@@ -604,6 +613,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
+                                                            <Link to={`${customer_url}support-tickets/${item.eventData[0]._id}`}><button className="list-rais-ticket-btn" type="button">Raise Ticket</button></Link>
                                                                 <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
