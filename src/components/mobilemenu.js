@@ -147,6 +147,7 @@ const Header = () => {
         setMyState(CurrentState);
         setNewModal(!newmodal)
         localStorage.setItem('countryname', CurrentCountry);
+        window.location.reload();
     }
     const [countryList, setcountryList] = useState([{ value: "", label: "Country" }]);
     const [Country, setCountry] = useState();
@@ -187,10 +188,12 @@ const Header = () => {
         setCountryname(selectedValue.label);
         localStorage.setItem('countryname', selectedValue.label);
         setNewModal(!newmodal)
+        window.location.reload();
     };
     useEffect(() => {
         fetchCountry();
     }, []);
+    
 
     return (
         <>

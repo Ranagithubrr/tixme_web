@@ -14,9 +14,11 @@ import { apiurl, onlyDayMonth, shortPer, app_url } from "../../common/Helpers";
 import { Link, useNavigate } from "react-router-dom";
 const Home = () => {
     const Beartoken = localStorage.getItem('userauth');
+    const country_name = localStorage.getItem("countryname");
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const [isFirstRender, setIsFirstRender] = useState(false);
+    const [IsCountryName, setIsCountryName] = useState(false);
     const [ApiLoader, setApiLoader] = useState(false);
     const [amountLoader, setamountLoader] = useState(false);
     const [moneyLoader, setmoneyLoader] = useState(false);
@@ -31,6 +33,7 @@ const Home = () => {
     const [localQuantities, setLocalQuantities] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
     const [rewardPoints, setRewardPoints] = useState('');
+    const [PaymentGatwayname, setPaymentGatwayname] = useState('');
     useEffect(() => {
         if (moneyLoader) {
             calculateTotalPrice();
@@ -41,6 +44,24 @@ const Home = () => {
             localStorage.setItem('cart', JSON.stringify({ items: cartItems, quantities: localQuantities }));
         }
     }, [cartItems]);
+
+    useEffect(() => {
+        if (!country_name) {
+            setIsCountryName(false);
+        } else {
+            setIsCountryName(true);
+            if (country_name == "India") {
+                setPaymentGatwayname('rezorpay');
+            }
+            if (country_name == "Singapore") {
+                setPaymentGatwayname('hitpay');
+            }
+            if (country_name == "United states") {
+                setPaymentGatwayname('Stripe');
+            }
+        }
+    }, [country_name]);
+    console.log("pp",PaymentGatwayname);
     useEffect(() => {
         getUserdata()
         loadCartFromLocalStorage();
@@ -182,15 +203,15 @@ const Home = () => {
         try {
             if (!Beartoken) {
                 toast.error("Login to your account");
-                navigate(app_url + 'auth/customer/signup');
+                navigate(app_url + 'auth/customer/login');
                 return;
             }
             setApiLoader(true);
             const requestData = {
                 totalamount: Subtotal,
                 cartitem: cartItems,
-                gatway_name: "Stripe",
-                location: "India",
+                gatway_name: PaymentGatwayname,
+                location: country_name,
                 rewardpoints: rewardPoints ? rewardPoints : null
             }
             fetch(apiurl + 'order/stripe/checkout', {
@@ -285,7 +306,7 @@ const Home = () => {
                 <MobileMenu />
             </div>
             <div>
-            <Row className="mt-5 mx-lg-4 my-lg-3 ">
+                <Row className="mt-5 mx-lg-4 my-lg-3 ">
                     <Col md={12}>
                         <h2 className="Your-cart-text font-weight-bold">Your cart</h2>
                     </Col>
@@ -398,11 +419,17 @@ const Home = () => {
                                                                 {ApiLoader ? (
                                                                     <Button className='signup-page-btn'>Please wait...</Button>
                                                                 ) : (
-                                                                    <div className="mt-3 paynow-btn-box">
-                                                                        <span onClick={() => HandelSavecart()}>
-                                                                            <Whitestarbtn title={'Pay now'} />
-                                                                        </span>
-                                                                    </div>
+                                                                    <>
+                                                                        {IsCountryName ? (
+                                                                            <div className="mt-3 paynow-btn-box">
+                                                                                <span onClick={() => saveCartToLocalStorage()}>
+                                                                                    <Whitestarbtn title={'Pay now'} />
+                                                                                </span>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <button type="button" className="btn btn-dark w-100">Select country</button>
+                                                                        )}
+                                                                    </>
                                                                 )}
                                                             </Col>
                                                         </Row>
@@ -418,7 +445,7 @@ const Home = () => {
                                 <Col md={12}>
                                     <Card>
                                         <Card.Body>
-                                            <h2 className="text-danger " style={{fontWeight: '600'}}>Your cart is empty !</h2>
+                                            <h2 className="text-danger " style={{ fontWeight: '600' }}>Your cart is empty !</h2>
                                         </Card.Body>
                                     </Card>
                                 </Col>

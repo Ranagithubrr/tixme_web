@@ -164,6 +164,52 @@ const Dashboard = ({ title }) => {
             setModalLoader(false);
         }
     }
+    // const HandelTransferTicket = async () => {
+    //     try {
+    //         if (!Orderid) {
+    //             return toast.error('Server error try again !');
+    //         }
+    //         if (!Emailid || !isEmail(Emailid)) {
+    //             return toast.error('Enter valid email id');
+    //         }
+    //         if (!ticketQuantity || ticketQuantity < 1) {
+    //             return toast.error('Enter ticket quantity');
+    //         }
+    //         setTransferLoader(true);
+    //         const requestData = {
+    //             id: Orderid,
+    //             email: Emailid,
+    //             ticketquantity: ticketQuantity
+    //         };
+    //         fetch(apiurl + 'order/tickets-transfer', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${Beartoken}`,
+    //             },
+    //             body: JSON.stringify(requestData),
+    //         })
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 if (data.success == true) {
+    //                     toast.success('Transfer successfully');
+    //                     setModalTT(!modalTT);
+    //                     setEmailid('');
+    //                     setTicketQuantity('');
+    //                 } else {
+    //                     toast.error(data.message);
+    //                 }
+    //                 setTransferLoader(false);
+    //             })
+    //             .catch(error => {
+    //                 console.error(error.message);
+    //                 setTransferLoader(false);
+    //             });
+    //     } catch (error) {
+    //         toast.error(error);
+    //         setTransferLoader(false);
+    //     }
+    // }
     const HandelTransferTicket = async () => {
         try {
             if (!Orderid) {
@@ -172,14 +218,11 @@ const Dashboard = ({ title }) => {
             if (!Emailid || !isEmail(Emailid)) {
                 return toast.error('Enter valid email id');
             }
-            if (!ticketQuantity || ticketQuantity < 1) {
-                return toast.error('Enter ticket quantity');
-            }
             setTransferLoader(true);
             const requestData = {
                 id: Orderid,
                 email: Emailid,
-                ticketquantity: ticketQuantity
+                itemid: checkedItemIds
             };
             fetch(apiurl + 'order/tickets-transfer', {
                 method: 'POST',
@@ -234,6 +277,20 @@ const Dashboard = ({ title }) => {
             value = ''; // Reset to empty if not a number
         }
         setTicketQuantity(value.toString());
+    };
+    const [checkedItemIds, setCheckedItemIds] = useState([]);
+
+    // Handle checkbox change
+    const handleCheckboxChange = (id) => {
+        setCheckedItemIds(prevIds => {
+            if (prevIds.includes(id)) {
+                // Remove id from the array if it's already included
+                return prevIds.filter(item => item !== id);
+            } else {
+                // Add id to the array
+                return [...prevIds, id];
+            }
+        });
     };
 
     return (
@@ -326,8 +383,7 @@ const Dashboard = ({ title }) => {
                                                                 <>
                                                                     <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
                                                                     <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
-                                                                    <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
-                                                                    <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                    <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Ticket No : {index + 1}</p>
                                                                     <p className="mb-0 mt-4" style={{ fontWeight: 600, color: '#000' }}>Transferred to</p>
                                                                     <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> {item.owner_email}</span>
                                                                 </>
@@ -335,19 +391,25 @@ const Dashboard = ({ title }) => {
                                                                 <div className="text-center">
                                                                     {item.scan_status == 0 ? (
                                                                         <>
-                                                                            <QRCode style={{ height: "auto", width: "150px" }} value={JSON.stringify({ id: item._id, time: generateRandomNumber(), index: index })} />
-                                                                            <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
-                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
-                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
-                                                                            <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
-                                                                            <span class="mt-0 badge-theme-warning badge-theme mt-3 mb-3 d-block w-100"><FaClock /> Pending</span>
+                                                                            <div className="transfer_box" style={{ position: 'relative' }}>
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={checkedItemIds.includes(item._id)}
+                                                                                    onChange={() => handleCheckboxChange(item._id)}
+                                                                                    style={{ position: 'absolute', top: '10px', left: '10px' }}
+                                                                                />
+                                                                                <QRCode style={{ height: "auto", width: "150px" }} value={JSON.stringify({ id: item._id, time: 1, index: index })} />
+                                                                                <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
+                                                                                <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Ticket No : {index + 1}</p>
+                                                                                <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
+                                                                                <span class="mt-0 badge-theme-warning badge-theme mt-3 mb-3 d-block w-100"><FaClock /> Pending</span>
+                                                                            </div>
                                                                         </>
                                                                     ) : (
                                                                         <>
                                                                             <img style={{ height: "auto", width: "150px" }} src={QRsuccess} className="qr-scanner-success" alt="" />
                                                                             <p className="mb-0 mt-1" style={{ fontSize: '12px', fontWeight: 400, color: '#000', textTransform: 'capitalize' }}>{item._id}</p>
-                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Name: {item.tuser_name}</p>
-                                                                            <p className="mb-0 mt-0" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Gender: {item.tuser_gender}</p>
+                                                                            <p className="mb-0 mt-3" style={{ fontWeight: 500, color: '#000', textTransform: 'capitalize' }}>Ticket No : {index + 1}</p>
                                                                             <p className="mb-0 mt-1" style={{ fontWeight: 600, color: '#000' }}>Scan status</p>
                                                                             <span class="mt-0 badge-theme-success badge-theme mt-3 mb-3 d-block w-100"><FaCircleCheck /> Success</span>
                                                                         </>
@@ -358,6 +420,14 @@ const Dashboard = ({ title }) => {
                                                     </div>
                                                 </Col>
                                             ))}
+                                            {checkedItemIds.length > 0 ? (
+                                                <>
+                                                    <Col md={12}></Col>
+                                                    <Col md={3}>
+                                                        <button type="button" onClick={() => {setModal(!modal); setModalTT(!modalTT); setModalLoader(false)}} className="w-100 btn btn-success">Transfer</button>
+                                                    </Col>
+                                                </>
+                                            ) : ''}
                                         </Row>
                                     </Col>
                                 ) : ''}
@@ -388,18 +458,14 @@ const Dashboard = ({ title }) => {
                                         <input type="text" class="form-control px-2 py-3 mb-3" onChange={(e) => setEmailid(e.target.value)} value={Emailid} placeholder="Email Id" />
                                     </div>
                                     <div>
-                                        <label>Total Ticket Quantity</label>
-                                        <input type="number" min="1" max={Orderitemlist.length} value={ticketQuantity} className="form-control px-2 py-3 mb-5" placeholder="Enter Ticket Quantity" onChange={handleInputChange} />
-                                    </div>
-                                    <div>
                                         <h5 className="text-bold">total Ticket :</h5>
-                                        <p>{Orderitemlist.length}</p>
+                                        <p>{checkedItemIds.length}</p>
                                     </div>
                                     {TransferLoader ? (
                                         <button disabled className="mb-0 mr-5 btn btn-dark list-Ticket-mng-1" type="button">Please wait...</button>
                                     ) : (
                                         <>
-                                            {Orderitemlist.length > 0 ? (
+                                            {checkedItemIds.length > 0 ? (
                                                 <div className="mr-5 pt-5">
                                                     <button onClick={() => HandelTransferTicket()} className="mb-0 mr-5  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
                                                 </div>
@@ -441,7 +507,7 @@ const Dashboard = ({ title }) => {
                                                     <>
                                                         {Listitems.map((item, index) => (
                                                             <Col md={12} className="event_list_box_main">
-                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
+                                                                <button className="list-active-ticket-btn" onClick={() => { setModal(!modal); fetchOrderData(item._id, 1); setCheckedItemIds([]) }} type="button">Ticket <img src={ArrowPng} className="arraw-svg ml-3" alt="" /></button>
                                                                 <div className="event_list_box">
                                                                     <Row>
                                                                         <Col md={4}>
@@ -506,9 +572,9 @@ const Dashboard = ({ title }) => {
                                                                                         <span className="on-img-date-val">{item.eventData[0].start_date}</span>
                                                                                     </span>
                                                                                 </div>
-                                                                                <div className="text-end mr-5 pt-4">
+                                                                                {/* <div className="text-end mr-5 pt-4">
                                                                                     <button onClick={() => { setModalTT(!modalTT); fetchOrderData(item._id, 2) }} className="mb-0  btn btn-success list-Ticket-mng-1" type="button">Transfer Ticket</button>
-                                                                                </div>
+                                                                                </div> */}
                                                                             </div>
                                                                         </Col>
                                                                     </Row>
