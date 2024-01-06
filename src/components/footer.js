@@ -7,7 +7,7 @@ import youtube from "./assets/youtube.svg";
 import support from "./assets/support.svg";
 import { app_url } from "../common/Helpers";
 import { Link } from "react-router-dom";
-const Footer = (props) => {
+const Footer = () => {
   return (
     <>
       <footer className="footer py-5 mt-4">
@@ -34,7 +34,7 @@ const Footer = (props) => {
             <h6 className="fw-bold text-primary-color mb-0">
               LIST YOUR ONLINE EVENTS
             </h6>
-            <div className="ms-lg-2">
+            <div className="">
               <Link to={app_url + 'auth/customer/login'}>
                 <span className="text-primary-color mt-3">Login</span>
               </Link>
@@ -48,7 +48,7 @@ const Footer = (props) => {
           </div>
           <div className="col-lg-2 col-12 footer-link ps-lg-0 ps-4 mt-lg-0 mt-5">
             <h6 className="fw-bold text-primary-color mb-0">LINKS</h6>
-            <div className="ms-lg-2">
+            <div className="">
               <Link to={app_url}>
                 <span className="text-primary-color mt-3">Home</span>
               </Link>
@@ -58,7 +58,7 @@ const Footer = (props) => {
               <Link to={app_url + 'aboutus'}>
                 <span className="text-primary-color mt-3">About Us</span>
               </Link>
-              <a href="#">
+              <a href="/">
                 {" "}
                 <span className="text-primary-color mt-3">Terms & Conditions</span>
               </a>

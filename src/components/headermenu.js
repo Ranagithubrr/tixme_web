@@ -4,34 +4,21 @@ import Search from "./assets/search.png";
 import Account from "./assets/account.svg";
 import menu from "./assets/menu.svg";
 import plus from "./assets/plus.svg";
-import location from "./assets/location (5) 1.svg";
-import music from "./assets/music.svg";
-import nightlife from "./assets/nightlife.svg";
-import business from "./assets/business.svg";
-import sport from "./assets/sport.svg";
 import { Link } from "react-router-dom";
-import foot from "./assets/food.svg";
-import art from "./assets/art.svg";
 import { app_url, apiurl, organizer_url, customer_url } from "../common/Helpers";
 const Header = () => {
   const customer_token = localStorage.getItem("userauth");
-  const organizername = localStorage.getItem("organizername");
-  const country_name = localStorage.getItem("countryname");
-  const accountTargetUrl = customer_token
-    ? customer_url + "dashboard"
-    : organizername
-      ? organizer_url + "dashboard"
-      : app_url + "auth/customer/login";
+  const organizername = localStorage.getItem("organizername"); 
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-white bg-white d-lg-none mx-4 rounded-8 top-10 d-block mb-5">
         <div className="container-fluid pe-0">
-          <img className="nav-logo ms-lg-5 ms-2" src={Logo} alt="No Image" />
+          <img className="nav-logo ms-lg-5 ms-2" src={Logo} alt="Not found" />
           <div>
             <img
               className="m-search me-md-4 me-3"
               src={Search}
-              alt="No Image"
+              alt="Not found "
             />
             <img className="m-account me-md-3 me-2" src={Account} alt="" />
             <button

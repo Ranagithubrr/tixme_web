@@ -197,7 +197,7 @@ const Events = () => {
                                 <Accordion.Header>Event Filters</Accordion.Header>
                                 <Accordion.Body>
                                     <Row>
-                                        <Col md={3} xs={12}>
+                                        <Col md={12} xs={12}>
                                             <div>
                                                 <p className="mb-0">Event mode</p>
                                                 <div className="filterbutton-container">
@@ -206,7 +206,7 @@ const Events = () => {
                                                 </div>
                                             </div>
                                         </Col>
-                                        <Col md={3} xs={12}>
+                                        <Col md={12} xs={12}>
                                             <div>
                                                 <p className="mb-0">Price</p>
                                                 <div className="filterbutton-container">
@@ -215,7 +215,7 @@ const Events = () => {
                                                 </div>
                                             </div>
                                         </Col>
-                                        <Col md={2} xs={12}>
+                                        <Col md={12} xs={12}>
                                             <div>
                                                 <p className="mb-2">Date</p>
                                                 <div>

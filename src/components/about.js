@@ -18,6 +18,10 @@ import location from "./assets/location (5) 1.svg";
 import Footer from './footer';
 import HeaderMenu from './headermenu';
 import MobileMenu from './mobilemenu';
+import Journey1 from '../assets/new/1.png'
+import Journey2 from '../assets/new/2.png'
+import Journey3 from '../assets/new/3.png'
+import Journey4 from '../assets/new/4.png'
 const About = () => {
   return (
     <>
@@ -45,11 +49,24 @@ const About = () => {
               satisfaction.
             </p>
           </div>
-          <p class="mt-2">
-            Step with us into the spotlight of unforgettable moments where the
-            journey is secure, the path is clear, and the memories are destined
-            to be extraordinary!Seize the moment, secure your ticket!
-          </p>
+          <div className="row newAboutJourney">
+                <div className="col-12 col-md-6 col-lg-3">
+                  <img className="img-fluid" src={Journey1} alt="" />
+                  <span>Journey is Secure</span>
+                </div>               
+                <div className="col-12 col-md-6 col-lg-3">
+                  <img className="img-fluid" src={Journey2} alt="" />
+                  <span>The Path is Clear</span>
+                </div>               
+                <div className="col-12 col-md-6 col-lg-3">
+                  <img className="img-fluid" src={Journey3} alt="" />
+                  <span>Memories are Destined</span>
+                </div>               
+                <div className="col-12 col-md-6 col-lg-3">
+                  <img className="img-fluid" src={Journey4} alt="" />
+                  <span>Secure your Ticket</span>
+                </div>               
+          </div>
           <p>
             At TIXME, we believe in expressing our gratitude to our valued
             customers for their ongoing support. Thereby, we are proud to
@@ -58,11 +75,16 @@ const About = () => {
             your ticket-buying journey with us, you automatically become a part
             of our three-tiered loyalty program: Silver, Gold and Platinum
           </p>
+          <p class="mt-2">
+            Step with us into the spotlight of unforgettable moments where the
+            journey is secure, the path is clear, and the memories are destined
+            to be extraordinary!Seize the moment, secure your ticket!
+          </p>        
         </div>
       </div>
       {/* </div> */}
       <div class="space-height"></div>
-      <div class=" sponser-sec banner-child py-5">
+      <div class=" sponser-sec banner-child py-5" id="sponsorSection">
         <div class="row w-100 m-auto">
           <div class="col-lg-4 text-lg-center text-start">
             <img class="mb-lg-0 mb-4" src={Silver} alt="" />
@@ -77,7 +99,7 @@ const About = () => {
                 purchases, you enter the Silver Tier, unlocking a range of
                 benefits. Enjoy exclusive discounts on future ticket purchases,
                 ensuring that your loyalty is immediately rewarded.
-              </span>
+              </span>z
             </div>
           </div>
         </div>

@@ -7,11 +7,6 @@ import AppLogo from '../common/logo.svg';
 const Example = () => {
   const [show, setshow] = useState(false);
 
-  const showSettings = (event) => {
-    event.preventDefault();
-    // Your logic for showSettings goes here if needed
-  };
-
   return (
     <Menu isOpen={show} className='only-mobile'>
       <Link onClick={() => setshow(false)} to={app_url}><img className="header-logo-in-sidebar" src={AppLogo} alt="App Logo" /></Link>

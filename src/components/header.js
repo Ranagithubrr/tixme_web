@@ -11,17 +11,19 @@ import business from "./assets/business.svg";
 import sport from "./assets/sport.svg";
 import foot from "./assets/food.svg";
 import art from "./assets/art.svg";
+import { FaLocationDot } from 'react-icons/fa';
+
 const Header = () => {
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-white bg-white d-lg-none mx-4 rounded-8 top-10 d-block mb-5">
         <div className="container-fluid pe-0">
-          <img className="nav-logo ms-lg-5 ms-2" src={Logo} alt="No Image" />
+          <img className="nav-logo ms-lg-5 ms-2" src={Logo} alt="Not found" />
           <div>
             <img
               className="m-search me-md-4 me-3"
               src={Search}
-              alt="No Image"
+              alt="Not found"
             />
             <img className="m-account me-md-3 me-2" src={Account} alt="" />
             <button
@@ -53,7 +55,7 @@ const Header = () => {
                 </a>
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
-                <a className="nav-link text-primary pe-1 font-nav" href="#">
+                <a className="nav-link text-primary pe-1 font-nav" href="events.html">
                   Events
                   <img className="nav-plus" src={plus} alt="" />
                 </a>
@@ -77,12 +79,7 @@ const Header = () => {
                 </a>
               </li>
               <li className="nav-item border rounded border-primary align-self-start px-2 my-1">
-                <a
-                  className="nav-link text-primary pt-1 pb-1p font-nav"
-                  href="#"
-                >
-                  List your event
-                </a>
+                <button className="ListYourEvents">List Your Events kdjfkdjfkfkd</button>
               </li>
               <li className="nav-item d-flex align-items-center justify-content-start">
                 <a
@@ -98,6 +95,7 @@ const Header = () => {
                   className="nav-link text-primary pe-1 font-nav"
                   href="contact-us.html"
                 >
+                  <span className="locationIcon"><FaLocationDot /></span>
                   Location
                   <img className="nav-plus" src={plus} alt="" />
                 </a>
@@ -109,7 +107,9 @@ const Header = () => {
       <div class="mx-lg-4 my-lg-3 banner bg-primary rounded-8 position-relative">
         <nav class="navbar navbar-expand-lg navbar-white bg-white mx-4 rounded-8 top-10 d-lg-block d-none">
           <div class="container-fluid pe-0">
-            <img class="nav-logo ms-lg-5 ms-2" src={Logo} alt="" />
+            <a class="" href="/">
+              <img class="nav-logo ms-lg-5 ms-2" src={Logo} alt="" />
+            </a>
             <button
               class="navbar-toggler"
               type="button"
@@ -132,7 +132,7 @@ const Header = () => {
                   </a>
                 </li>
                 <li class="nav-item d-flex align-items-center justify-content-center me-xl-5 me-3">
-                  <a class="nav-link text-primary pe-1 font-nav" href="#">
+                  <a class="nav-link text-primary pe-1 font-nav" href="/">
                     Events{" "}
                     <img class="nav-plus" src={plus} alt="" />
                   </a>
@@ -156,19 +156,19 @@ const Header = () => {
                   </a>
                 </li>
                 <li class="nav-item border rounded border-primary align-self-center me-7">
-                  <a class="nav-link text-primary pt-1 pb-1p font-nav" href="#">
+                  <a class="nav-link text-primary pt-1 pb-1p font-nav" href="/">
                     List your event
                   </a>
                 </li>
                 <li class="nav-item position-absolute end-0 bg-white nav-box me-0 d-flex flex-column justify-content-center align-items-center rounded-8">
-                  <a class="nav-link text-primary pt-1 pb-1p font-nav" href="#">
+                  <a class="nav-link text-primary pt-1 pb-1p font-nav" href="/">
                     Login/Sign Up
                   </a>
                   <div class="d-flex align-items-center justify-content-center">
                     <img class="nav-loc" src={location} alt="" />
                     <a
                       class="nav-link text-primary px-1 font-nav-small"
-                      href="#"
+                      href="/"
                     >
                       Location
                       <img class="nav-plus" src={plus} alt="" />
@@ -189,7 +189,7 @@ const Header = () => {
           </h5>
           <div class="d-flex space-sec2 flex-lg-row flex-column mt-lg-0 mt-3">
             <select
-              class="form-select category me-4"
+              class="form-select category me-4 selectBarIconRight"
               aria-label="Default select example"
             >
               <option>Category</option>

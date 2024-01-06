@@ -347,8 +347,7 @@ span.on-img-date-val {
     font-weight: 600;
 }
 
-.event-category-title {
-    background: linear-gradient(180deg, rgba(0, 71, 171, 0.35) 0%, rgba(0, 71, 171, 0.0525) 100%);
+.event-category-title {    
     border-radius: 6px;
     padding: 8px 42px;
     color: rgba(0, 71, 171, 1);

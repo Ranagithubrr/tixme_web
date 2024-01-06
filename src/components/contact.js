@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import india from "./assets/india.svg";
 import singapore from "./assets/singapore.svg";
 import USA from "./assets/USA.svg";
@@ -13,6 +13,7 @@ import Footer from './footer';
 import HeaderMenu from './headermenu';
 import MobileMenu from './mobilemenu';
 const Contact = () => {
+  const [tabno, setTabno] = useState(1);
   return (
     <>
       <HeaderMenu />
@@ -150,26 +151,73 @@ const Contact = () => {
       </div>
       <div className="h-200"></div>
       <div className="address-sec banner-child-address py-5">
+        {/* <TabComp /> */}
         <div className="d-flex justify-content-center">
-          <img className="mx-lg-4 mx-2 animate__animated animate__bounce" src={india} alt="" />
-          <img className="mx-lg-4 mx-2 animate__animated animate__bounce" src={singapore} alt="" />
-          <img className="mx-lg-4 mx-2 animate__animated animate__bounce" src={USA} alt="" />
+          <img onClick={() => setTabno(1)} className="mx-lg-4 mx-2 animate__animated animate__bounce" src={india} alt="" />
+          <img onClick={() => setTabno(2)} className="mx-lg-4 mx-2 animate__animated animate__bounce" src={singapore} alt="" />
+          <img onClick={() => setTabno(3)} className="mx-lg-4 mx-2 animate__animated animate__bounce" src={USA} alt="" />
         </div>
         <div className="contact-sec w-500 m-auto px-5 py-4 mt-4">
-          <div>
-            <span className="text-primary-color text-uppercase fw-bold">Address:</span>
-            <span>
-              Office, Vijay Chambers, Grant Road, Mumbai, Maharashtra 400004
-            </span>
-          </div>
-          <div>
-            <span className="text-primary-color text-uppercase fw-bold">Email</span>
-            <span>tixme.tix@gmail.com</span>
-          </div>
-          <div>
-            <span className="text-primary-color text-uppercase fw-bold">Phone</span>
-            <span>+91 8080000007 (WhatsApp)</span>
-          </div>
+          {
+            tabno === 1 && (
+              <>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Address:</span>
+                  <span>
+                    Office, Vijay Chambers, Grant Road, Mumbai, Maharashtra 400004
+                  </span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Email</span>
+                  <span>tixme.tix@gmail.com</span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Phone</span>
+                  <span>+91 8080000007 (WhatsApp)</span>
+                </div>
+              </>
+            )
+          }
+          {
+            tabno === 2 && (
+              <>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Address:</span>
+                  <span>
+                    Office, Singapure Office Location
+                  </span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Email</span>
+                  <span>tixme.tix@gmail.com</span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Phone</span>
+                  <span>+91 8080000007 (WhatsApp)</span>
+                </div>
+              </>
+            )
+          }
+          {
+            tabno === 3 && (
+              <>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Address:</span>
+                  <span>
+                    USA Office Location, Broklyn United Staes of America and more
+                  </span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Email</span>
+                  <span>tixme.tix@gmail.com</span>
+                </div>
+                <div>
+                  <span className="text-primary-color text-uppercase fw-bold">Phone</span>
+                  <span>+91 8080000007 (WhatsApp)</span>
+                </div>
+              </>
+            )
+          }
         </div>
       </div>
       <Footer />

@@ -11,6 +11,8 @@ import toast from 'react-hot-toast';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { FaTimes } from 'react-icons/fa';
+import arrow from "../../../assets/arrow.svg";
+import TopIcon from "../../../assets/new/top.png"
 import {
     Modal,
     Input,
@@ -220,43 +222,67 @@ const About = () => {
                     Login / Sign up
                 </h1>
                 <div class="banner-child bg-white px-0" style={{ border: '1px solid #eee' }}>
-                    <div className='row p-5'>
-                        <div className="col-md-6 mb-5">
-                            <div className="event_category_box gradient-blue text-center float-right">
-                                <h3 className="event-category-title theme-color">Customer</h3>
-                                <p className="event-category-desc text-black mb-4">Welcome to TIXME,</p>
-                                <div className="text-center">
-                                    <Link to={app_url + 'auth/customer/login'} className="btn btn-primary text-white px-5"><span className="mr-2"><FiLogIn /></span> Login</Link>
-                                </div>
+                    <div className="TixmeBox">
+                        <h4>TIXME</h4>
+                        <p>Your one stop solution for managing and conducting events</p>
+                    </div>
+                    <div className='row p-5 py-5'>
+                        <div className="col-12 col-md-4 col-lg-4 mt-5">
+                            <div className="GetCustomerButtonBox">
+                                <img src={TopIcon} alt="" className="TopLeftImg"/>
+                                <h4>Customer</h4>
+                                <button class="GetLatestUpdateButton CustomerButton">
+                                    <div class="left text-center">
+                                        <small class="ms-2">LOGIN</small>
+                                    </div>
+                                    <div class="right">
+                                        <img src={arrow} alt="" style={{ width: "15px" }} />
+                                    </div>
+                                </button>
                             </div>
-                        </div>
-                        <div className="col-md-6 mb-5">
-                            <div className="event_category_box gradient-grey text-center">
-                                <h3 className="event-category-title theme-color">Customer</h3>
-                                <p className="event-category-desc text-black mb-4">Welcome to TIXME,</p>
-                                <div className="text-center">
-                                    <Link to={app_url + 'auth/customer/signup'} className="btn btn-primary text-white px-5"><span className="mr-2"><FiPlus /></span> Sign Up</Link>
-                                </div>
+                        </div>                        
+                        <div className="col-12 col-md-4 col-lg-4 mt-5">
+                            <div className="GetCustomerButtonBox">
+                                <img src={TopIcon} alt="" className="TopLeftImg"/>
+                                <h4>Customer</h4>
+                                <button class="GetLatestUpdateButton CustomerButton">
+                                    <div class="left text-center">
+                                        <small class="ms-2">LOGIN</small>
+                                    </div>
+                                    <div class="right">
+                                        <img src={arrow} alt="" style={{ width: "15px" }} />
+                                    </div>
+                                </button>
                             </div>
-                        </div>
-                        <div className="col-md-6 mb-5">
-                            <div className="event_category_box gradient-blue text-center float-right">
-                                <h3 className="event-category-title theme-color">Organizer</h3>
-                                <p className="event-category-desc text-black mb-4">Welcome to TIXME,</p>
-                                <div className="text-center">
-                                    <Link to={app_url + 'auth/organizer/login'} className="btn btn-primary text-white px-5"><span className="mr-2"><FiLogIn /></span> Login</Link>
-                                </div>
+                        </div>                        
+                        <div className="col-12 col-md-4 col-lg-4 mt-5">
+                            <div className="GetCustomerButtonBox">
+                                <img src={TopIcon} alt="" className="TopLeftImg"/>
+                                <h4>Organizer</h4>
+                                <button class="GetLatestUpdateButton CustomerButton">
+                                    <div class="left text-center">
+                                        <small class="ms-2">LOGIN</small>
+                                    </div>
+                                    <div class="right">
+                                        <img src={arrow} alt="" style={{ width: "15px" }} />
+                                    </div>
+                                </button>
                             </div>
-                        </div>
-                        <div className="col-md-6 mb-5">
-                            <div className="event_category_box gradient-grey text-center">
-                                <h3 className="event-category-title theme-color">Organizer</h3>
-                                <p className="event-category-desc text-black mb-4">Welcome to TIXME,</p>
-                                <div className="text-center">
-                                    <span onClick={() => setContactModal(!ContactModal)} className="btn btn-primary text-white px-5"><span className="mr-2"><FiPlus /></span> Contact Us</span>
-                                </div>
+                        </div>                        
+                        <div className="col-12 col-md-4 col-lg-4 mt-5 m-auto">
+                            <div className="GetCustomerButtonBox">
+                                <img src={TopIcon} alt="" className="TopLeftImg"/>
+                                <h4>Customer</h4>
+                                <button class="GetLatestUpdateButton CustomerButton">
+                                    <div class="left text-center">
+                                        <small class="ms-2">LOGIN</small>
+                                    </div>
+                                    <div class="right">
+                                        <img src={arrow} alt="" style={{ width: "15px" }} />
+                                    </div>
+                                </button>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>

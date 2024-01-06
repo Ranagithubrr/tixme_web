@@ -205,30 +205,37 @@ const Home = () => {
             <div className="mx-lg-4 my-lg-3 banner bg-primary-color rounded-8 position-relative">
                 <MobileMenu />
                 <h1 className="banner-h text-white text-start text-uppercase">Explore our events :</h1>
-                <div className="banner-child bg-white">
+                <div className="banner-child keywordsBannerIndex">
                     <div className="row mx-lg-3 mx-1 mb-4 mt-4 gx-md-4 gx-2">
                         <div className="col-md-12">
-                            <div className="categories-container pt-4">
-                                {
-                                    Listitems.map((item, index) => {
-                                        const isFirstItem = filtercategory === item._id;
-                                        const className = isFirstItem ? 'active hobby-box ' : 'hobby-box ';
-                                        return <a className={className} onClick={() => setFilterCategory(item._id)} key={index}>{item.name}</a>;
-                                    })
-                                }
-                            </div>
+                            <Accordion defaultActiveKey="0">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Search Keywords</Accordion.Header>
+                                    <Accordion.Body>
+                                        <div className="categories-container pt-4">
+                                            {
+                                                Listitems.map((item, index) => {
+                                                    const isFirstItem = filtercategory === item._id;
+                                                    const className = isFirstItem ? 'active hobby-box ' : 'hobby-box ';
+                                                    return <a className={className} onClick={() => setFilterCategory(item._id)} key={index}>{item.name}</a>;
+                                                })
+                                            }
+                                        </div>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>
                         </div>
                     </div>
                 </div>
             </div>
-            <Row className="mx-4" style={{marginTop: '130px'}}>
-                <Col md={12} className="filter-according">
+            <Row className="mx-4" style={{ marginTop: '130px' }}>
+                <Col md={3} className="filter-according">
                     <Accordion defaultActiveKey="0">
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Event Filters</Accordion.Header>
                             <Accordion.Body>
                                 <Row>
-                                    <Col md={3} xs={12}>
+                                    <Col md={12} xs={12}>
                                         <div>
                                             <p className="mb-0">Event mode</p>
                                             <div className="filterbutton-container">
@@ -237,7 +244,7 @@ const Home = () => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col md={3} xs={12}>
+                                    <Col md={12} xs={12}>
                                         <div>
                                             <p className="mb-0">Price</p>
                                             <div className="filterbutton-container">
@@ -246,8 +253,8 @@ const Home = () => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col md={2} xs={12}>
-                                        <div>
+                                    <Col md={12} xs={12}>
+                                        <div className="">
                                             <p className="mb-2">Date</p>
                                             <div>
                                                 <Select
@@ -262,7 +269,7 @@ const Home = () => {
                                         </div>
                                     </Col>
                                     {Datetype == "Pick a date" ? (
-                                        <Col md={4} xs={12}>
+                                        <Col md={12} xs={12}>
                                             <p className="mb-1">Select Date</p>
                                             <div class="input-group mb-3 input-warning-o" style={{ position: 'relative' }}>
                                                 <span class="input-group-text"><img src={DateIcon} alt="" /></span>
@@ -313,7 +320,7 @@ const Home = () => {
                                         </>
                                     ) : ''}
                                     <Col md={12} className="mb-2"></Col>
-                                    <Col md={4}>
+                                    <Col md={12}>
                                         <p className="mb-0">Select Price rage</p>
                                         <div
                                             style={{
@@ -389,7 +396,7 @@ const Home = () => {
                                             </output>
                                         </div>
                                     </Col>
-                                    <Col md={4} className="mt-5">
+                                    <Col md={12} className="mt-5">
                                         <span onClick={() => setPriceFilter(values[0].toFixed(0) > 0 ? values[0].toFixed(0) : null)}>
                                             <Whitestartbtn title={'Filter price'} />
                                         </span>
@@ -402,8 +409,8 @@ const Home = () => {
                         </Accordion.Item>
                     </Accordion>
                 </Col>
-                <Col md={12}>
-                    <div className="event-category-section mb-5 in-event-page mt-5">
+                <Col md={9}>
+                    <div className="event-category-section mb-5 in-event-page">
                         <Container fluid className="">
                             {Eventloader ? (
                                 <>

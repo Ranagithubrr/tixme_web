@@ -1,45 +1,14 @@
 import React, { useEffect, useState } from "react";
-import aboutUs from "../../../assets/about-us-pic.svg";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Silver from "../../../assets/Sliver.svg";
-import Gold from "../../../assets/Gold.svg";
-import Platinum from "../../../assets/Platinum.svg";
-import google from "../../../assets/google.svg";
-import airBNB from "../../../assets/airBNB.svg";
-import booking from "../../../assets/booking.com.svg";
-import expedia from "../../../assets/expedia.svg";
-import TUI from "../../../assets/TUI.svg";
-import arrow from "../../../assets/arrow.svg";
-import Logo from "../../../assets/Logo.svg";
-import Search from "../../../assets/search.png";
-import Account from "../../../assets/account.svg";
-import menu from "../../../assets/menu.svg";
-import plus from "../../../assets/plus.svg";
-import location from "../../../assets/location (5) 1.svg";
-import Footer from '../../../components/footer';
 import HeaderMenu from '../../../components/headermenu';
 import MobileMenu from '../../../components/mobilemenu';
-import { FaEnvelope } from "react-icons/fa6";
 import toast from 'react-hot-toast';
 import { apiurl, app_url, isEmail, organizer_url } from '../../../common/Helpers';
 import WhitestarBtn from '../../../component/Whitestarbtn';
 import { Link, useNavigate } from "react-router-dom";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import NoResult from '../../../lotte/xxx.json';
-import Lottie from "lottie-react";
-import Select from 'react-select'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-import { auth, googleProvider, facebookProvider } from '../../../firebase';
-import GoogleLogo from '../../../common/icon/google.png';
-import { signInWithPopup } from 'firebase/auth';
-const About = () => {
-    const lottewidth = {
-        width: 'auto',
-        height: '320px'
-    }
+const About = () => {    
     const navigate = useNavigate();
     const [Email, setEmail] = useState();
     const [otp, setOTP] = useState();
@@ -70,7 +39,7 @@ const About = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success == true) {
+                    if (data.success === true) {
                         toast.success('Your Gmail OTP has been sent', {
                             duration: 6000,
                         });
@@ -98,7 +67,7 @@ const About = () => {
             if (!otp) {
                 return toast.error('OTP is required');
             }
-            if (otp.length != 6) {
+            if (otp.length !== 6) {
                 return toast.error('Invalid OTP length. Must be 6 digits.');
             }
             setLoader(true);
@@ -115,7 +84,7 @@ const About = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success == true) {
+                    if (data.success === true) {
                         toast.success('Your OTP has been successfully verified.', {
                             duration: 6000,
                         });
@@ -165,7 +134,7 @@ const About = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success == true) {
+                    if (data.success === true) {
                         localStorage.removeItem('userauth');
                         localStorage.removeItem('user_role');
                         localStorage.setItem('organizerauth', '');
